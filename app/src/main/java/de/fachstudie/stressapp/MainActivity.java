@@ -52,8 +52,7 @@ public class MainActivity extends AppCompatActivity {
         Cursor c = db.query(StressNotification.NotificationEntry.TABLE_NAME, projection, null,
                 null, null, null, null);
 
-        if (c != null) {
-            c.moveToFirst();
+        if (c != null && c.moveToFirst()) {
             String dbTitle = c.getString(c.getColumnIndex(StressNotification.NotificationEntry
                     .TITLE));
             String dbContent = c.getString(c.getColumnIndex(StressNotification.NotificationEntry
