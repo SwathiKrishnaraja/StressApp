@@ -74,15 +74,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onPause() {
+    protected void onDestroy() {
         super.onPause();
         unregisterReceiver(notificationReceiver);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        registerReceiver(notificationReceiver, filter);
     }
 
     @Override
