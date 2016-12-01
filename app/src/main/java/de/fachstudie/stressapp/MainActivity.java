@@ -22,6 +22,8 @@ import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
+import com.vdurmont.emoji.Emoji;
+import com.vdurmont.emoji.EmojiParser;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -86,6 +88,13 @@ public class MainActivity extends AppCompatActivity {
                 String timeStampText = c.getString(c.getColumnIndex(ViewNotification
                         .NotificationEntry
                         .TIMESTAMP));
+
+                EmojiFrequency frequency = new EmojiFrequency();
+                for(Map.Entry<Emoji, Integer> entry: frequency.getEmojiFrequenciesFromText(content).entrySet()){
+                    Log.d("key", entry.getKey().getUnicode());
+                    Log.d("value", ""+entry.getValue());
+
+                }
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 Date timeStampDate = null;
                 try {
@@ -136,11 +145,15 @@ public class MainActivity extends AppCompatActivity {
         barChart.setData(barData);
         barChart.invalidate();
 
-        StressNotification last = notificationList.get(notificationList.size() - 1);
-        notification.title.set(last.getTitle());
-        notification.content.set(last.getContent());
-        notification.application.set(last.getApplication());
-        notification.timestamp.set(last.getTimestamp().toString());
+        Log.d("Notifications: ", notificationList.size() + "");
+
+        if(!notificationList.isEmpty()) {
+            StressNotification last = notificationList.get(notificationList.size() - 1);
+            notification.title.set(last.getTitle());
+            notification.content.set(last.getContent());
+            notification.application.set(last.getApplication());
+            notification.timestamp.set(last.getTimestamp().toString());
+        }
     }
 
     @Override
