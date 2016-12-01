@@ -75,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
                 null, null, null, null);
 
         List<StressNotification> notificationList = new ArrayList<>();
+        EmojiFrequency frequency = new EmojiFrequency();
         if (c != null && c.moveToFirst()) {
             Log.d("Count: ", c.getCount() + "");
 
@@ -89,7 +90,6 @@ public class MainActivity extends AppCompatActivity {
                         .NotificationEntry
                         .TIMESTAMP));
 
-                EmojiFrequency frequency = new EmojiFrequency();
                 for(Map.Entry<Emoji, Integer> entry: frequency.getEmojiFrequenciesFromText(content).entrySet()){
                     Log.d("key", entry.getKey().getUnicode());
                     Log.d("value", ""+entry.getValue());
