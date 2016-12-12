@@ -15,15 +15,15 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 
 import com.github.mikephil.charting.charts.BarChart;
-import com.github.mikephil.charting.charts.HorizontalBarChart;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.vdurmont.emoji.Emoji;
-import com.vdurmont.emoji.EmojiParser;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -40,11 +40,16 @@ import de.fachstudie.stressapp.model.StressNotification;
 import de.fachstudie.stressapp.model.ViewNotification;
 
 public class MainActivity extends AppCompatActivity {
+    private Button tetris_button;
     private ViewNotification notification;
     private NotificationReceiver notificationReceiver;
     private IntentFilter filter;
     private BarChart barChart;
 
+    public void changeActivity(View view){
+        Intent intent = new Intent(MainActivity.this, TetrisActivity.class);
+        startActivity(intent);
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

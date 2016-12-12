@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:bind="http://schemas.android.com/apk/res-auto">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:bind="http://schemas.android.com/apk/res-auto">
 
     <data class="de.fachstudie.stressapp.databinding.ActivityMainBinding">
 
@@ -8,8 +9,7 @@
             type="de.fachstudie.stressapp.model.ViewNotification"/>
     </data>
 
-    <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                                                     xmlns:app="http://schemas.android.com/apk/res-auto"
+    <android.support.design.widget.CoordinatorLayout xmlns:app="http://schemas.android.com/apk/res-auto"
                                                      xmlns:tools="http://schemas.android.com/tools"
                                                      android:layout_width="match_parent"
                                                      android:layout_height="match_parent"
@@ -34,6 +34,16 @@
             layout="@layout/content_main"
             android:id="@+id/innerLayout"
             bind:currentNotification="@{currentNotification}"/>
+
+        <Button
+            android:text="Tetris"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:id="@+id/tetris_btn"
+            android:onClick="changeActivity"
+            android:layout_gravity="bottom|left"
+            app:layout_anchor="@+id/innerLayout"
+            app:layout_anchorGravity="top|right" />
 
     </android.support.design.widget.CoordinatorLayout>
 </layout>
