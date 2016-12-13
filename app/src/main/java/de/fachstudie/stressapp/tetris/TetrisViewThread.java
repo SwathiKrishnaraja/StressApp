@@ -6,11 +6,11 @@ import android.view.SurfaceHolder;
 /**
  * Created by Sanjeev on 12.12.2016.
  */
-
 public class TetrisViewThread extends Thread {
     private TetrisView view;
     private SurfaceHolder holder;
     private boolean run = false;
+    private long lastUpdateTime = -1;
 
     public TetrisViewThread(TetrisView view, SurfaceHolder holder) {
         this.view = view;
@@ -20,22 +20,23 @@ public class TetrisViewThread extends Thread {
     @Override
     public void run() {
         Canvas canvas = null;
-        while(run){
-            try{
+        while (run) {
+            try {
+
                 canvas = holder.lockCanvas();
                 synchronized (holder) {
                     view.draw(canvas);
                 }
-
-            }finally {
-                if(canvas != null){
+            } finally {
+                if (canvas != null) {
                     holder.unlockCanvasAndPost(canvas);
                 }
             }
+            lastUpdateTime = System.currentTimeMillis();
         }
     }
 
-    public void setRunnable(boolean run){
+    public void setRunnable(boolean run) {
         this.run = run;
     }
 }
