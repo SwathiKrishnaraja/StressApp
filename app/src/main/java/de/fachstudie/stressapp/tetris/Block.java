@@ -21,11 +21,13 @@ public class Block extends Item {
     private final int[][] T_SHIFTS = {{-1, 0}, {0, 0}, {0, 1}, {1, -1}};
 
     private final int[][] shift;
+    private Shape type;
     private int[][][] shape;
     private int rotationIndex = 0;
 
     public Block(int x, int y, int width, int height) {
         super(x, y, width, height);
+        this.type = Shape.L;
         this.shape = L_ROTATIONS;
         this.shift = L_SHIFTS;
     }
@@ -33,6 +35,7 @@ public class Block extends Item {
     public Block(int x, int y, int width, int height, Shape shape) {
         super(x, y, width, height);
 
+        this.type = shape;
         switch (shape) {
             case SQUARE:
                 this.shape = SQUARE_ROTATIONS;
@@ -51,6 +54,10 @@ public class Block extends Item {
                 this.shift = T_SHIFTS;
                 break;
         }
+    }
+
+    public Shape getType() {
+        return type;
     }
 
     public int[][] getShape() {

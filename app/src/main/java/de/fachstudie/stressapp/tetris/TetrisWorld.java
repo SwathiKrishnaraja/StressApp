@@ -7,6 +7,10 @@ import android.graphics.Paint;
 import java.util.Arrays;
 import java.util.Random;
 
+import static de.fachstudie.stressapp.tetris.Block.Shape.L;
+import static de.fachstudie.stressapp.tetris.Block.Shape.SQUARE;
+import static de.fachstudie.stressapp.tetris.Block.Shape.T;
+
 public class TetrisWorld {
     private final int WIDTH = 8;
     private final int HEIGHT = 20;
@@ -36,11 +40,11 @@ public class TetrisWorld {
         int number = r.nextInt(3);
         int x = r.nextInt(3);
         if (number == 0) {
-            return new Block(x, 0, 0, 0, Block.Shape.L);
+            return new Block(x, 0, 0, 0, L);
         } else if (number == 1) {
-            return new Block(x, 0, 0, 0, Block.Shape.T);
+            return new Block(x, 0, 0, 0, T);
         } else {
-            return new Block(x, 0, 0, 0, Block.Shape.SQUARE);
+            return new Block(x, 0, 0, 0, SQUARE);
         }
     }
 
@@ -88,7 +92,17 @@ public class TetrisWorld {
                     int yOffset = j - item.getY();
                     int xOffset = i - item.getX();
                     if (item.getShape()[yOffset][xOffset] == 1) {
-                        p.setColor(Color.RED);
+                        switch (item.getType()) {
+                            case SQUARE:
+                                p.setColor(Color.YELLOW);
+                                break;
+                            case L:
+                                p.setColor(Color.BLUE);
+                                break;
+                            case T:
+                                p.setColor(Color.RED);
+                                break;
+                        }
                         canvas.drawRect(i * gridSize, j * gridSize, (i + 1) * gridSize, (j + 1) *
                                 gridSize, p);
                     }
