@@ -117,7 +117,7 @@ public class TetrisWorld {
         int canvasWidth = canvas.getWidth();
         int canvasHeight = canvas.getHeight();
 
-        int PADDING = 120;
+        int PADDING = 140;
         int TOP_PADDING = 30;
         int gridSize = (canvasWidth - 2 * PADDING) / WIDTH;
 

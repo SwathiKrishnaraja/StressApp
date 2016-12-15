@@ -86,7 +86,7 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
             }
         }
 
-        if (System.currentTimeMillis() - lastUpdateTime > 500 || lastUpdateTime == -1) {
+        if (System.currentTimeMillis() - lastUpdateTime > 350 || lastUpdateTime == -1) {
             model.gravityStep();
             lastUpdateTime = System.currentTimeMillis();
         }
