@@ -5,8 +5,11 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.util.Log;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
 import static de.fachstudie.stressapp.tetris.Block.Shape.I;
@@ -36,9 +39,37 @@ public class TetrisWorld {
             return true;
         } else {
             freeze(this.item);
+            clearFullLines();
             Block item = randomItem();
             this.item = item;
             return false;
+        }
+    }
+
+    private void clearFullLines() {
+        List<Integer> fullLines = new ArrayList<>();
+        for (int j = 0; j < occupancy.length; j++) {
+            boolean isFull = true;
+            for (int i = 0; i < occupancy[j].length; i++) {
+                if (occupancy[j][i] == 0) {
+                    isFull = false;
+                    break;
+                }
+            }
+            if (isFull) {
+                fullLines.add(j);
+            }
+        }
+        for (Integer fullLine : fullLines) {
+            for (int j = fullLine; j >= 0; j--) {
+                for (int i = 0; i < occupancy[j].length; i++) {
+                    if (j != 0) {
+                        occupancy[j][i] = occupancy[j - 1][i];
+                    } else {
+                        occupancy[j][i] = 0;
+                    }
+                }
+            }
         }
     }
 
@@ -50,15 +81,15 @@ public class TetrisWorld {
             return new Block(x, 0, 0, 0, L);
         } else if (number == 1) {
             return new Block(x, 0, 0, 0, T);
-        } else if (number == 2) {
+        } else if(number == 2) {
             return new Block(x, 0, 0, 0, SQUARE);
-        } else if (number == 3) {
+        }else if(number == 3){
             return new Block(x, 0, 0, 0, I);
-        } else if (number == 4) {
+        }else if(number == 4){
             return new Block(x, 0, 0, 0, J);
-        } else if (number == 5) {
+        }else if(number == 5){
             return new Block(x, 0, 0, 0, S);
-        } else {
+        }else{
             return new Block(x, 0, 0, 0, Z);
         }
     }
@@ -69,7 +100,7 @@ public class TetrisWorld {
                 int yOffset = j - item.getY();
                 int xOffset = i - item.getX();
                 if (item.getShape()[yOffset][xOffset] == 1 && yOffset >= 0 && xOffset >= 0) {
-                    occupancy[j][i] = 1;
+                    occupancy[j][i] = item.getType().getN();
                 }
             }
         }
@@ -78,7 +109,7 @@ public class TetrisWorld {
     private boolean hasOverlap(int[][] state) {
         for (int j = 0; j < state.length; j++) {
             for (int i = 0; i < state[j].length; i++) {
-                if (state[j][i] > 1) {
+                if (state[j][i] == -1) {
                     return true;
                 }
             }
@@ -98,7 +129,7 @@ public class TetrisWorld {
         int canvasWidth = canvas.getWidth();
         int canvasHeight = canvas.getHeight();
 
-        int PADDING = 120;
+        int PADDING = 140;
         int TOP_PADDING = 30;
         int gridSize = (canvasWidth - 2 * PADDING) / WIDTH;
 
@@ -126,38 +157,70 @@ public class TetrisWorld {
                                 p.setColor(Color.parseColor("#009688"));
                                 break;
                             case I:
-                                p.setColor(Color.parseColor("#ff9800"));
+                                p.setColor(Color.parseColor("#00bcd4"));
                                 break;
                             case J:
-                                p.setColor(Color.parseColor("#9C27b0"));
-                                break;
-                            case S:
                                 p.setColor(Color.parseColor("#3f51b5"));
                                 break;
-                            case Z:
-                                p.setColor(Color.parseColor("#00BCD4"));
+                            case S:
+                                p.setColor(Color.parseColor("#9c27b0"));
                                 break;
-
+                            case Z:
+                                p.setColor(Color.parseColor("#ff9800"));
+                                break;
                         }
-                        canvas.drawRect(i * gridSize + PADDING, j * gridSize + TOP_PADDING, (i +
+                        canvas.drawRect(i * gridSize + PADDING + 1, j * gridSize + TOP_PADDING +
+                                1, (i +
                                 1) * gridSize
-                                + PADDING, (j + 1) *
-                                gridSize + TOP_PADDING, p);
+                                + PADDING - 1, (j + 1) *
+                                gridSize + TOP_PADDING - 1, p);
                     }
                 }
-                if (occupancy[j][i] == 1) {
-                    p.setColor(Color.GRAY);
-                    canvas.drawRect(i * gridSize + PADDING, j * gridSize + TOP_PADDING, (i + 1) *
-                            gridSize +
-                            PADDING, (j + 1) *
-                            gridSize + TOP_PADDING, p);
+                if (occupancy[j][i] != 0) {
+                    switch (occupancy[j][i]) {
+                        case 1:
+                            p.setColor(Color.parseColor("#f44336"));
+                            break;
+                        case 2:
+                            p.setColor(Color.parseColor("#2196f3"));
+                            break;
+                        case 3:
+                            p.setColor(Color.parseColor("#009688"));
+                            break;
+                        case 4:
+                            p.setColor(Color.parseColor("#00bcd4"));
+                            break;
+                        case 5:
+                            p.setColor(Color.parseColor("#3f51b5"));
+                            break;
+                        case 6:
+                            p.setColor(Color.parseColor("#9c27b0"));
+                            break;
+                        case 7:
+                            p.setColor(Color.parseColor("#ff9800"));
+                            break;
+                    }
+                    canvas.drawRect(i * gridSize + PADDING + 1, j * gridSize + TOP_PADDING + 1,
+                            (i + 1) *
+                                    gridSize +
+                                    PADDING - 1, (j + 1) *
+                                    gridSize + TOP_PADDING - 1, p);
                 }
             }
         }
     }
 
     public void rotateBlock() {
-        this.item.rotate();
+        int[][] state = copy(occupancy);
+        this.item.simulateRotate(state);
+
+        if (!hasOverlap(state)) {
+            this.item.rotate();
+        }
+
+        if (this.item.getX() >= WIDTH) {
+            this.item.setX(WIDTH - 1);
+        }
     }
 
     public void drop() {
@@ -165,17 +228,27 @@ public class TetrisWorld {
     }
 
     public void moveRight() {
-        this.item.moveRight();
+        int[][] state = copy(occupancy);
+        this.item.simulateStepRight(state);
+
+        if (!hasOverlap(state)) {
+            this.item.moveRight();
+        }
+
         if (item.getX() + item.getWidth() >= WIDTH) {
             item.setX(WIDTH - item.getWidth());
         }
     }
 
     public void moveLeft() {
-        this.item.moveLeft();
-        if (item.getX() < 0) {
-            item.setX(0);
+        int[][] state = copy(occupancy);
+        this.item.simulateStepLeft(state);
+
+        if (!hasOverlap(state)) {
+            this.item.moveLeft();
         }
+
+        Log.d("X", item.getX() + "");
     }
 
     public void stopDropping() {
