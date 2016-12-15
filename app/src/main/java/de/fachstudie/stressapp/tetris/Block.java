@@ -109,7 +109,9 @@ public class Block extends Item {
                 int yOffset = j - getY();
                 int xOffset = i - getX();
                 if (getShape()[yOffset][xOffset] == 1) {
-                    state[j][i]++;
+                    if (state[j][i] > 0) {
+                        state[j][i] = -1;
+                    }
                 }
             }
         }
@@ -134,6 +136,16 @@ public class Block extends Item {
     }
 
     public enum Shape {
-        SQUARE, L, T
+        SQUARE(1), L(2), T(3);
+
+        private int n;
+
+        Shape(int n) {
+            this.n = n;
+        }
+
+        public int getN() {
+            return n;
+        }
     }
 }

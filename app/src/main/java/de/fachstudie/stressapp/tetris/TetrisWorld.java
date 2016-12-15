@@ -58,7 +58,7 @@ public class TetrisWorld {
                 int yOffset = j - item.getY();
                 int xOffset = i - item.getX();
                 if (item.getShape()[yOffset][xOffset] == 1 && yOffset >= 0 && xOffset >= 0) {
-                    occupancy[j][i] = 1;
+                    occupancy[j][i] = item.getType().getN();
                 }
             }
         }
@@ -67,7 +67,7 @@ public class TetrisWorld {
     private boolean hasOverlap(int[][] state) {
         for (int j = 0; j < state.length; j++) {
             for (int i = 0; i < state[j].length; i++) {
-                if (state[j][i] > 1) {
+                if (state[j][i] == -1) {
                     return true;
                 }
             }
@@ -121,8 +121,18 @@ public class TetrisWorld {
                                 gridSize + TOP_PADDING, p);
                     }
                 }
-                if (occupancy[j][i] == 1) {
-                    p.setColor(Color.GRAY);
+                if (occupancy[j][i] != 0) {
+                    switch (occupancy[j][i]) {
+                        case 1:
+                            p.setColor(Color.parseColor("#f44336"));
+                            break;
+                        case 2:
+                            p.setColor(Color.parseColor("#2196f3"));
+                            break;
+                        case 3:
+                            p.setColor(Color.parseColor("#009688"));
+                            break;
+                    }
                     canvas.drawRect(i * gridSize + PADDING, j * gridSize + TOP_PADDING, (i + 1) *
                             gridSize +
                             PADDING, (j + 1) *
