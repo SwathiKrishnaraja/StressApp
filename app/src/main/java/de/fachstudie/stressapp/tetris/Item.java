@@ -40,4 +40,12 @@ public class Item {
     public void stepDown() {
         this.y += 1;
     }
+
+    public void moveRight() {
+        this.x += 1;
+    }
+
+    public void moveLeft() {
+        this.x -= 1;
+    }
 }

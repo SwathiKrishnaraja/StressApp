@@ -1,7 +1,9 @@
 package de.fachstudie.stressapp.tetris;
 
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 
 import java.util.Arrays;
@@ -12,10 +14,11 @@ import static de.fachstudie.stressapp.tetris.Block.Shape.SQUARE;
 import static de.fachstudie.stressapp.tetris.Block.Shape.T;
 
 public class TetrisWorld {
-    private final int WIDTH = 8;
+    private final int WIDTH = 10;
     private final int HEIGHT = 20;
     private int[][] occupancy = new int[HEIGHT][WIDTH];
     private Block item;
+    private boolean dropping = false;
 
     public void addItem(Block item) {
         this.item = item;
@@ -83,7 +86,15 @@ public class TetrisWorld {
         int canvasWidth = canvas.getWidth();
         int canvasHeight = canvas.getHeight();
 
-        int gridSize = canvasWidth / HEIGHT;
+        int PADDING = 120;
+        int TOP_PADDING = 30;
+        int gridSize = (canvasWidth - 2 * PADDING) / WIDTH;
+
+        p.setStyle(Paint.Style.STROKE);
+        p.setColor(Color.DKGRAY);
+        canvas.drawRect(PADDING, TOP_PADDING, canvasWidth - PADDING, TOP_PADDING + HEIGHT *
+                gridSize, p);
+        p.setStyle(Paint.Style.FILL);
 
         for (int j = 0; j < occupancy.length; j++) {
             for (int i = 0; i < occupancy[j].length; i++) {
@@ -94,23 +105,27 @@ public class TetrisWorld {
                     if (item.getShape()[yOffset][xOffset] == 1) {
                         switch (item.getType()) {
                             case SQUARE:
-                                p.setColor(Color.YELLOW);
+                                p.setColor(Color.parseColor("#f44336"));
                                 break;
                             case L:
-                                p.setColor(Color.BLUE);
+                                p.setColor(Color.parseColor("#2196f3"));
                                 break;
                             case T:
-                                p.setColor(Color.RED);
+                                p.setColor(Color.parseColor("#009688"));
                                 break;
                         }
-                        canvas.drawRect(i * gridSize, j * gridSize, (i + 1) * gridSize, (j + 1) *
-                                gridSize, p);
+                        canvas.drawRect(i * gridSize + PADDING, j * gridSize + TOP_PADDING, (i +
+                                1) * gridSize
+                                + PADDING, (j + 1) *
+                                gridSize + TOP_PADDING, p);
                     }
                 }
                 if (occupancy[j][i] == 1) {
                     p.setColor(Color.GRAY);
-                    canvas.drawRect(i * gridSize, j * gridSize, (i + 1) * gridSize, (j + 1) *
-                            gridSize, p);
+                    canvas.drawRect(i * gridSize + PADDING, j * gridSize + TOP_PADDING, (i + 1) *
+                            gridSize +
+                            PADDING, (j + 1) *
+                            gridSize + TOP_PADDING, p);
                 }
             }
         }
@@ -121,15 +136,60 @@ public class TetrisWorld {
     }
 
     public void drop() {
-        long lastUpdate = -1;
-        while (true) {
-            if (System.currentTimeMillis() - lastUpdate > 70) {
-                boolean canDrop = gravityStep();
-                if (!canDrop) {
-                    return;
-                }
-                lastUpdate = System.currentTimeMillis();
-            }
+        dropping = true;
+    }
+
+    public void moveRight() {
+        this.item.moveRight();
+        if (item.getX() + item.getWidth() >= WIDTH) {
+            item.setX(WIDTH - item.getWidth());
         }
+    }
+
+    public void moveLeft() {
+        this.item.moveLeft();
+        if (item.getX() < 0) {
+            item.setX(0);
+        }
+    }
+
+    public void stopDropping() {
+        this.dropping = false;
+    }
+
+    public boolean isDropping() {
+        return dropping;
+    }
+
+    public void setDropping(boolean dropping) {
+        this.dropping = dropping;
+    }
+
+    public void drawIcon(Canvas canvas, Bitmap bitmap, Paint p) {
+        int canvasWidth = canvas.getWidth();
+        int canvasHeight = canvas.getHeight();
+
+        int PADDING = 120;
+        int TOP_PADDING = 30;
+        int gridSize = (canvasWidth - 2 * PADDING) / WIDTH;
+        bitmap = getResizedBitmap(bitmap, gridSize, gridSize);
+        canvas.drawBitmap(bitmap, item.getX() * gridSize + PADDING, item.getY() * gridSize +
+                TOP_PADDING, p);
+    }
+
+    private Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight) {
+        int width = bm.getWidth();
+        int height = bm.getHeight();
+        float scaleWidth = ((float) newWidth) / width;
+        float scaleHeight = ((float) newHeight) / height;
+        // CREATE A MATRIX FOR THE MANIPULATION
+        Matrix matrix = new Matrix();
+        // RESIZE THE BIT MAP
+        matrix.postScale(scaleWidth, scaleHeight);
+
+        // "RECREATE" THE NEW BITMAP
+        Bitmap resizedBitmap = Bitmap.createBitmap(
+                bm, 0, 0, width, height, matrix, false);
+        return resizedBitmap;
     }
 }

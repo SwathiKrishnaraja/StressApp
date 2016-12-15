@@ -11,6 +11,7 @@
     tools:context="de.fachstudie.stressapp.TetrisActivity">
 
     <de.fachstudie.stressapp.tetris.TetrisView
+        android:id="@+id/tetrisview"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 </RelativeLayout>
