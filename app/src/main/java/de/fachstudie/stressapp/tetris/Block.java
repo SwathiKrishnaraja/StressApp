@@ -98,6 +98,34 @@ public class Block extends Item {
         this.setY(getY() - 1);
     }
 
+    public void simulateStepRight(int[][] state) {
+        this.moveRight();
+        for (int j = getY(); j < getY() + getHeight() && j < state.length; j++) {
+            for (int i = getX(); i < getX() + getWidth() && i < state[j].length; i++) {
+                int yOffset = j - getY();
+                int xOffset = i - getX();
+                if (getShape()[yOffset][xOffset] == 1) {
+                    state[j][i]++;
+                }
+            }
+        }
+        this.moveLeft();
+    }
+
+    public void simulateStepLeft(int[][] state) {
+        this.moveLeft();
+        for (int j = getY(); j < getY() + getHeight() && j < state.length; j++) {
+            for (int i = getX(); i < getX() + getWidth() && i < state[j].length; i++) {
+                int yOffset = j - getY();
+                int xOffset = i - getX();
+                if (getShape()[yOffset][xOffset] == 1) {
+                    state[j][i]++;
+                }
+            }
+        }
+        this.moveRight();
+    }
+
     public enum Shape {
         SQUARE, L, T
     }

@@ -11,6 +11,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
 import de.fachstudie.stressapp.tetris.TetrisView;
 
@@ -70,6 +71,8 @@ public class TetrisActivity extends AppCompatActivity {
             String title = intent.getStringExtra("title");
             String content = intent.getStringExtra("content");
             String application = intent.getStringExtra("application");
+
+            Log.d("Received Notification", application);
 
             try {
                 Drawable applicationIcon = getPackageManager().getApplicationIcon(application);

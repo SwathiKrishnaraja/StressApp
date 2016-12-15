@@ -140,14 +140,26 @@ public class TetrisWorld {
     }
 
     public void moveRight() {
-        this.item.moveRight();
+        int[][] state = copy(occupancy);
+        this.item.simulateStepRight(state);
+
+        if (!hasOverlap(state)) {
+            this.item.moveRight();
+        }
+
         if (item.getX() + item.getWidth() >= WIDTH) {
             item.setX(WIDTH - item.getWidth());
         }
     }
 
     public void moveLeft() {
-        this.item.moveLeft();
+        int[][] state = copy(occupancy);
+        this.item.simulateStepLeft(state);
+
+        if (!hasOverlap(state)) {
+            this.item.moveLeft();
+        }
+
         if (item.getX() < 0) {
             item.setX(0);
         }
