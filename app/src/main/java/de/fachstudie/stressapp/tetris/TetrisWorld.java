@@ -9,9 +9,13 @@ import android.graphics.Paint;
 import java.util.Arrays;
 import java.util.Random;
 
+import static de.fachstudie.stressapp.tetris.Block.Shape.I;
+import static de.fachstudie.stressapp.tetris.Block.Shape.J;
 import static de.fachstudie.stressapp.tetris.Block.Shape.L;
+import static de.fachstudie.stressapp.tetris.Block.Shape.S;
 import static de.fachstudie.stressapp.tetris.Block.Shape.SQUARE;
 import static de.fachstudie.stressapp.tetris.Block.Shape.T;
+import static de.fachstudie.stressapp.tetris.Block.Shape.Z;
 
 public class TetrisWorld {
     private final int WIDTH = 10;
@@ -40,14 +44,22 @@ public class TetrisWorld {
 
     private Block randomItem() {
         Random r = new Random();
-        int number = r.nextInt(3);
+        int number = r.nextInt(7);
         int x = r.nextInt(3);
         if (number == 0) {
             return new Block(x, 0, 0, 0, L);
         } else if (number == 1) {
             return new Block(x, 0, 0, 0, T);
-        } else {
+        } else if (number == 2) {
             return new Block(x, 0, 0, 0, SQUARE);
+        } else if (number == 3) {
+            return new Block(x, 0, 0, 0, I);
+        } else if (number == 4) {
+            return new Block(x, 0, 0, 0, J);
+        } else if (number == 5) {
+            return new Block(x, 0, 0, 0, S);
+        } else {
+            return new Block(x, 0, 0, 0, Z);
         }
     }
 
@@ -113,6 +125,19 @@ public class TetrisWorld {
                             case T:
                                 p.setColor(Color.parseColor("#009688"));
                                 break;
+                            case I:
+                                p.setColor(Color.parseColor("#ff9800"));
+                                break;
+                            case J:
+                                p.setColor(Color.parseColor("#9C27b0"));
+                                break;
+                            case S:
+                                p.setColor(Color.parseColor("#3f51b5"));
+                                break;
+                            case Z:
+                                p.setColor(Color.parseColor("#00BCD4"));
+                                break;
+
                         }
                         canvas.drawRect(i * gridSize + PADDING, j * gridSize + TOP_PADDING, (i +
                                 1) * gridSize

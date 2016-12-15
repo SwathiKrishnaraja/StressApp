@@ -6,12 +6,34 @@ public class Block extends Item {
     private final int[][] SQUARE_SHIFTS = {{0, 0}, {0, 0}, {0, 0}, {0, 0}};
 
     //See http://tetris.wikia.com/wiki/SRS
+    private final int[][] I_1 = new int[][]{{1, 1, 1, 1}};
+    private final int[][] I_2 = new int[][]{{1}, {1}, {1}, {1}};
+    private final int[][][] I_ROTATIONS = {I_1, I_2, I_1, I_2};
+    private final int[][] I_SHIFTS = {{-1, 2}, {2, -2}, {-2, 1}, {1, -1}};
+
+    private final int[][] J_1 = new int[][]{{1, 0, 0}, {1, 1, 1}};
+    private final int[][] J_2 = new int[][]{{1, 1}, {1, 0}, {1, 0}};
+    private final int[][] J_3 = new int[][]{{1, 1, 1}, {0, 0, 1}};
+    private final int[][] J_4 = new int[][]{{0, 1}, {0, 1}, {1, 1}};
+    private final int[][][] J_ROTATIONS = {J_1, J_2, J_3, J_4};
+    private final int[][] J_SHIFTS = {{0, 1}, {1, -1}, {-1, 1}, {0, -1}};
+
     private final int[][] L_1 = new int[][]{{1, 0}, {1, 0}, {1, 1}};
     private final int[][] L_2 = new int[][]{{1, 1, 1}, {1, 0, 0}};
     private final int[][] L_3 = new int[][]{{1, 1}, {0, 1}, {0, 1}};
     private final int[][] L_4 = new int[][]{{0, 0, 1}, {1, 1, 1}};
     private final int[][][] L_ROTATIONS = {L_1, L_2, L_3, L_4};
     private final int[][] L_SHIFTS = {{1, -1}, {-1, 0}, {0, 0}, {0, 1}};
+
+    private final int[][] S_1 = new int[][]{{0, 1, 1}, {1, 1, 0}};
+    private final int[][] S_2 = new int[][]{{1, 0}, {1, 1}, {0, 1}};
+    private final int[][][] S_ROTATIONS = {S_1, S_2, S_1, S_2};
+    private final int[][] S_SHIFTS = {{-1, 1}, {1, -1}, {-2, 0}, {1, 0}};
+
+    private final int[][] Z_1 = new int[][]{{1, 1, 0}, {0, 1, 1}};
+    private final int[][] Z_2 = new int[][]{{0, 1}, {1, 1}, {1, 0}};
+    private final int[][][] Z_ROTATIONS = {Z_1, Z_2, Z_1, Z_2};
+    private final int[][] Z_SHIFTS = {{2, 1}, {-1, -1}, {1, 0}, {-2, 0}};
 
     private final int[][] T_1 = new int[][]{{1, 1, 1}, {0, 1, 0}};
     private final int[][] T_2 = new int[][]{{0, 1}, {1, 1}, {0, 1}};
@@ -41,9 +63,25 @@ public class Block extends Item {
                 this.shape = SQUARE_ROTATIONS;
                 this.shift = SQUARE_SHIFTS;
                 break;
+            case I:
+                this.shape = I_ROTATIONS;
+                this.shift = I_SHIFTS;
+                break;
+            case J:
+                this.shape = J_ROTATIONS;
+                this.shift = J_SHIFTS;
+                break;
             case L:
                 this.shape = L_ROTATIONS;
                 this.shift = L_SHIFTS;
+                break;
+            case S:
+                this.shape = S_ROTATIONS;
+                this.shift = S_SHIFTS;
+                break;
+            case Z:
+                this.shape = Z_ROTATIONS;
+                this.shift = Z_SHIFTS;
                 break;
             case T:
                 this.shape = T_ROTATIONS;
@@ -99,6 +137,6 @@ public class Block extends Item {
     }
 
     public enum Shape {
-        SQUARE, L, T
+        SQUARE, L, T, I, J, S, Z
     }
 }
