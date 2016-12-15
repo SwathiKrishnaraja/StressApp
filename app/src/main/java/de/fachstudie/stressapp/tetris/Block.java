@@ -1,5 +1,7 @@
 package de.fachstudie.stressapp.tetris;
 
+import android.util.Log;
+
 public class Block extends Item {
     private final int[][] SQUARE = new int[][]{{1, 1}, {1, 1}};
     private final int[][][] SQUARE_ROTATIONS = {SQUARE, SQUARE, SQUARE, SQUARE};
@@ -75,17 +77,33 @@ public class Block extends Item {
     }
 
     public void rotate() {
-        this.y += shift[(rotationIndex) % 4][0];
-        this.x += shift[(rotationIndex) % 4][1];
-        this.rotationIndex++;
+        rotate(1);
+    }
+
+    public void rotate(int direction) {
+        if (direction > 0) {
+            this.y += shift[(rotationIndex) % 4][0];
+            this.x += shift[(rotationIndex) % 4][1];
+        } else {
+            this.y -= shift[(rotationIndex - 1) % 4][0];
+            this.x -= shift[(rotationIndex - 1) % 4][1];
+        }
+        this.rotationIndex += direction;
+
+        Log.d("RotationIndex", rotationIndex + "");
 
         if (this.x < 0) {
             this.x = 0;
         }
     }
 
-    public void simulateStepDown(int[][] state) {
-        this.setY(getY() + 1);
+    public void simulateRotate(int[][] state) {
+        this.rotate(1);
+        computeOverlaps(state);
+        this.rotate(-1);
+    }
+
+    private void computeOverlaps(int[][] state) {
         for (int j = getY(); j < getY() + getHeight() && j < state.length; j++) {
             for (int i = getX(); i < getX() + getWidth() && i < state[j].length; i++) {
                 int yOffset = j - getY();
@@ -95,34 +113,23 @@ public class Block extends Item {
                 }
             }
         }
+    }
+
+    public void simulateStepDown(int[][] state) {
+        this.setY(getY() + 1);
+        computeOverlaps(state);
         this.setY(getY() - 1);
     }
 
     public void simulateStepRight(int[][] state) {
         this.moveRight();
-        for (int j = getY(); j < getY() + getHeight() && j < state.length; j++) {
-            for (int i = getX(); i < getX() + getWidth() && i < state[j].length; i++) {
-                int yOffset = j - getY();
-                int xOffset = i - getX();
-                if (getShape()[yOffset][xOffset] == 1) {
-                    state[j][i]++;
-                }
-            }
-        }
+        computeOverlaps(state);
         this.moveLeft();
     }
 
     public void simulateStepLeft(int[][] state) {
         this.moveLeft();
-        for (int j = getY(); j < getY() + getHeight() && j < state.length; j++) {
-            for (int i = getX(); i < getX() + getWidth() && i < state[j].length; i++) {
-                int yOffset = j - getY();
-                int xOffset = i - getX();
-                if (getShape()[yOffset][xOffset] == 1) {
-                    state[j][i]++;
-                }
-            }
-        }
+        computeOverlaps(state);
         this.moveRight();
     }
 

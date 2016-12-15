@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.util.Log;
 
 import java.util.Arrays;
 import java.util.Random;
@@ -132,7 +133,16 @@ public class TetrisWorld {
     }
 
     public void rotateBlock() {
-        this.item.rotate();
+        int[][] state = copy(occupancy);
+        this.item.simulateRotate(state);
+
+        if (!hasOverlap(state)) {
+            this.item.rotate();
+        }
+
+        if (this.item.getX() >= WIDTH) {
+            this.item.setX(WIDTH - 1);
+        }
     }
 
     public void drop() {
@@ -160,9 +170,7 @@ public class TetrisWorld {
             this.item.moveLeft();
         }
 
-        if (item.getX() < 0) {
-            item.setX(0);
-        }
+        Log.d("X", item.getX() + "");
     }
 
     public void stopDropping() {

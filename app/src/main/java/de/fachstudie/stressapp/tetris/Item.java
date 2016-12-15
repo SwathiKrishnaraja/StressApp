@@ -47,5 +47,8 @@ public class Item {
 
     public void moveLeft() {
         this.x -= 1;
+        if(this.x < 0) {
+            this.x = 0;
+        }
     }
 }
