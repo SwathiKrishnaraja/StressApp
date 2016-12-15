@@ -7,7 +7,9 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.util.Log;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
 import static de.fachstudie.stressapp.tetris.Block.Shape.L;
@@ -33,9 +35,37 @@ public class TetrisWorld {
             return true;
         } else {
             freeze(this.item);
+            clearFullLines();
             Block item = randomItem();
             this.item = item;
             return false;
+        }
+    }
+
+    private void clearFullLines() {
+        List<Integer> fullLines = new ArrayList<>();
+        for (int j = 0; j < occupancy.length; j++) {
+            boolean isFull = true;
+            for (int i = 0; i < occupancy[j].length; i++) {
+                if (occupancy[j][i] == 0) {
+                    isFull = false;
+                    break;
+                }
+            }
+            if (isFull) {
+                fullLines.add(j);
+            }
+        }
+        for (Integer fullLine : fullLines) {
+            for (int j = fullLine; j >= 0; j--) {
+                for (int i = 0; i < occupancy[j].length; i++) {
+                    if (j != 0) {
+                        occupancy[j][i] = occupancy[j - 1][i];
+                    } else {
+                        occupancy[j][i] = 0;
+                    }
+                }
+            }
         }
     }
 
@@ -115,10 +145,11 @@ public class TetrisWorld {
                                 p.setColor(Color.parseColor("#009688"));
                                 break;
                         }
-                        canvas.drawRect(i * gridSize + PADDING, j * gridSize + TOP_PADDING, (i +
+                        canvas.drawRect(i * gridSize + PADDING + 1, j * gridSize + TOP_PADDING +
+                                1, (i +
                                 1) * gridSize
-                                + PADDING, (j + 1) *
-                                gridSize + TOP_PADDING, p);
+                                + PADDING - 1, (j + 1) *
+                                gridSize + TOP_PADDING - 1, p);
                     }
                 }
                 if (occupancy[j][i] != 0) {
@@ -133,10 +164,11 @@ public class TetrisWorld {
                             p.setColor(Color.parseColor("#009688"));
                             break;
                     }
-                    canvas.drawRect(i * gridSize + PADDING, j * gridSize + TOP_PADDING, (i + 1) *
+                    canvas.drawRect(i * gridSize + PADDING + 1, j * gridSize + TOP_PADDING + 1,
+                            (i + 1) *
                             gridSize +
-                            PADDING, (j + 1) *
-                            gridSize + TOP_PADDING, p);
+                            PADDING - 1, (j + 1) *
+                            gridSize + TOP_PADDING - 1, p);
                 }
             }
         }
