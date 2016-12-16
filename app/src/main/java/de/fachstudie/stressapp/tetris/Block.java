@@ -37,12 +37,12 @@ public class Block extends Item {
     private final int[][] S_1 = new int[][]{{0, 1, 1}, {1, 1, 0}};
     private final int[][] S_2 = new int[][]{{1, 0}, {1, 1}, {0, 1}};
     private final int[][][] S_ROTATIONS = {S_1, S_2, S_1, S_2};
-    private final int[][] S_SHIFTS = {{-1, 1}, {1, -1}, {-2, 0}, {1, 0}};
+    private final int[][] S_SHIFTS = {{0, 1}, {1, -1}, {-1, 0}, {0, 0}};
 
     private final int[][] Z_1 = new int[][]{{1, 1, 0}, {0, 1, 1}};
     private final int[][] Z_2 = new int[][]{{0, 1}, {1, 1}, {1, 0}};
     private final int[][][] Z_ROTATIONS = {Z_1, Z_2, Z_1, Z_2};
-    private final int[][] Z_SHIFTS = {{2, 1}, {-1, -1}, {1, 0}, {-2, 0}};
+    private final int[][] Z_SHIFTS = {{0, 1}, {1, -1}, {-1, 0}, {0, 0}};
 
     private final int[][] shift;
     private Shape type;
