@@ -151,7 +151,7 @@ public class TetrisWorld {
                                 p.setColor(Color.parseColor("#f44336"));
                                 break;
                             case L:
-                                p.setColor(Color.parseColor("#2196f3"));
+                                p.setColor(Color.parseColor("#9c27b0"));
                                 break;
                             case T:
                                 p.setColor(Color.parseColor("#009688"));
@@ -163,7 +163,7 @@ public class TetrisWorld {
                                 p.setColor(Color.parseColor("#3f51b5"));
                                 break;
                             case S:
-                                p.setColor(Color.parseColor("#9c27b0"));
+                                p.setColor(Color.parseColor("#2196f3"));
                                 break;
                             case Z:
                                 p.setColor(Color.parseColor("#ff9800"));
@@ -182,7 +182,7 @@ public class TetrisWorld {
                             p.setColor(Color.parseColor("#f44336"));
                             break;
                         case 2:
-                            p.setColor(Color.parseColor("#2196f3"));
+                            p.setColor(Color.parseColor("#9c27b0"));
                             break;
                         case 3:
                             p.setColor(Color.parseColor("#009688"));
@@ -194,7 +194,7 @@ public class TetrisWorld {
                             p.setColor(Color.parseColor("#3f51b5"));
                             break;
                         case 6:
-                            p.setColor(Color.parseColor("#9c27b0"));
+                            p.setColor(Color.parseColor("#2196f3"));
                             break;
                         case 7:
                             p.setColor(Color.parseColor("#ff9800"));
