@@ -2,47 +2,9 @@ package de.fachstudie.stressapp.tetris;
 
 import android.util.Log;
 
+import de.fachstudie.stressapp.tetris.constants.BlockConfigurations;
+
 public class Block extends Item {
-    private final int[][] SQUARE = new int[][]{{1, 1}, {1, 1}};
-    private final int[][][] SQUARE_ROTATIONS = {SQUARE, SQUARE, SQUARE, SQUARE};
-    private final int[][] SQUARE_SHIFTS = {{0, 0}, {0, 0}, {0, 0}, {0, 0}};
-
-    //See http://tetris.wikia.com/wiki/SRS
-    private final int[][] L_1 = new int[][]{{1, 0}, {1, 0}, {1, 1}};
-    private final int[][] L_2 = new int[][]{{1, 1, 1}, {1, 0, 0}};
-    private final int[][] L_3 = new int[][]{{1, 1}, {0, 1}, {0, 1}};
-    private final int[][] L_4 = new int[][]{{0, 0, 1}, {1, 1, 1}};
-    private final int[][][] L_ROTATIONS = {L_1, L_2, L_3, L_4};
-    private final int[][] L_SHIFTS = {{1, -1}, {-1, 0}, {0, 0}, {0, 1}};
-
-    private final int[][] T_1 = new int[][]{{1, 1, 1}, {0, 1, 0}};
-    private final int[][] T_2 = new int[][]{{0, 1}, {1, 1}, {0, 1}};
-    private final int[][] T_3 = new int[][]{{0, 1, 0}, {1, 1, 1}};
-    private final int[][] T_4 = new int[][]{{1, 0}, {1, 1}, {1, 0}};
-    private final int[][][] T_ROTATIONS = {T_1, T_2, T_3, T_4};
-    private final int[][] T_SHIFTS = {{-1, 0}, {0, 0}, {0, 1}, {1, -1}};
-
-    private final int[][] I_1 = new int[][]{{1, 1, 1, 1}};
-    private final int[][] I_2 = new int[][]{{1}, {1}, {1}, {1}};
-    private final int[][][] I_ROTATIONS = {I_1, I_2, I_1, I_2};
-    private final int[][] I_SHIFTS = {{-1, 2}, {2, -2}, {-2, 1}, {1, -1}};
-
-    private final int[][] J_1 = new int[][]{{1, 0, 0}, {1, 1, 1}};
-    private final int[][] J_2 = new int[][]{{1, 1}, {1, 0}, {1, 0}};
-    private final int[][] J_3 = new int[][]{{1, 1, 1}, {0, 0, 1}};
-    private final int[][] J_4 = new int[][]{{0, 1}, {0, 1}, {1, 1}};
-    private final int[][][] J_ROTATIONS = {J_1, J_2, J_3, J_4};
-    private final int[][] J_SHIFTS = {{0, 1}, {1, -1}, {-1, 1}, {0, -1}};
-
-    private final int[][] S_1 = new int[][]{{0, 1, 1}, {1, 1, 0}};
-    private final int[][] S_2 = new int[][]{{1, 0}, {1, 1}, {0, 1}};
-    private final int[][][] S_ROTATIONS = {S_1, S_2, S_1, S_2};
-    private final int[][] S_SHIFTS = {{0, 1}, {1, -1}, {-1, 0}, {0, 0}};
-
-    private final int[][] Z_1 = new int[][]{{1, 1, 0}, {0, 1, 1}};
-    private final int[][] Z_2 = new int[][]{{0, 1}, {1, 1}, {1, 0}};
-    private final int[][][] Z_ROTATIONS = {Z_1, Z_2, Z_1, Z_2};
-    private final int[][] Z_SHIFTS = {{0, 1}, {1, -1}, {-1, 0}, {0, 0}};
 
     private final int[][] shift;
     private Shape type;
@@ -52,8 +14,8 @@ public class Block extends Item {
     public Block(int x, int y, int width, int height) {
         super(x, y, width, height);
         this.type = Shape.L;
-        this.shape = L_ROTATIONS;
-        this.shift = L_SHIFTS;
+        this.shape = BlockConfigurations.L_ROTATIONS;
+        this.shift = BlockConfigurations.L_SHIFTS;
     }
 
     public Block(int x, int y, int width, int height, Shape shape) {
@@ -62,36 +24,36 @@ public class Block extends Item {
         this.type = shape;
         switch (shape) {
             case SQUARE:
-                this.shape = SQUARE_ROTATIONS;
-                this.shift = SQUARE_SHIFTS;
+                this.shape = BlockConfigurations.SQUARE_ROTATIONS;
+                this.shift = BlockConfigurations.SQUARE_SHIFTS;
                 break;
             case L:
-                this.shape = L_ROTATIONS;
-                this.shift = L_SHIFTS;
+                this.shape = BlockConfigurations.L_ROTATIONS;
+                this.shift = BlockConfigurations.L_SHIFTS;
                 break;
             case T:
-                this.shape = T_ROTATIONS;
-                this.shift = T_SHIFTS;
+                this.shape = BlockConfigurations.T_ROTATIONS;
+                this.shift = BlockConfigurations.T_SHIFTS;
                 break;
             case I:
-                this.shape = I_ROTATIONS;
-                this.shift = I_SHIFTS;
+                this.shape = BlockConfigurations.I_ROTATIONS;
+                this.shift = BlockConfigurations.I_SHIFTS;
                 break;
             case J:
-                this.shape = J_ROTATIONS;
-                this.shift = J_SHIFTS;
+                this.shape = BlockConfigurations.J_ROTATIONS;
+                this.shift = BlockConfigurations.J_SHIFTS;
                 break;
             case S:
-                this.shape = S_ROTATIONS;
-                this.shift = S_SHIFTS;
+                this.shape = BlockConfigurations.S_ROTATIONS;
+                this.shift = BlockConfigurations.S_SHIFTS;
                 break;
             case Z:
-                this.shape = Z_ROTATIONS;
-                this.shift = Z_SHIFTS;
+                this.shape = BlockConfigurations.Z_ROTATIONS;
+                this.shift = BlockConfigurations.Z_SHIFTS;
                 break;
             default:
-                this.shape = T_ROTATIONS;
-                this.shift = T_SHIFTS;
+                this.shape = BlockConfigurations.T_ROTATIONS;
+                this.shift = BlockConfigurations.T_SHIFTS;
                 break;
         }
     }
