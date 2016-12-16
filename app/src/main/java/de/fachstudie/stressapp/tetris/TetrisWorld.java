@@ -23,6 +23,8 @@ import static de.fachstudie.stressapp.tetris.Block.Shape.Z;
 public class TetrisWorld {
     private final int WIDTH = 10;
     private final int HEIGHT = 20;
+    int PADDING = 140;
+    int TOP_PADDING = 30;
     private int[][] occupancy = new int[HEIGHT][WIDTH];
     private Block item;
     private boolean dropping = false;
@@ -81,15 +83,15 @@ public class TetrisWorld {
             return new Block(x, 0, 0, 0, L);
         } else if (number == 1) {
             return new Block(x, 0, 0, 0, T);
-        } else if(number == 2) {
+        } else if (number == 2) {
             return new Block(x, 0, 0, 0, SQUARE);
-        }else if(number == 3){
+        } else if (number == 3) {
             return new Block(x, 0, 0, 0, I);
-        }else if(number == 4){
+        } else if (number == 4) {
             return new Block(x, 0, 0, 0, J);
-        }else if(number == 5){
+        } else if (number == 5) {
             return new Block(x, 0, 0, 0, S);
-        }else{
+        } else {
             return new Block(x, 0, 0, 0, Z);
         }
     }
@@ -129,13 +131,11 @@ public class TetrisWorld {
         int canvasWidth = canvas.getWidth();
         int canvasHeight = canvas.getHeight();
 
-        int PADDING = 140;
-        int TOP_PADDING = 30;
         int gridSize = (canvasWidth - 2 * PADDING) / WIDTH;
 
         p.setStyle(Paint.Style.STROKE);
         p.setColor(Color.DKGRAY);
-        canvas.drawRect(PADDING, TOP_PADDING, canvasWidth - PADDING, TOP_PADDING + HEIGHT *
+        canvas.drawRect(PADDING, TOP_PADDING, PADDING + WIDTH * gridSize, TOP_PADDING + HEIGHT *
                 gridSize, p);
         p.setStyle(Paint.Style.FILL);
 
@@ -218,8 +218,8 @@ public class TetrisWorld {
             this.item.rotate();
         }
 
-        if (this.item.getX() >= WIDTH) {
-            this.item.setX(WIDTH - 1);
+        if (this.item.getX() + this.item.getWidth() >= WIDTH) {
+            this.item.setX(WIDTH - this.item.getWidth());
         }
     }
 
@@ -267,12 +267,22 @@ public class TetrisWorld {
         int canvasWidth = canvas.getWidth();
         int canvasHeight = canvas.getHeight();
 
-        int PADDING = 120;
-        int TOP_PADDING = 30;
         int gridSize = (canvasWidth - 2 * PADDING) / WIDTH;
         bitmap = getResizedBitmap(bitmap, gridSize, gridSize);
-        canvas.drawBitmap(bitmap, item.getX() * gridSize + PADDING, item.getY() * gridSize +
-                TOP_PADDING, p);
+
+        for (int j = item.getY(); j < item.getY() + item.getHeight(); j++) {
+            for (int i = item.getX(); i < item.getX() + item.getWidth(); i++) {
+                int yOffset = j - item.getY();
+                int xOffset = i - item.getX();
+                if (yOffset >= 0 && xOffset >= 0 && yOffset < item.getShape().length && xOffset <
+                        item.getShape()[yOffset].length && item
+                        .getShape()[yOffset][xOffset] == 1) {
+                    canvas.drawBitmap(bitmap, i * gridSize + PADDING + 1, j * gridSize +
+                            TOP_PADDING +
+                            1, p);
+                }
+            }
+        }
     }
 
     private Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight) {
