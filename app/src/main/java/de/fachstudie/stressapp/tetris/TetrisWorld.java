@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -25,8 +26,10 @@ import static de.fachstudie.stressapp.tetris.Block.Shape.Z;
 public class TetrisWorld {
     private final int WIDTH = 10;
     private final int HEIGHT = 20;
+    private final int TEXT_SIZE = 40;
     int PADDING = 140;
-    int TOP_PADDING = 30;
+    int TOP_PADDING = 50;
+    int SCORE = 0;
     private int[][] occupancy = new int[HEIGHT][WIDTH];
     private Block item;
     private boolean dropping = false;
@@ -43,6 +46,7 @@ public class TetrisWorld {
             return true;
         } else {
             freeze(this.item);
+            calculateScore();
             clearFullLines();
             Block item = randomItem();
             this.item = item;
@@ -50,20 +54,20 @@ public class TetrisWorld {
         }
     }
 
-    private void clearFullLines() {
-        List<Integer> fullLines = new ArrayList<>();
-        for (int j = 0; j < occupancy.length; j++) {
-            boolean isFull = true;
-            for (int i = 0; i < occupancy[j].length; i++) {
-                if (occupancy[j][i] == 0) {
-                    isFull = false;
-                    break;
-                }
-            }
-            if (isFull) {
-                fullLines.add(j);
-            }
+    private void calculateScore(){
+        List<Integer> fullLines = getFullLines();
+        if(fullLines.size() == 1){
+            this.SCORE += 40;
+        }else if(fullLines.size() == 2){
+            this.SCORE += 100;
+        }else if(fullLines.size() == 3){
+            this.SCORE += 300;
+        }else if(fullLines.size() == 4) {
+            this.SCORE += 1200;
         }
+    }
+    private void clearFullLines() {
+        List<Integer> fullLines = getFullLines();
         for (Integer fullLine : fullLines) {
             for (int j = fullLine; j >= 0; j--) {
                 for (int i = 0; i < occupancy[j].length; i++) {
@@ -77,6 +81,23 @@ public class TetrisWorld {
         }
     }
 
+    private List<Integer> getFullLines(){
+        List<Integer> fullLines = new ArrayList<>();
+        for (int j = 0; j < occupancy.length; j++) {
+            boolean isFull = true;
+            for (int i = 0; i < occupancy[j].length; i++) {
+                if (occupancy[j][i] == 0) {
+                    isFull = false;
+                    break;
+                }
+            }
+            if (isFull) {
+                fullLines.add(j);
+            }
+        }
+
+        return fullLines;
+    }
     private Block randomItem() {
         Random r = new Random();
         int number = r.nextInt(7);
@@ -135,10 +156,18 @@ public class TetrisWorld {
 
         int gridSize = (canvasWidth - 2 * PADDING) / WIDTH;
 
+        // Font settings
+        p.setTextSize(TEXT_SIZE);
+        p.setColor(Color.BLACK);
+        p.setTypeface(Typeface.create("Arial",Typeface.BOLD));
+
+        canvas.drawText(""+SCORE, PADDING + (WIDTH * gridSize / 2), (TOP_PADDING / 2) + 10, p);
+
         p.setStyle(Paint.Style.STROKE);
         p.setColor(Color.DKGRAY);
         canvas.drawRect(PADDING, TOP_PADDING, PADDING + WIDTH * gridSize, TOP_PADDING + HEIGHT *
                 gridSize, p);
+
         p.setStyle(Paint.Style.FILL);
 
         for (int j = 0; j < occupancy.length; j++) {
@@ -203,10 +232,7 @@ public class TetrisWorld {
                             break;
                     }
                     canvas.drawRect(i * gridSize + PADDING + 1, j * gridSize + TOP_PADDING + 1,
-                            (i + 1) *
-                                    gridSize +
-                                    PADDING - 1, (j + 1) *
-                                    gridSize + TOP_PADDING - 1, p);
+                            (i + 1) * gridSize + PADDING - 1, (j + 1) * gridSize + TOP_PADDING - 1, p);
                 }
             }
         }
