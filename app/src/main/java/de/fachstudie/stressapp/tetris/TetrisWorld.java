@@ -31,7 +31,9 @@ public class TetrisWorld {
     int TOP_PADDING = 50;
     int SCORE = 0;
     private int[][] occupancy = new int[HEIGHT][WIDTH];
+    private Bitmap[][] bitmaps = new Bitmap[HEIGHT][WIDTH];
     private Block item;
+    private Bitmap bitmap;
     private boolean dropping = false;
 
     public void addItem(Block item) {
@@ -54,18 +56,19 @@ public class TetrisWorld {
         }
     }
 
-    private void calculateScore(){
+    private void calculateScore() {
         List<Integer> fullLines = getFullLines();
-        if(fullLines.size() == 1){
+        if (fullLines.size() == 1) {
             this.SCORE += 40;
-        }else if(fullLines.size() == 2){
+        } else if (fullLines.size() == 2) {
             this.SCORE += 100;
-        }else if(fullLines.size() == 3){
+        } else if (fullLines.size() == 3) {
             this.SCORE += 300;
-        }else if(fullLines.size() == 4) {
+        } else if (fullLines.size() == 4) {
             this.SCORE += 1200;
         }
     }
+
     private void clearFullLines() {
         List<Integer> fullLines = getFullLines();
         for (Integer fullLine : fullLines) {
@@ -73,15 +76,17 @@ public class TetrisWorld {
                 for (int i = 0; i < occupancy[j].length; i++) {
                     if (j != 0) {
                         occupancy[j][i] = occupancy[j - 1][i];
+                        bitmaps[j][i] = bitmaps[j - 1][i];
                     } else {
                         occupancy[j][i] = 0;
+                        bitmaps[j][i] = null;
                     }
                 }
             }
         }
     }
 
-    private List<Integer> getFullLines(){
+    private List<Integer> getFullLines() {
         List<Integer> fullLines = new ArrayList<>();
         for (int j = 0; j < occupancy.length; j++) {
             boolean isFull = true;
@@ -98,6 +103,7 @@ public class TetrisWorld {
 
         return fullLines;
     }
+
     private Block randomItem() {
         Random r = new Random();
         int number = r.nextInt(7);
@@ -126,6 +132,7 @@ public class TetrisWorld {
                 int xOffset = i - item.getX();
                 if (item.getShape()[yOffset][xOffset] == 1 && yOffset >= 0 && xOffset >= 0) {
                     occupancy[j][i] = item.getType().getN();
+                    bitmaps[j][i] = this.bitmap;
                 }
             }
         }
@@ -159,9 +166,9 @@ public class TetrisWorld {
         // Font settings
         p.setTextSize(TEXT_SIZE);
         p.setColor(Color.BLACK);
-        p.setTypeface(Typeface.create("Arial",Typeface.BOLD));
+        p.setTypeface(Typeface.create("Arial", Typeface.BOLD));
 
-        canvas.drawText(""+SCORE, PADDING + (WIDTH * gridSize / 2), (TOP_PADDING / 2) + 10, p);
+        canvas.drawText("" + SCORE, PADDING + (WIDTH * gridSize / 2), (TOP_PADDING / 2) + 10, p);
 
         p.setStyle(Paint.Style.STROKE);
         p.setColor(Color.DKGRAY);
@@ -233,6 +240,13 @@ public class TetrisWorld {
                     }
                     canvas.drawRect(i * gridSize + PADDING + 1, j * gridSize + TOP_PADDING + 1,
                             (i + 1) * gridSize + PADDING - 1, (j + 1) * gridSize + TOP_PADDING - 1, p);
+
+                    if(bitmaps[j][i] != null) {
+                        Bitmap bitmap = getResizedBitmap(bitmaps[j][i], gridSize, gridSize);
+                        canvas.drawBitmap(bitmap, i * gridSize + PADDING + 1, j * gridSize +
+                                TOP_PADDING +
+                                1, p);
+                    }
                 }
             }
         }
@@ -291,12 +305,12 @@ public class TetrisWorld {
         this.dropping = dropping;
     }
 
-    public void drawIcon(Canvas canvas, Bitmap bitmap, Paint p) {
+    public void drawIcon(Canvas canvas, Paint p) {
         int canvasWidth = canvas.getWidth();
         int canvasHeight = canvas.getHeight();
 
         int gridSize = (canvasWidth - 2 * PADDING) / WIDTH;
-        bitmap = getResizedBitmap(bitmap, gridSize, gridSize);
+        this.bitmap = getResizedBitmap(this.bitmap, gridSize, gridSize);
 
         for (int j = item.getY(); j < item.getY() + item.getHeight(); j++) {
             for (int i = item.getX(); i < item.getX() + item.getWidth(); i++) {
@@ -305,7 +319,7 @@ public class TetrisWorld {
                 if (yOffset >= 0 && xOffset >= 0 && yOffset < item.getShape().length && xOffset <
                         item.getShape()[yOffset].length && item
                         .getShape()[yOffset][xOffset] == 1) {
-                    canvas.drawBitmap(bitmap, i * gridSize + PADDING + 1, j * gridSize +
+                    canvas.drawBitmap(this.bitmap, i * gridSize + PADDING + 1, j * gridSize +
                             TOP_PADDING +
                             1, p);
                 }
@@ -327,5 +341,9 @@ public class TetrisWorld {
         Bitmap resizedBitmap = Bitmap.createBitmap(
                 bm, 0, 0, width, height, matrix, false);
         return resizedBitmap;
+    }
+
+    public void setBitmap(Bitmap bitmap){
+        this.bitmap = bitmap;
     }
 }

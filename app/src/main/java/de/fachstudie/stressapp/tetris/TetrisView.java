@@ -96,7 +96,8 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
 
             if (notificationPosted) {
                 if (bitmap != null) {
-                    model.drawIcon(canvas, bitmap, p);
+                    model.setBitmap(bitmap);
+                    model.drawIcon(canvas, p);
                 }
             }
         }

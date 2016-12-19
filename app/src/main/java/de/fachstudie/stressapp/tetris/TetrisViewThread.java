@@ -22,7 +22,6 @@ public class TetrisViewThread extends Thread {
         Canvas canvas = null;
         while (run) {
             try {
-
                 canvas = holder.lockCanvas();
                 synchronized (holder) {
                     view.draw(canvas);
