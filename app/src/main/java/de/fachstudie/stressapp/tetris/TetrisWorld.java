@@ -177,6 +177,11 @@ public class TetrisWorld {
 
         p.setStyle(Paint.Style.FILL);
 
+        // First draw the shadow
+        p.setColor(Color.parseColor("#D3D3D3"));
+        drawShadow(canvas, p, item);
+        // Then the actual block, so it obscures the shadow if necessary
+        setColorForShape(p, item.getType());
         drawItem(canvas, p, item);
 
         for (int j = 0; j < occupancy.length; j++) {
@@ -199,7 +204,6 @@ public class TetrisWorld {
     }
 
     public void drawItem(Canvas canvas, Paint p, Block item) {
-        setColorForShape(p, item.getType());
         for (int j = item.getY(); j < item.getY() + item.getHeight(); j++) {
             for (int i = item.getX(); i < item.getX() + item.getWidth(); i++) {
                 int yOffset = j - item.getY();
@@ -211,6 +215,22 @@ public class TetrisWorld {
                             + PADDING - 1, (j + 1) *
                             gridSize + TOP_PADDING - 1, p);
                 }
+            }
+        }
+    }
+
+    public void drawShadow(Canvas canvas, Paint p, Block item) {
+        int oldY = item.getY();
+        int[][] state = copy(occupancy);
+
+        while (true) {
+            item.simulateStepDown(state);
+            if (!hasOverlap(state) && item.getY() + item.getHeight() < HEIGHT) {
+                item.stepDown();
+            } else {
+                drawItem(canvas, p, item);
+                item.setY(oldY);
+                return;
             }
         }
     }
