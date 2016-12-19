@@ -177,21 +177,10 @@ public class TetrisWorld {
 
         p.setStyle(Paint.Style.FILL);
 
+        drawItem(canvas, p, item);
+
         for (int j = 0; j < occupancy.length; j++) {
             for (int i = 0; i < occupancy[j].length; i++) {
-                if (j >= item.getY() && j < item.getY() + item.getHeight() && i >= item.getX()
-                        && i < item.getX() + item.getWidth()) {
-                    int yOffset = j - item.getY();
-                    int xOffset = i - item.getX();
-                    if (item.getShape()[yOffset][xOffset] == 1) {
-                        setColorForShape(p, item.getType());
-                        canvas.drawRect(i * gridSize + PADDING + 1, j * gridSize + TOP_PADDING +
-                                1, (i +
-                                1) * gridSize
-                                + PADDING - 1, (j + 1) *
-                                gridSize + TOP_PADDING - 1, p);
-                    }
-                }
                 if (occupancy[j][i] != 0) {
                     setColorForShape(p, occupancy[j][i]);
                     canvas.drawRect(i * gridSize + PADDING + 1, j * gridSize + TOP_PADDING + 1,
@@ -210,6 +199,7 @@ public class TetrisWorld {
     }
 
     public void drawItem(Canvas canvas, Paint p, Block item) {
+        setColorForShape(p, item.getType());
         for (int j = item.getY(); j < item.getY() + item.getHeight(); j++) {
             for (int i = item.getX(); i < item.getX() + item.getWidth(); i++) {
                 int yOffset = j - item.getY();
