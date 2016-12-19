@@ -13,8 +13,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-import de.fachstudie.stressapp.tetris.constants.BlockColors;
-
 import static de.fachstudie.stressapp.tetris.Block.Shape.I;
 import static de.fachstudie.stressapp.tetris.Block.Shape.J;
 import static de.fachstudie.stressapp.tetris.Block.Shape.L;
@@ -22,6 +20,7 @@ import static de.fachstudie.stressapp.tetris.Block.Shape.S;
 import static de.fachstudie.stressapp.tetris.Block.Shape.SQUARE;
 import static de.fachstudie.stressapp.tetris.Block.Shape.T;
 import static de.fachstudie.stressapp.tetris.Block.Shape.Z;
+import static de.fachstudie.stressapp.tetris.ColorUtils.setColorForShape;
 
 public class TetrisWorld {
     private final int WIDTH = 10;
@@ -35,6 +34,7 @@ public class TetrisWorld {
     private Block item;
     private Bitmap bitmap;
     private boolean dropping = false;
+    private int gridSize;
 
     public void addItem(Block item) {
         this.item = item;
@@ -161,7 +161,7 @@ public class TetrisWorld {
         int canvasWidth = canvas.getWidth();
         int canvasHeight = canvas.getHeight();
 
-        int gridSize = (canvasWidth - 2 * PADDING) / WIDTH;
+        gridSize = (canvasWidth - 2 * PADDING) / WIDTH;
 
         // Font settings
         p.setTextSize(TEXT_SIZE);
@@ -184,29 +184,7 @@ public class TetrisWorld {
                     int yOffset = j - item.getY();
                     int xOffset = i - item.getX();
                     if (item.getShape()[yOffset][xOffset] == 1) {
-                        switch (item.getType()) {
-                            case SQUARE:
-                                p.setColor(Color.parseColor(BlockColors.RED));
-                                break;
-                            case L:
-                                p.setColor(Color.parseColor(BlockColors.PURPLE));
-                                break;
-                            case T:
-                                p.setColor(Color.parseColor(BlockColors.TEAL));
-                                break;
-                            case I:
-                                p.setColor(Color.parseColor(BlockColors.CYAN));
-                                break;
-                            case J:
-                                p.setColor(Color.parseColor(BlockColors.INDIGO));
-                                break;
-                            case S:
-                                p.setColor(Color.parseColor(BlockColors.BLUE));
-                                break;
-                            case Z:
-                                p.setColor(Color.parseColor(BlockColors.ORANGE));
-                                break;
-                        }
+                        setColorForShape(p, item.getType());
                         canvas.drawRect(i * gridSize + PADDING + 1, j * gridSize + TOP_PADDING +
                                 1, (i +
                                 1) * gridSize
@@ -215,38 +193,33 @@ public class TetrisWorld {
                     }
                 }
                 if (occupancy[j][i] != 0) {
-                    switch (occupancy[j][i]) {
-                        case 1:
-                            p.setColor(Color.parseColor(BlockColors.RED));
-                            break;
-                        case 2:
-                            p.setColor(Color.parseColor(BlockColors.PURPLE));
-                            break;
-                        case 3:
-                            p.setColor(Color.parseColor(BlockColors.TEAL));
-                            break;
-                        case 4:
-                            p.setColor(Color.parseColor(BlockColors.CYAN));
-                            break;
-                        case 5:
-                            p.setColor(Color.parseColor(BlockColors.INDIGO));
-                            break;
-                        case 6:
-                            p.setColor(Color.parseColor(BlockColors.BLUE));
-                            break;
-                        case 7:
-                            p.setColor(Color.parseColor(BlockColors.ORANGE));
-                            break;
-                    }
+                    setColorForShape(p, occupancy[j][i]);
                     canvas.drawRect(i * gridSize + PADDING + 1, j * gridSize + TOP_PADDING + 1,
-                            (i + 1) * gridSize + PADDING - 1, (j + 1) * gridSize + TOP_PADDING - 1, p);
+                            (i + 1) * gridSize + PADDING - 1, (j + 1) * gridSize + TOP_PADDING -
+                                    1, p);
 
-                    if(bitmaps[j][i] != null) {
+                    if (bitmaps[j][i] != null) {
                         Bitmap bitmap = getResizedBitmap(bitmaps[j][i], gridSize, gridSize);
                         canvas.drawBitmap(bitmap, i * gridSize + PADDING + 1, j * gridSize +
                                 TOP_PADDING +
                                 1, p);
                     }
+                }
+            }
+        }
+    }
+
+    public void drawItem(Canvas canvas, Paint p, Block item) {
+        for (int j = item.getY(); j < item.getY() + item.getHeight(); j++) {
+            for (int i = item.getX(); i < item.getX() + item.getWidth(); i++) {
+                int yOffset = j - item.getY();
+                int xOffset = i - item.getX();
+                if (item.getShape()[yOffset][xOffset] == 1 && yOffset >= 0 && xOffset >= 0) {
+                    canvas.drawRect(i * gridSize + PADDING + 1, j * gridSize + TOP_PADDING +
+                            1, (i +
+                            1) * gridSize
+                            + PADDING - 1, (j + 1) *
+                            gridSize + TOP_PADDING - 1, p);
                 }
             }
         }
@@ -343,7 +316,7 @@ public class TetrisWorld {
         return resizedBitmap;
     }
 
-    public void setBitmap(Bitmap bitmap){
+    public void setBitmap(Bitmap bitmap) {
         this.bitmap = bitmap;
     }
 }
