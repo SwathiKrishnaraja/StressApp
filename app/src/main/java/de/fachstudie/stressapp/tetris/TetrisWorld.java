@@ -25,33 +25,37 @@ import static de.fachstudie.stressapp.tetris.ColorUtils.setColorForShape;
 public class TetrisWorld {
     private final int WIDTH = 10;
     private final int HEIGHT = 20;
+    private final int PREVIEW_WIDTH = 4;
+    private final int PADDING = 140;
+    private final int TOP_PADDING = 50;
+    private final int PREVIEW_PADDING = 10;
     private final int TEXT_SIZE = 40;
-    int PADDING = 140;
-    int TOP_PADDING = 50;
-    int SCORE = 0;
+    private int SCORE = 0;
     private int[][] occupancy = new int[HEIGHT][WIDTH];
-    private Bitmap[][] bitmaps = new Bitmap[HEIGHT][WIDTH];
-    private Block item;
     private Bitmap bitmap;
+    private Bitmap[][] bitmaps = new Bitmap[HEIGHT][WIDTH];
+    private Block currentItem;
+    private Block nextItem;
     private boolean dropping = false;
     private int gridSize;
 
     public void addItem(Block item) {
-        this.item = item;
+        this.currentItem = item;
+        this.nextItem = randomItem();
     }
 
     public boolean gravityStep() {
         int[][] state = copy(occupancy);
-        item.simulateStepDown(state);
-        if (!hasOverlap(state) && item.getY() + item.getHeight() < HEIGHT) {
-            item.stepDown();
+        currentItem.simulateStepDown(state);
+        if (!hasOverlap(state) && currentItem.getY() + currentItem.getHeight() < HEIGHT) {
+            currentItem.stepDown();
             return true;
         } else {
-            freeze(this.item);
+            freeze(this.currentItem);
             calculateScore();
             clearFullLines();
-            Block item = randomItem();
-            this.item = item;
+            this.currentItem = (nextItem != null ? nextItem : randomItem());
+            this.nextItem = randomItem();
             return false;
         }
     }
@@ -162,6 +166,7 @@ public class TetrisWorld {
         int canvasHeight = canvas.getHeight();
 
         gridSize = (canvasWidth - 2 * PADDING) / WIDTH;
+        int previewGridSize = (PADDING - 2 * PREVIEW_PADDING) / PREVIEW_WIDTH;
 
         // Font settings
         p.setTextSize(TEXT_SIZE);
@@ -175,14 +180,23 @@ public class TetrisWorld {
         canvas.drawRect(PADDING, TOP_PADDING, PADDING + WIDTH * gridSize, TOP_PADDING + HEIGHT *
                 gridSize, p);
 
+        // Draw boundary of the preview
+        canvas.drawRect(PADDING + WIDTH * gridSize + PREVIEW_PADDING,
+                TOP_PADDING,
+                PADDING + WIDTH * gridSize + PADDING - PREVIEW_PADDING,
+                TOP_PADDING + PADDING - HEIGHT, p);
+
         p.setStyle(Paint.Style.FILL);
 
         // First draw the shadow
         p.setColor(Color.parseColor("#D3D3D3"));
-        drawShadow(canvas, p, item);
+        drawShadow(canvas, p, currentItem);
+
         // Then the actual block, so it obscures the shadow if necessary
-        setColorForShape(p, item.getType());
-        drawItem(canvas, p, item);
+        setColorForShape(p, currentItem.getType());
+        drawCurrentItem(canvas, p, currentItem);
+
+        drawNextItem(canvas, p, previewGridSize);
 
         for (int j = 0; j < occupancy.length; j++) {
             for (int i = 0; i < occupancy[j].length; i++) {
@@ -193,8 +207,7 @@ public class TetrisWorld {
                                     1, p);
 
                     if (bitmaps[j][i] != null) {
-                        Bitmap bitmap = getResizedBitmap(bitmaps[j][i], gridSize, gridSize);
-                        canvas.drawBitmap(bitmap, i * gridSize + PADDING + 1, j * gridSize +
+                        canvas.drawBitmap(bitmaps[j][i], i * gridSize + PADDING + 1, j * gridSize +
                                 TOP_PADDING +
                                 1, p);
                     }
@@ -203,7 +216,7 @@ public class TetrisWorld {
         }
     }
 
-    public void drawItem(Canvas canvas, Paint p, Block item) {
+    public void drawCurrentItem(Canvas canvas, Paint p, Block item) {
         for (int j = item.getY(); j < item.getY() + item.getHeight(); j++) {
             for (int i = item.getX(); i < item.getX() + item.getWidth(); i++) {
                 int yOffset = j - item.getY();
@@ -219,6 +232,28 @@ public class TetrisWorld {
         }
     }
 
+    private void drawNextItem(Canvas canvas, Paint p, int previewGridSize){
+        for (int l = 0; l < PREVIEW_WIDTH; l++) {
+            for (int k = 0; k < PREVIEW_WIDTH; k++) {
+
+                // TODO boundaries check
+                if (l >= nextItem.getY() && l < nextItem.getY() + nextItem.getHeight() && k >= nextItem.getX()
+                        && k < nextItem.getX() + nextItem.getWidth()) {
+                    int yOffset = l - nextItem.getY();
+                    int xOffset = k - nextItem.getX();
+                    if(nextItem.getShape()[yOffset][xOffset] == 1){
+                        setColorForShape(p, nextItem.getType());
+                        canvas.drawRect(k * previewGridSize + PADDING + WIDTH * gridSize + PREVIEW_PADDING + 1,
+                                l * previewGridSize + TOP_PADDING + 1,
+                                (k + 1) * previewGridSize + PADDING + WIDTH * gridSize + PREVIEW_PADDING - 1,
+                                (l + 1) * previewGridSize + TOP_PADDING - 1, p);
+                        // TODO draw bitmap
+                    }
+                }
+            }
+        }
+    }
+
     public void drawShadow(Canvas canvas, Paint p, Block item) {
         int oldY = item.getY();
         int[][] state = copy(occupancy);
@@ -228,7 +263,7 @@ public class TetrisWorld {
             if (!hasOverlap(state) && item.getY() + item.getHeight() < HEIGHT) {
                 item.stepDown();
             } else {
-                drawItem(canvas, p, item);
+                drawCurrentItem(canvas, p, item);
                 item.setY(oldY);
                 return;
             }
@@ -237,14 +272,14 @@ public class TetrisWorld {
 
     public void rotateBlock() {
         int[][] state = copy(occupancy);
-        this.item.simulateRotate(state);
+        this.currentItem.simulateRotate(state);
 
         if (!hasOverlap(state)) {
-            this.item.rotate();
+            this.currentItem.rotate();
         }
 
-        if (this.item.getX() + this.item.getWidth() >= WIDTH) {
-            this.item.setX(WIDTH - this.item.getWidth());
+        if (this.currentItem.getX() + this.currentItem.getWidth() >= WIDTH) {
+            this.currentItem.setX(WIDTH - this.currentItem.getWidth());
         }
     }
 
@@ -254,26 +289,26 @@ public class TetrisWorld {
 
     public void moveRight() {
         int[][] state = copy(occupancy);
-        this.item.simulateStepRight(state);
+        this.currentItem.simulateStepRight(state);
 
         if (!hasOverlap(state)) {
-            this.item.moveRight();
+            this.currentItem.moveRight();
         }
 
-        if (item.getX() + item.getWidth() >= WIDTH) {
-            item.setX(WIDTH - item.getWidth());
+        if (currentItem.getX() + currentItem.getWidth() >= WIDTH) {
+            currentItem.setX(WIDTH - currentItem.getWidth());
         }
     }
 
     public void moveLeft() {
         int[][] state = copy(occupancy);
-        this.item.simulateStepLeft(state);
+        this.currentItem.simulateStepLeft(state);
 
         if (!hasOverlap(state)) {
-            this.item.moveLeft();
+            this.currentItem.moveLeft();
         }
 
-        Log.d("X", item.getX() + "");
+        Log.d("X", currentItem.getX() + "");
     }
 
     public void stopDropping() {
@@ -295,12 +330,12 @@ public class TetrisWorld {
         int gridSize = (canvasWidth - 2 * PADDING) / WIDTH;
         this.bitmap = getResizedBitmap(this.bitmap, gridSize, gridSize);
 
-        for (int j = item.getY(); j < item.getY() + item.getHeight(); j++) {
-            for (int i = item.getX(); i < item.getX() + item.getWidth(); i++) {
-                int yOffset = j - item.getY();
-                int xOffset = i - item.getX();
-                if (yOffset >= 0 && xOffset >= 0 && yOffset < item.getShape().length && xOffset <
-                        item.getShape()[yOffset].length && item
+        for (int j = currentItem.getY(); j < currentItem.getY() + currentItem.getHeight(); j++) {
+            for (int i = currentItem.getX(); i < currentItem.getX() + currentItem.getWidth(); i++) {
+                int yOffset = j - currentItem.getY();
+                int xOffset = i - currentItem.getX();
+                if (yOffset >= 0 && xOffset >= 0 && yOffset < currentItem.getShape().length && xOffset <
+                        currentItem.getShape()[yOffset].length && currentItem
                         .getShape()[yOffset][xOffset] == 1) {
                     canvas.drawBitmap(this.bitmap, i * gridSize + PADDING + 1, j * gridSize +
                             TOP_PADDING +

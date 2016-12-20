@@ -11,12 +11,12 @@ public class BlockConfigurations {
     public static final int[][] SQUARE_SHIFTS = {{0, 0}, {0, 0}, {0, 0}, {0, 0}};
 
     //See http://tetris.wikia.com/wiki/SRS
-    public static final int[][] L_1 = new int[][]{{1, 0}, {1, 0}, {1, 1}};
-    public static final int[][] L_2 = new int[][]{{1, 1, 1}, {1, 0, 0}};
-    public static final int[][] L_3 = new int[][]{{1, 1}, {0, 1}, {0, 1}};
-    public static final int[][] L_4 = new int[][]{{0, 0, 1}, {1, 1, 1}};
+    public static final int[][] L_1 = new int[][]{{0, 0, 1}, {1, 1, 1}};
+    public static final int[][] L_2 = new int[][]{{1, 0}, {1, 0}, {1, 1}};
+    public static final int[][] L_3 = new int[][]{{1, 1, 1}, {1, 0, 0}};
+    public static final int[][] L_4 = new int[][]{{1, 1}, {0, 1}, {0, 1}};
     public static final int[][][] L_ROTATIONS = {L_1, L_2, L_3, L_4};
-    public static final int[][] L_SHIFTS = {{1, -1}, {-1, 0}, {0, 0}, {0, 1}};
+    public static final int[][] L_SHIFTS = {{0, 1}, {1, -1}, {-1, 0}, {0, 0}};
 
     public static final int[][] T_1 = new int[][]{{1, 1, 1}, {0, 1, 0}};
     public static final int[][] T_2 = new int[][]{{0, 1}, {1, 1}, {0, 1}};
