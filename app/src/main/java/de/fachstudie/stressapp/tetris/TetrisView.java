@@ -26,6 +26,7 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
     private boolean notificationPosted = false;
     private String notificationText = "";
     private Bitmap bitmap;
+    private long lastTouchDown = -1;
 
     public TetrisView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -45,7 +46,9 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
             if (!swiping && !dropping) {
                 this.model.rotateBlock();
             }
-            if (dropping) {
+            if (dropping && System.currentTimeMillis() - lastTouchDown < 150) {
+                this.model.hardDrop();
+            } else if(dropping) {
                 this.model.stopDropping();
             }
             swiping = false;
@@ -67,10 +70,11 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
                 lastTouchY = event.getY();
                 swiping = true;
             }
-            if (event.getY() - lastTouchY > 70 && !dropping) {
+            if (event.getY() - lastTouchY > 60 && !dropping) {
                 dropping = true;
                 this.model.drop();
                 lastTouchY = 0;
+                lastTouchDown = System.currentTimeMillis();
             }
         }
         return true;

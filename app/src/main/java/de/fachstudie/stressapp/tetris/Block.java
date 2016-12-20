@@ -104,12 +104,17 @@ public class Block extends Item {
     }
 
     private void computeOverlaps(int[][] state) {
-        for (int j = getY(); j < getY() + getHeight() && j < state.length; j++) {
-            for (int i = getX(); i < getX() + getWidth() && j >= 0 && i < state[j].length; i++) {
-                int yOffset = j - getY();
-                int xOffset = i - getX();
+        int currentY = getY();
+        int currentX = getX();
+        int currentWidth = getWidth();
+        int currentHeight = getHeight();
+        for (int j = currentY; j < currentY + currentHeight && j < state.length; j++) {
+            for (int i = getX(); i < currentX + currentWidth && j >= 0 && i < state[j].length;
+                 i++) {
+                int yOffset = j - currentY;
+                int xOffset = i - currentX;
                 if (getShape()[yOffset][xOffset] == 1) {
-                    if (state[j][i] > 0) {
+                    if (j >= 0 && i >= 0 && state[j][i] > 0) {
                         state[j][i] = -1;
                     }
                 }
