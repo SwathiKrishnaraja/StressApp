@@ -43,7 +43,7 @@ public class TetrisWorld {
         this.currentItem = item;
     }
 
-    public void createNextItem(){
+    public void createNextItem() {
         this.nextItem = randomItem();
     }
 
@@ -240,25 +240,34 @@ public class TetrisWorld {
     }
 
     private void drawNextItem(Canvas canvas, Paint p, int previewGridSize) {
-        for (int l = 0; l < PREVIEW_WIDTH; l++) {
-            for (int k = 0; k < PREVIEW_WIDTH; k++) {
+        int yStart = 1;
+        int xStart = 0;
+        int yLimit = 3;
+        int xLimit = 3;
+        switch(nextItem.getType()){
+            case SQUARE:
+                xStart = 1;
+                break;
+            case I:
+                yStart = 2;
+                xLimit = 4;
+                break;
+        }
 
-                // TODO boundaries check
-                if (l >= nextItem.getY() && l < nextItem.getY() + nextItem.getHeight() && k >=
-                        nextItem.getX()
-                        && k < nextItem.getX() + nextItem.getWidth()) {
-                    int yOffset = l - nextItem.getY();
-                    int xOffset = k - nextItem.getX();
-                    if (nextItem.getShape()[yOffset][xOffset] == 1) {
-                        setColorForShape(p, nextItem.getType());
-                        canvas.drawRect(k * previewGridSize + PADDING + WIDTH * gridSize +
-                                        PREVIEW_PADDING + 1,
-                                l * previewGridSize + TOP_PADDING + 1,
-                                (k + 1) * previewGridSize + PADDING + WIDTH * gridSize +
-                                        PREVIEW_PADDING - 1,
-                                (l + 1) * previewGridSize + TOP_PADDING - 1, p);
-                        // TODO draw bitmap
-                    }
+        for (int j = yStart; j < yLimit; j++) {
+            for (int i = xStart; i < xLimit; i++) {
+                int yOffset = j - yStart;
+                int xOffset = i - xStart;
+
+                if (nextItem.getShape()[yOffset][xOffset] == 1) {
+                    setColorForShape(p, nextItem.getType());
+                    canvas.drawRect(i * previewGridSize + PADDING + WIDTH * gridSize +
+                                    PREVIEW_PADDING + 1,
+                            j * previewGridSize + TOP_PADDING + 1,
+                            (i + 1) * previewGridSize + PADDING + WIDTH * gridSize +
+                                    PREVIEW_PADDING - 1,
+                            (j + 1) * previewGridSize + TOP_PADDING - 1, p);
+                    // TODO draw bitmap
                 }
             }
         }
