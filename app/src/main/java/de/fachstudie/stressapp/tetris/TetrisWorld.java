@@ -41,6 +41,9 @@ public class TetrisWorld {
 
     public void addItem(Block item) {
         this.currentItem = item;
+    }
+
+    public void createNextItem(){
         this.nextItem = randomItem();
     }
 
@@ -54,7 +57,7 @@ public class TetrisWorld {
             freeze(this.currentItem);
             calculateScore();
             clearFullLines();
-            this.currentItem = (nextItem != null ? nextItem : randomItem());
+            this.currentItem = nextItem;
             this.nextItem = randomItem();
             return false;
         }

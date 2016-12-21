@@ -37,6 +37,7 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
 
         this.model = new TetrisWorld();
         this.model.addItem(new Block(2, 0, 0, 0));
+        this.model.createNextItem();
     }
 
     @Override
