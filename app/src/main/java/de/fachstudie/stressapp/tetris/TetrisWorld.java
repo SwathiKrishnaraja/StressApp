@@ -220,11 +220,15 @@ public class TetrisWorld {
     }
 
     public void drawCurrentItem(Canvas canvas, Paint p, Block item) {
-        for (int j = item.getY(); j < item.getY() + item.getHeight(); j++) {
-            for (int i = item.getX(); i < item.getX() + item.getWidth(); i++) {
-                int yOffset = j - item.getY();
-                int xOffset = i - item.getX();
-                if (item.getShape()[yOffset][xOffset] == 1 && yOffset >= 0 && xOffset >= 0) {
+        int currentY = item.getY();
+        int currentX = item.getX();
+        int currentWidth = item.getWidth();
+        int currentHeight = item.getHeight();
+        for (int j = item.getY(); j < currentY + currentHeight; j++) {
+            for (int i = item.getX(); i < currentX + currentWidth; i++) {
+                int yOffset = j - currentY;
+                int xOffset = i - currentX;
+                if (yOffset >= 0 && xOffset >= 0 && item.getShape()[yOffset][xOffset] == 1) {
                     canvas.drawRect(i * gridSize + PADDING + 1, j * gridSize + TOP_PADDING +
                             1, (i +
                             1) * gridSize
@@ -235,20 +239,23 @@ public class TetrisWorld {
         }
     }
 
-    private void drawNextItem(Canvas canvas, Paint p, int previewGridSize){
+    private void drawNextItem(Canvas canvas, Paint p, int previewGridSize) {
         for (int l = 0; l < PREVIEW_WIDTH; l++) {
             for (int k = 0; k < PREVIEW_WIDTH; k++) {
 
                 // TODO boundaries check
-                if (l >= nextItem.getY() && l < nextItem.getY() + nextItem.getHeight() && k >= nextItem.getX()
+                if (l >= nextItem.getY() && l < nextItem.getY() + nextItem.getHeight() && k >=
+                        nextItem.getX()
                         && k < nextItem.getX() + nextItem.getWidth()) {
                     int yOffset = l - nextItem.getY();
                     int xOffset = k - nextItem.getX();
-                    if(nextItem.getShape()[yOffset][xOffset] == 1){
+                    if (nextItem.getShape()[yOffset][xOffset] == 1) {
                         setColorForShape(p, nextItem.getType());
-                        canvas.drawRect(k * previewGridSize + PADDING + WIDTH * gridSize + PREVIEW_PADDING + 1,
+                        canvas.drawRect(k * previewGridSize + PADDING + WIDTH * gridSize +
+                                        PREVIEW_PADDING + 1,
                                 l * previewGridSize + TOP_PADDING + 1,
-                                (k + 1) * previewGridSize + PADDING + WIDTH * gridSize + PREVIEW_PADDING - 1,
+                                (k + 1) * previewGridSize + PADDING + WIDTH * gridSize +
+                                        PREVIEW_PADDING - 1,
                                 (l + 1) * previewGridSize + TOP_PADDING - 1, p);
                         // TODO draw bitmap
                     }
@@ -268,6 +275,21 @@ public class TetrisWorld {
             } else {
                 drawCurrentItem(canvas, p, item);
                 item.setY(oldY);
+                return;
+            }
+        }
+    }
+
+    public void hardDrop() {
+        int oldY = currentItem.getY();
+        int[][] state = copy(occupancy);
+
+        while (true) {
+            currentItem.simulateStepDown(state);
+            if (!hasOverlap(state) && currentItem.getY() + currentItem.getHeight() < HEIGHT) {
+                currentItem.stepDown();
+            } else {
+                dropping = false;
                 return;
             }
         }
@@ -337,8 +359,9 @@ public class TetrisWorld {
             for (int i = currentItem.getX(); i < currentItem.getX() + currentItem.getWidth(); i++) {
                 int yOffset = j - currentItem.getY();
                 int xOffset = i - currentItem.getX();
-                if (yOffset >= 0 && xOffset >= 0 && yOffset < currentItem.getShape().length && xOffset <
-                        currentItem.getShape()[yOffset].length && currentItem
+                if (yOffset >= 0 && xOffset >= 0 && yOffset < currentItem.getShape().length &&
+                        xOffset <
+                                currentItem.getShape()[yOffset].length && currentItem
                         .getShape()[yOffset][xOffset] == 1) {
                     canvas.drawBitmap(this.bitmap, i * gridSize + PADDING + 1, j * gridSize +
                             TOP_PADDING +
