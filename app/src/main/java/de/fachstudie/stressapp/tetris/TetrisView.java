@@ -96,15 +96,16 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
             lastUpdateTime = System.currentTimeMillis();
         }
         if (canvas != null) {
+            if (notificationPosted) {
+                if (bitmap != null)
+                    model.setNextBitmap(bitmap);
+                    notificationPosted = false;
+            }
             canvas.drawColor(Color.WHITE);
             model.drawState(canvas, p);
 
-            if (notificationPosted) {
-                if (bitmap != null) {
-                    model.setBitmap(bitmap);
-                    model.drawIcon(canvas, p);
-                }
-            }
+            if(model.getCurrentBitmap() != null)
+                model.drawIcon(canvas, p);
         }
     }
 
