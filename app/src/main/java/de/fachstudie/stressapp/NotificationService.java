@@ -28,4 +28,15 @@ public class NotificationService extends NotificationListenerService {
         i.putExtra("content", text);
         sendBroadcast(i);
     }
+
+    @Override
+    public void onNotificationRemoved(StatusBarNotification sbn) {
+        String app = sbn.getPackageName();
+
+        Log.d("Notification removed",app);
+
+        Intent i = new Intent();
+        i.putExtra("Notification event", app);
+        sendBroadcast(i);
+    }
 }
