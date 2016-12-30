@@ -20,7 +20,8 @@ import static de.fachstudie.stressapp.tetris.Block.Shape.S;
 import static de.fachstudie.stressapp.tetris.Block.Shape.SQUARE;
 import static de.fachstudie.stressapp.tetris.Block.Shape.T;
 import static de.fachstudie.stressapp.tetris.Block.Shape.Z;
-import static de.fachstudie.stressapp.tetris.ColorUtils.setColorForShape;
+import static de.fachstudie.stressapp.tetris.utils.ColorUtils.setColorForShape;
+import static de.fachstudie.stressapp.tetris.utils.ArrayUtils.indexExists;
 
 public class TetrisWorld {
 
@@ -144,9 +145,11 @@ public class TetrisWorld {
     private void freezeCurrentBlock() {
         for (int j = currentBlock.getY(); j < currentBlock.getY() + currentBlock.getHeight(); j++) {
             for (int i = currentBlock.getX(); i < currentBlock.getX() + currentBlock.getWidth(); i++) {
+
                 int yOffset = j - currentBlock.getY();
                 int xOffset = i - currentBlock.getX();
-                if (currentBlock.getShape()[yOffset][xOffset] == 1 && yOffset >= 0 && xOffset >= 0) {
+                if (currentBlock.getShape()[yOffset][xOffset] == 1 && yOffset >= 0 && xOffset >= 0 &&
+                        indexExists(j, occupancy) && indexExists(i, occupancy[j])) {
                     occupancy[j][i] = currentBlock.getType().getN();
                     bitmaps[j][i] = currentBitmap;
                 }
@@ -237,7 +240,8 @@ public class TetrisWorld {
             for (int i = item.getX(); i < currentX + currentWidth; i++) {
                 int yOffset = j - currentY;
                 int xOffset = i - currentX;
-                if (yOffset >= 0 && xOffset >= 0 && item.getShape()[yOffset][xOffset] == 1) {
+                if (indexExists(yOffset, currentBlock.getShape()) && indexExists(xOffset, currentBlock.getShape()[yOffset])
+                        && item.getShape()[yOffset][xOffset] == 1) {
                     canvas.drawRect(i * gridSize + PADDING + 1, j * gridSize + TOP_PADDING + 1,
                             (i + 1) * gridSize + PADDING - 1,
                             (j + 1) * gridSize + TOP_PADDING - 1, p);
@@ -379,12 +383,12 @@ public class TetrisWorld {
 
         for (int j = currentBlock.getY(); j < currentBlock.getY() + currentBlock.getHeight(); j++) {
             for (int i = currentBlock.getX(); i < currentBlock.getX() + currentBlock.getWidth(); i++) {
+
                 int yOffset = j - currentBlock.getY();
                 int xOffset = i - currentBlock.getX();
-                if (yOffset >= 0 && xOffset >= 0 && yOffset < currentBlock.getShape().length &&
-                        xOffset <
-                                currentBlock.getShape()[yOffset].length && currentBlock
-                        .getShape()[yOffset][xOffset] == 1) {
+                if (indexExists(yOffset, currentBlock.getShape()) && indexExists(xOffset, currentBlock.getShape()[yOffset]) &&
+                        currentBlock
+                                .getShape()[yOffset][xOffset] == 1) {
                     canvas.drawBitmap(this.currentBitmap, i * gridSize + PADDING + 1, j * gridSize +
                             TOP_PADDING +
                             1, p);
@@ -392,6 +396,7 @@ public class TetrisWorld {
             }
         }
     }
+
 
     private Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight) {
         int width = bm.getWidth();

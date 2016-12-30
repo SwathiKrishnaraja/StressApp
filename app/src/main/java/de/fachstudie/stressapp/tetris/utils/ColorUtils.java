@@ -1,8 +1,9 @@
-package de.fachstudie.stressapp.tetris;
+package de.fachstudie.stressapp.tetris.utils;
 
 import android.graphics.Color;
 import android.graphics.Paint;
 
+import de.fachstudie.stressapp.tetris.Block;
 import de.fachstudie.stressapp.tetris.constants.BlockColors;
 
 public class ColorUtils {
