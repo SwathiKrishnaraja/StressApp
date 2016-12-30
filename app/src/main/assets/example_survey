@@ -1,0 +1,23 @@
+{
+  "survey_properties": {
+    "intro_message": "<strong>Your feedback helps us to build a better mobile product.</strong><br><br><br>   Hello, Feedback from our clients, friends and family is how we make key decisions on what the future holds for XYZ App.<br><br>By combining data and previous feedback we have introduced many new features e.g. x, y, z.<br><br>It will take less than 2 minutes to answer the feedback quiz.",
+    "end_message": "Thank you for having the time to take our survey.",
+    "skip_intro": false
+  },
+  "questions": [
+    {
+      "question_type": "Radioboxes",
+      "question_title": "In the last month, how often have you been upset because of something that happened unexpectedly?",
+      "description": "",
+      "required": true,
+      "random_choices": false,
+      "choices": [
+        "Never",
+        "Almost never",
+        "Sometimes",
+        "Fairly often",
+        "Very often"
+      ]
+    }
+  ]
+}

@@ -40,10 +40,20 @@
             android:layout_width="wrap_content"
             android:layout_height="50dp"
             android:id="@+id/tetris_btn"
-            android:onClick="changeActivity"
+            android:onClick="startTetrisActivity"
             android:layout_gravity="bottom|left"
             app:layout_anchor="@+id/innerLayout"
             app:layout_anchorGravity="top|right" />
+
+        <Button
+            android:text="Survey"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/survey_btn"
+            android:onClick="startSurveyActivity"
+            app:layout_anchor="@+id/innerLayout"
+            app:layout_anchorGravity="top|center_horizontal"
+            android:layout_gravity="bottom|right" />
 
     </android.support.design.widget.CoordinatorLayout>
 </layout>

@@ -47,8 +47,13 @@ public class MainActivity extends AppCompatActivity {
     private IntentFilter filterLock;
     private BarChart barChart;
 
-    public void changeActivity(View view) {
+    public void startTetrisActivity(View view) {
         Intent intent = new Intent(MainActivity.this, TetrisActivity.class);
+        startActivity(intent);
+    }
+
+    public void startSurveyActivity(View view) {
+        Intent intent = new Intent(MainActivity.this, SurveyActivity.class);
         startActivity(intent);
     }
 
