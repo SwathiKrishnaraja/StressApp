@@ -42,7 +42,9 @@ public class MainActivity extends AppCompatActivity {
     private Button tetris_button;
     private ViewNotification notification;
     private NotificationReceiver notificationReceiver;
+    private LockScreenReceiver lockScreenReceiver;
     private IntentFilter filter;
+    private IntentFilter filterLock;
     private BarChart barChart;
 
     public void changeActivity(View view) {
@@ -69,6 +71,13 @@ public class MainActivity extends AppCompatActivity {
         filter = new IntentFilter();
         filter.addAction("com.test");
         registerReceiver(notificationReceiver, filter);
+
+        lockScreenReceiver = new LockScreenReceiver();
+        filterLock = new IntentFilter();
+        filterLock.addAction(Intent.ACTION_SCREEN_ON);
+        filterLock.addAction(Intent.ACTION_SCREEN_OFF);
+        filterLock.addAction(Intent.ACTION_USER_PRESENT);
+        registerReceiver(lockScreenReceiver, filterLock);
 
         DatabaseHelper dbHelper = new DatabaseHelper(this);
         SQLiteDatabase db = dbHelper.getReadableDatabase();
@@ -213,6 +222,32 @@ public class MainActivity extends AppCompatActivity {
             values.put(ViewNotification.NotificationEntry.CONTENT, content);
             values.put(ViewNotification.NotificationEntry.APPLICATION, application);
             db.insert(ViewNotification.NotificationEntry.TABLE_NAME, null, values);
+        }
+    }
+
+    private class LockScreenReceiver extends BroadcastReceiver
+    {
+        @Override
+        public void onReceive(Context context, Intent intent)
+        {
+            if (intent != null && intent.getAction() != null)
+            {
+                if (intent.getAction().equals(Intent.ACTION_SCREEN_ON))
+                {
+                    // Screen is on but not unlocked (if any locking mechanism present)
+                    Log.i("LockScreenReceiver","Screen is on but not unlocked");
+                }
+                else if (intent.getAction().equals(Intent.ACTION_SCREEN_OFF))
+                {
+                    // Screen is locked
+                    Log.i("LockScreenReceiver","Screen is locked");
+                }
+                else if (intent.getAction().equals(Intent.ACTION_USER_PRESENT))
+                {
+                    // Screen is unlocked
+                    Log.i("LockScreenReceiver","Screen is unlocked");
+                }
+            }
         }
     }
 }
