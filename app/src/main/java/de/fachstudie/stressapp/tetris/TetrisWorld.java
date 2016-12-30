@@ -46,6 +46,7 @@ public class TetrisWorld {
     private int score;
     private int gridSize;
     private boolean dropping = false;
+    private boolean blockChange = false;
 
     public void addItem(Block item) {
         this.currentBlock = item;
@@ -58,6 +59,7 @@ public class TetrisWorld {
     public boolean gravityStep() {
         int[][] state = copy(occupancy);
         currentBlock.simulateStepDown(state);
+        this.blockChange = false;
         if (!hasOverlap(state) && currentBlock.getY() + currentBlock.getHeight() < HEIGHT) {
             currentBlock.stepDown();
             return true;
@@ -69,6 +71,7 @@ public class TetrisWorld {
             this.nextBlock = randomItem();
             this.currentBitmap = nextBitmap;
             this.nextBitmap = null;
+            this.blockChange = true;
             return false;
         }
     }
@@ -362,18 +365,6 @@ public class TetrisWorld {
         Log.d("X", currentBlock.getX() + "");
     }
 
-    public void stopDropping() {
-        this.dropping = false;
-    }
-
-    public boolean isDropping() {
-        return dropping;
-    }
-
-    public void setDropping(boolean dropping) {
-        this.dropping = dropping;
-    }
-
     public void drawIcon(Canvas canvas, Paint p) {
         int canvasWidth = canvas.getWidth();
         int canvasHeight = canvas.getHeight();
@@ -420,5 +411,21 @@ public class TetrisWorld {
 
     public Bitmap getCurrentBitmap() {
         return currentBitmap;
+    }
+
+    public void stopDropping() {
+        this.dropping = false;
+    }
+
+    public boolean isDropping() {
+        return dropping;
+    }
+
+    public void setDropping(boolean dropping) {
+        this.dropping = dropping;
+    }
+
+    public boolean isBlockChange() {
+        return blockChange;
     }
 }

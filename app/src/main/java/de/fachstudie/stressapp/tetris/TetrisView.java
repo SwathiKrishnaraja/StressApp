@@ -47,7 +47,7 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
             if (!swiping && !dropping) {
                 this.model.rotateBlock();
             }
-            if (dropping && System.currentTimeMillis() - lastTouchDown < 150) {
+            if (dropping && System.currentTimeMillis() - lastTouchDown < 150 && !this.model.isBlockChange()) {
                 this.model.hardDrop();
             } else if(dropping) {
                 this.model.stopDropping();
