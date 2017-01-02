@@ -36,7 +36,6 @@ public class SurveyActivity extends AppCompatActivity {
                 Log.v("JSON RESULT", json_result);
 
                 List<String> answers = getSurveyAnswers(json_result);
-
                 // TODO save answers in DB
             }
         }
@@ -44,10 +43,10 @@ public class SurveyActivity extends AppCompatActivity {
 
     private List<String> getSurveyAnswers(String answers_json) {
         List<String> answers = new ArrayList<>();
-        Pattern pattern = Pattern.compile(":(.*?)(,|\\})");
+        Pattern pattern = Pattern.compile(":([\"\\p{Alpha}\\s]+)(,|\\})");
         Matcher matcher = pattern.matcher(answers_json);
         while(matcher.find()){
-            answers.add(matcher.group(1));
+            answers.add(matcher.group(1).replaceAll("\"", ""));
         }
         return answers;
     }
