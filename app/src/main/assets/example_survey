@@ -7,7 +7,189 @@
   "questions": [
     {
       "question_type": "Radioboxes",
-      "question_title": "In the last month, how often have you been upset because of something that happened unexpectedly?",
+      "question_title": "1. In the last day, how often have you been upset because of something that happened unexpectedly?",
+      "description": "",
+      "required": true,
+      "random_choices": false,
+      "choices": [
+        "Never",
+        "Almost never",
+        "Sometimes",
+        "Fairly often",
+        "Very often"
+      ]
+    },
+    {
+      "question_type": "Radioboxes",
+      "question_title": "2. In the last day, how often have you felt that you were unable to control the important things in your life?",
+      "description": "",
+      "required": true,
+      "random_choices": false,
+      "choices": [
+        "Never",
+        "Almost never",
+        "Sometimes",
+        "Fairly often",
+        "Very often"
+      ]
+    },
+    {
+      "question_type": "Radioboxes",
+      "question_title": "3. In the last day, how often have you felt nervous and \"stressed\"?",
+      "description": "",
+      "required": true,
+      "random_choices": false,
+      "choices": [
+        "Never",
+        "Almost never",
+        "Sometimes",
+        "Fairly often",
+        "Very often"
+      ]
+    },
+    {
+      "question_type": "Radioboxes",
+      "question_title": "4. In the last day, how often have you dealt successfully with irritating life hassles?",
+      "description": "",
+      "required": true,
+      "random_choices": false,
+      "choices": [
+        "Never",
+        "Almost never",
+        "Sometimes",
+        "Fairly often",
+        "Very often"
+      ]
+    },
+    {
+      "question_type": "Radioboxes",
+      "question_title": "5. In the last day, how often have you felt that you were effectively coping with important changes were occurring in your life?",
+      "description": "",
+      "required": true,
+      "random_choices": false,
+      "choices": [
+        "Never",
+        "Almost never",
+        "Sometimes",
+        "Fairly often",
+        "Very often"
+      ]
+    },
+    {
+      "question_type": "Radioboxes",
+      "question_title": "6. In the last day, how often have you felt confident about your ability to handle your personal problems?",
+      "description": "",
+      "required": true,
+      "random_choices": false,
+      "choices": [
+        "Never",
+        "Almost never",
+        "Sometimes",
+        "Fairly often",
+        "Very often"
+      ]
+    },
+    {
+      "question_type": "Radioboxes",
+      "question_title": "7. In the last day, how often have you felt that things were going your way?",
+      "description": "",
+      "required": true,
+      "random_choices": false,
+      "choices": [
+        "Never",
+        "Almost never",
+        "Sometimes",
+        "Fairly often",
+        "Very often"
+      ]
+    },
+    {
+      "question_type": "Radioboxes",
+      "question_title": "8. In the last day, how often have you found that you could not cope with all the things that you had to do?",
+      "description": "",
+      "required": true,
+      "random_choices": false,
+      "choices": [
+        "Never",
+        "Almost never",
+        "Sometimes",
+        "Fairly often",
+        "Very often"
+      ]
+    },
+    {
+      "question_type": "Radioboxes",
+      "question_title": "9. In the last day, how often have you been able to control irritations in your life?",
+      "description": "",
+      "required": true,
+      "random_choices": false,
+      "choices": [
+        "Never",
+        "Almost never",
+        "Sometimes",
+        "Fairly often",
+        "Very often"
+      ]
+    },
+    {
+      "question_type": "Radioboxes",
+      "question_title": "10. In the last day, how often have you felt that you were on top of things?",
+      "description": "",
+      "required": true,
+      "random_choices": false,
+      "choices": [
+        "Never",
+        "Almost never",
+        "Sometimes",
+        "Fairly often",
+        "Very often"
+      ]
+    },
+    {
+      "question_type": "Radioboxes",
+      "question_title": "11. In the last day, how often have you been angered because of things that happened that were outside of your control?",
+      "description": "",
+      "required": true,
+      "random_choices": false,
+      "choices": [
+        "Never",
+        "Almost never",
+        "Sometimes",
+        "Fairly often",
+        "Very often"
+      ]
+    },
+    {
+      "question_type": "Radioboxes",
+      "question_title": "12. In the last day, how often have you found yourself thinking about things that you have to accomplish?",
+      "description": "",
+      "required": true,
+      "random_choices": false,
+      "choices": [
+        "Never",
+        "Almost never",
+        "Sometimes",
+        "Fairly often",
+        "Very often"
+      ]
+    },
+    {
+      "question_type": "Radioboxes",
+      "question_title": "13. In the last day, how often have you been able to control the way you spend your time?",
+      "description": "",
+      "required": true,
+      "random_choices": false,
+      "choices": [
+        "Never",
+        "Almost never",
+        "Sometimes",
+        "Fairly often",
+        "Very often"
+      ]
+    },
+    {
+      "question_type": "Radioboxes",
+      "question_title": "14. In the last day, how often have you felt difficulties were piling up so high that you could not overcome them?",
       "description": "",
       "required": true,
       "random_choices": false,
