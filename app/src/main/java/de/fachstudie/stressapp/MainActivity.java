@@ -38,18 +38,25 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         tetrisView = (TetrisView) findViewById(R.id.tetrisview);
 
         DatabaseService dbService = new DatabaseService(this);
-        Log.d("size", ""+dbService.getAllNotifications().size());
+        Log.d("size", "" + dbService.getAllNotifications().size());
 
         notificationReceiver = new NotificationReceiver();
         filter = new IntentFilter();
         filter.addAction("com.test");
         registerReceiver(notificationReceiver, filter);
+
+        lockScreenReceiver = new LockScreenReceiver();
+        filterLock = new IntentFilter();
+        filterLock.addAction(Intent.ACTION_SCREEN_ON);
+        filterLock.addAction(Intent.ACTION_SCREEN_OFF);
+        filterLock.addAction(Intent.ACTION_USER_PRESENT);
+        registerReceiver(lockScreenReceiver, filterLock);
     }
 
     @Override
@@ -61,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onPause();
         unregisterReceiver(notificationReceiver);
+        unregisterReceiver(lockScreenReceiver);
     }
 
     @Override
@@ -77,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         // no inspection SimplifiableIfStatement
 
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.action_survey:
                 Intent intent = new Intent(MainActivity.this, SurveyActivity.class);
                 startActivity(intent);
