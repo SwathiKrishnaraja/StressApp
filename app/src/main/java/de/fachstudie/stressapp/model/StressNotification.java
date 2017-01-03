@@ -61,6 +61,14 @@ public class StressNotification {
         this.timestamp = timestamp;
     }
 
+    public boolean isLoaded() {
+        return loaded;
+    }
+
+    public void setLoaded(boolean loaded) {
+        this.loaded = loaded;
+    }
+
     public static class NotificationEntry implements BaseColumns {
         public static final String TABLE_NAME = "notification";
         public static final String TITLE = "title";

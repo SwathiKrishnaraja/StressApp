@@ -1,5 +1,6 @@
 package de.fachstudie.stressapp.db;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -25,8 +26,8 @@ public class DatabaseService {
             .NotificationEntry.TIMESTAMP, StressNotification.NotificationEntry.CONTENT};
 
     private final String SELECT_QUERY = "SELECT * FROM " + StressNotification.NotificationEntry
-            .TABLE_NAME + " ORDER BY DESC " + StressNotification.NotificationEntry.TIMESTAMP + " AND" +
-            " WHERE " + StressNotification.NotificationEntry.LOADED + " = ?";
+            .TABLE_NAME + " WHERE " + StressNotification.NotificationEntry.LOADED + " = ?" +
+            " ORDER BY " + StressNotification.NotificationEntry.TIMESTAMP + " DESC";
 
     private DatabaseHelper dbHelper;
 
@@ -41,22 +42,40 @@ public class DatabaseService {
                 null, null, null, null);
 
         addNotifications(notifications, c);
-        db.close();
+        closeDatabaseComponents(db, c);
         return notifications;
     }
 
     public List<StressNotification> getAllNotLoadedNotifications() {
         List<StressNotification> notifications = new ArrayList<>();
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-        Cursor c = db.rawQuery(SELECT_QUERY, new String[]{"false"});
+
+        String[] selectionArgs = {"false"};
+        Cursor c = db.rawQuery(SELECT_QUERY, selectionArgs);
 
         addNotifications(notifications, c);
-        db.close();
+        closeDatabaseComponents(db, c);
         return notifications;
     }
 
+    public void updateNotificationIsLoaded(StressNotification notification) {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(StressNotification.NotificationEntry.LOADED, "" + notification.isLoaded());
+
+        String selection = StressNotification.NotificationEntry._ID + " LIKE ?";
+        String[] selectionArgs = {"" + notification.getId()};
+
+        int count = db.update(
+                StressNotification.NotificationEntry.TABLE_NAME,
+                values,
+                selection,
+                selectionArgs);
+    }
+
     private void addNotifications(List<StressNotification> notifications, Cursor c) {
-        if (c != null && c.moveToFirst()) {
+        if (c != null) {
             while (c.moveToNext()) {
                 String title = c.getString(c.getColumnIndex(StressNotification.NotificationEntry
                         .TITLE));
@@ -76,13 +95,19 @@ public class DatabaseService {
                 } catch (ParseException e) {
                 }
 
-                boolean loaded = ("true".equals(c.getString(c.getColumnIndex(StressNotification.NotificationEntry.LOADED))));
+                boolean loaded = ("true".equals(c.getString(
+                        c.getColumnIndex(StressNotification.NotificationEntry.LOADED))));
                 Log.d("Loaded", "" + loaded);
 
-                StressNotification not = new StressNotification(title, application, content,
+                StressNotification notification = new StressNotification(title, application, content,
                         timeStampDate, loaded);
-                notifications.add(not);
+                notifications.add(notification);
             }
         }
+    }
+
+    private void closeDatabaseComponents(SQLiteDatabase db, Cursor c) {
+        c.close();
+        db.close();
     }
 }
