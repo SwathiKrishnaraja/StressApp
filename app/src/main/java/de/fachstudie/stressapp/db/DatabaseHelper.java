@@ -12,7 +12,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
     private static final String DATABASE_CREATE = "CREATE TABLE notification " +
             "( _id integer primary key autoincrement, content text, title text," +
-            " application text, timestamp datetime default current_timestamp)";
+            " application text, loaded text, timestamp datetime default current_timestamp)";
 
     private static DatabaseHelper dbHelper;
 

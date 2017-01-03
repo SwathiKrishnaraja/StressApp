@@ -9,16 +9,24 @@ import java.util.Date;
  */
 public class StressNotification {
 
+    private int id;
     private String title;
     private String application;
     private String content;
     private Date timestamp;
+    private boolean loaded;
 
-    public StressNotification(String title, String application, String content, Date timestamp) {
+    public StressNotification(String title, String application, String content, Date timestamp,
+                              boolean loaded) {
         this.title = title;
         this.application = application;
         this.content = content;
         this.timestamp = timestamp;
+        this.loaded = loaded;
+    }
+
+    public int getId() {
+        return id;
     }
 
     public String getTitle() {
@@ -59,6 +67,6 @@ public class StressNotification {
         public static final String CONTENT = "content";
         public static final String APPLICATION = "application";
         public static final String TIMESTAMP = "timestamp";
-
+        public static final String LOADED = "loaded";
     }
 }

@@ -11,6 +11,8 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import de.fachstudie.stressapp.db.DatabaseService;
+
 public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
     private final TetrisWorld model;
     private TetrisViewThread thread = null;
@@ -35,6 +37,9 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
         thread = new TetrisViewThread(this, getHolder());
         p = new Paint();
         p.setColor(Color.GREEN);
+
+        DatabaseService dbService = new DatabaseService(context);
+        Log.d("size", "" + dbService.getAllNotifications().size());
 
         this.model = new TetrisWorld();
         this.model.addItem(new Block(2, 0, 0, 0));

@@ -22,7 +22,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import de.fachstudie.stressapp.db.DatabaseHelper;
-import de.fachstudie.stressapp.db.DatabaseService;
 import de.fachstudie.stressapp.model.StressNotification;
 import de.fachstudie.stressapp.tetris.TetrisView;
 
@@ -33,7 +32,6 @@ public class MainActivity extends AppCompatActivity {
     private IntentFilter filterLock;
     private TetrisView tetrisView;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,9 +40,6 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         tetrisView = (TetrisView) findViewById(R.id.tetrisview);
-
-        DatabaseService dbService = new DatabaseService(this);
-        Log.d("size", "" + dbService.getAllNotifications().size());
 
         notificationReceiver = new NotificationReceiver();
         filter = new IntentFilter();
@@ -149,6 +144,8 @@ public class MainActivity extends AppCompatActivity {
             values.put(StressNotification.NotificationEntry.TITLE, title);
             values.put(StressNotification.NotificationEntry.CONTENT, content);
             values.put(StressNotification.NotificationEntry.APPLICATION, application);
+            values.put(StressNotification.NotificationEntry.LOADED, "false");
+            values.put(StressNotification.NotificationEntry.TIMESTAMP, timestamp);
             db.insert(StressNotification.NotificationEntry.TABLE_NAME, null, values);
         }
     }
