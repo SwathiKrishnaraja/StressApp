@@ -111,6 +111,9 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
 
     @Override
     public void surfaceCreated(SurfaceHolder surfaceHolder) {
+        if(thread == null){
+            thread = new TetrisViewThread(this, getHolder());
+        }
         thread.setRunnable(true);
         thread.start();
     }

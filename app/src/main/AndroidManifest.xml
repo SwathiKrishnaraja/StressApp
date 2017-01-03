@@ -14,7 +14,6 @@
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -33,7 +32,6 @@
             android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
             android:windowSoftInputMode="stateHidden"></activity>
 
-        <activity android:name=".TetrisActivity" />
         <activity android:name=".SurveyActivity"></activity>
     </application>
 

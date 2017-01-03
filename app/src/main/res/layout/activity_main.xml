@@ -2,13 +2,6 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:bind="http://schemas.android.com/apk/res-auto">
 
-    <data class="de.fachstudie.stressapp.databinding.ActivityMainBinding">
-
-        <variable
-            name="currentNotification"
-            type="de.fachstudie.stressapp.model.ViewNotification"/>
-    </data>
-
     <android.support.design.widget.CoordinatorLayout xmlns:app="http://schemas.android.com/apk/res-auto"
                                                      xmlns:tools="http://schemas.android.com/tools"
                                                      android:layout_width="match_parent"
@@ -30,30 +23,11 @@
 
         </android.support.design.widget.AppBarLayout>
 
-        <include
-            layout="@layout/content_main"
-            android:id="@+id/innerLayout"
-            bind:currentNotification="@{currentNotification}"/>
-
-        <Button
-            android:text="Tetris"
-            android:layout_width="wrap_content"
-            android:layout_height="50dp"
-            android:id="@+id/tetris_btn"
-            android:onClick="startTetrisActivity"
-            android:layout_gravity="bottom|left"
-            app:layout_anchor="@+id/innerLayout"
-            app:layout_anchorGravity="top|right" />
-
-        <Button
-            android:text="Survey"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/survey_btn"
-            android:onClick="startSurveyActivity"
-            app:layout_anchor="@+id/innerLayout"
-            app:layout_anchorGravity="top|center_horizontal"
-            android:layout_gravity="bottom|right" />
+        <de.fachstudie.stressapp.tetris.TetrisView
+            android:id="@+id/tetrisview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            />
 
     </android.support.design.widget.CoordinatorLayout>
 </layout>

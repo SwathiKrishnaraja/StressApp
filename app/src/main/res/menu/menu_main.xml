@@ -3,8 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="de.fachstudie.stressapp.MainActivity">
     <item
-        android:id="@+id/action_settings"
+        android:id="@+id/action_survey"
         android:orderInCategory="100"
-        android:title="@string/action_settings"
-        app:showAsAction="never" />
+        android:icon="@mipmap/ic_format_list_bulleted_white_24dp"
+        android:title="Survey"
+        android:tint="@color/white"
+        app:showAsAction="always" />
 </menu>

@@ -41,20 +41,32 @@ public class SurveyActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        finish();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
+
     private List<String> getSurveyAnswers(String answers_json) {
         List<String> answers = new ArrayList<>();
         Pattern pattern = Pattern.compile(":([\"\\p{Alpha}\\s]+)(,|\\})");
         Matcher matcher = pattern.matcher(answers_json);
-        while(matcher.find()){
+        while (matcher.find()) {
             answers.add(matcher.group(1).replaceAll("\"", ""));
         }
         return answers;
     }
 
     //json stored in the assets folder. but you can get it from wherever you like.
+
     private String loadSurveyJson(String filename) {
         try {
-            InputStream is =  getAssets().open(filename);
+            InputStream is = getAssets().open(filename);
             int size = is.available();
             byte[] buffer = new byte[size];
             is.read(buffer);

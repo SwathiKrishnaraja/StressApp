@@ -30,7 +30,7 @@ public class TetrisWorld {
     private final int HEIGHT = 20;
     private final int PREVIEW_WIDTH = 4;
     private final int PADDING = 140;
-    private final int TOP_PADDING = 50;
+    private final int TOP_PADDING = 160;
     private final int PREVIEW_PADDING = 10;
     private final int TEXT_SIZE = 40;
 
@@ -191,7 +191,7 @@ public class TetrisWorld {
         p.setColor(Color.BLACK);
         p.setTypeface(Typeface.create("Arial", Typeface.BOLD));
 
-        canvas.drawText("" + score, PADDING + (WIDTH * gridSize / 2), (TOP_PADDING / 2) + 10, p);
+        canvas.drawText("" + score, PADDING + (WIDTH * gridSize / 2), TOP_PADDING - 10, p);
 
         p.setStyle(Paint.Style.STROKE);
         p.setColor(Color.DKGRAY);

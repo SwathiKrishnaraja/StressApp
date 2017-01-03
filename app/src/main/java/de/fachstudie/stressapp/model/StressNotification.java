@@ -1,5 +1,7 @@
 package de.fachstudie.stressapp.model;
 
+import android.provider.BaseColumns;
+
 import java.util.Date;
 
 /**
@@ -49,5 +51,14 @@ public class StressNotification {
 
     public void setTimestamp(Date timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public static class NotificationEntry implements BaseColumns {
+        public static final String TABLE_NAME = "notification";
+        public static final String TITLE = "title";
+        public static final String CONTENT = "content";
+        public static final String APPLICATION = "application";
+        public static final String TIMESTAMP = "timestamp";
+
     }
 }
