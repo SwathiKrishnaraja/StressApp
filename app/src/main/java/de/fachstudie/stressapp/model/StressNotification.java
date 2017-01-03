@@ -16,8 +16,9 @@ public class StressNotification {
     private Date timestamp;
     private boolean loaded;
 
-    public StressNotification(String title, String application, String content, Date timestamp,
-                              boolean loaded) {
+    public StressNotification(int id, String title, String application, String content,
+                              Date timestamp, boolean loaded) {
+        this.id = id;
         this.title = title;
         this.application = application;
         this.content = content;

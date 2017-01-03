@@ -1,7 +1,6 @@
 package de.fachstudie.stressapp.tetris;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -10,8 +9,6 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-
-import de.fachstudie.stressapp.db.DatabaseService;
 
 public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
     private final TetrisWorld model;
@@ -25,9 +22,6 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
     private boolean swiping = false;
     private boolean dropping = false;
     private long lastUpdate = -1;
-    private boolean notificationPosted = false;
-    private String notificationText = "";
-    private Bitmap bitmap;
     private long lastTouchDown = -1;
 
     public TetrisView(Context context, AttributeSet attrs) {
@@ -38,10 +32,7 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
         p = new Paint();
         p.setColor(Color.GREEN);
 
-        DatabaseService dbService = new DatabaseService(context);
-        Log.d("size", "" + dbService.getAllNotifications().size());
-
-        this.model = new TetrisWorld();
+        this.model = new TetrisWorld(context);
         this.model.addItem(new Block(2, 0, 0, 0));
         this.model.createNextItem();
     }
@@ -101,11 +92,6 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
             lastUpdateTime = System.currentTimeMillis();
         }
         if (canvas != null) {
-            if (notificationPosted) {
-                if (bitmap != null)
-                    model.setNextBitmap(bitmap);
-                    notificationPosted = false;
-            }
             canvas.drawColor(Color.WHITE);
             model.drawState(canvas, p);
 
@@ -140,14 +126,5 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
                 e.printStackTrace();
             }
         }
-    }
-
-    public void postNotification(String title) {
-        notificationPosted = true;
-        notificationText = title;
-    }
-
-    public void setBitmap(Bitmap bitmap) {
-        this.bitmap = bitmap;
     }
 }

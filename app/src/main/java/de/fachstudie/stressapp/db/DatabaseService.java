@@ -27,7 +27,7 @@ public class DatabaseService {
 
     private final String SELECT_QUERY = "SELECT * FROM " + StressNotification.NotificationEntry
             .TABLE_NAME + " WHERE " + StressNotification.NotificationEntry.LOADED + " = ?" +
-            " ORDER BY " + StressNotification.NotificationEntry.TIMESTAMP + " DESC";
+            " ORDER BY " + StressNotification.NotificationEntry.TIMESTAMP + " ASC";
 
     private DatabaseHelper dbHelper;
 
@@ -67,16 +67,15 @@ public class DatabaseService {
         String selection = StressNotification.NotificationEntry._ID + " LIKE ?";
         String[] selectionArgs = {"" + notification.getId()};
 
-        int count = db.update(
-                StressNotification.NotificationEntry.TABLE_NAME,
-                values,
-                selection,
-                selectionArgs);
+        db.update(StressNotification.NotificationEntry.TABLE_NAME, values, selection, selectionArgs);
+        db.close();
     }
 
     private void addNotifications(List<StressNotification> notifications, Cursor c) {
         if (c != null) {
             while (c.moveToNext()) {
+                int id = c.getInt(c.getColumnIndex(StressNotification.NotificationEntry._ID));
+
                 String title = c.getString(c.getColumnIndex(StressNotification.NotificationEntry
                         .TITLE));
                 String content = c.getString(c.getColumnIndex(StressNotification.NotificationEntry
@@ -87,7 +86,6 @@ public class DatabaseService {
                         .NotificationEntry
                         .TIMESTAMP));
 
-                Log.d("Timestamp", timeStampText);
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 Date timeStampDate = null;
                 try {
@@ -97,9 +95,8 @@ public class DatabaseService {
 
                 boolean loaded = ("true".equals(c.getString(
                         c.getColumnIndex(StressNotification.NotificationEntry.LOADED))));
-                Log.d("Loaded", "" + loaded);
 
-                StressNotification notification = new StressNotification(title, application, content,
+                StressNotification notification = new StressNotification(id, title, application, content,
                         timeStampDate, loaded);
                 notifications.add(notification);
             }

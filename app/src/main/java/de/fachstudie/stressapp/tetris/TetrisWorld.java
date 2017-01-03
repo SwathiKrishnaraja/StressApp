@@ -1,17 +1,23 @@
 package de.fachstudie.stressapp.tetris;
 
+import android.content.Context;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+
+import de.fachstudie.stressapp.db.DatabaseService;
+import de.fachstudie.stressapp.model.StressNotification;
 
 import static de.fachstudie.stressapp.tetris.Block.Shape.I;
 import static de.fachstudie.stressapp.tetris.Block.Shape.J;
@@ -20,8 +26,9 @@ import static de.fachstudie.stressapp.tetris.Block.Shape.S;
 import static de.fachstudie.stressapp.tetris.Block.Shape.SQUARE;
 import static de.fachstudie.stressapp.tetris.Block.Shape.T;
 import static de.fachstudie.stressapp.tetris.Block.Shape.Z;
-import static de.fachstudie.stressapp.tetris.utils.ColorUtils.setColorForShape;
 import static de.fachstudie.stressapp.tetris.utils.ArrayUtils.indexExists;
+import static de.fachstudie.stressapp.tetris.utils.BitmapUtils.drawableToBitmap;
+import static de.fachstudie.stressapp.tetris.utils.ColorUtils.setColorForShape;
 
 public class TetrisWorld {
 
@@ -48,6 +55,17 @@ public class TetrisWorld {
     private boolean dropping = false;
     private boolean blockChange = false;
 
+    private int notificationsIndex = 0;
+    private List<StressNotification> notifications = new ArrayList<>();
+    private DatabaseService dbService;
+    private Context context;
+
+    public TetrisWorld(Context context) {
+        this.context = context;
+        dbService = new DatabaseService(this.context);
+        Log.d("size", "" + dbService.getAllNotifications().size());
+    }
+
     public void addItem(Block item) {
         this.currentBlock = item;
     }
@@ -69,10 +87,49 @@ public class TetrisWorld {
             clearFullLines();
             this.currentBlock = nextBlock;
             this.nextBlock = randomItem();
-            this.currentBitmap = nextBitmap;
-            this.nextBitmap = null;
+            this.resetCurrentBitmap();
+            this.updateNotificationIsLoaded();
+            this.setBitmaps();
             this.blockChange = true;
             return false;
+        }
+    }
+
+    private void resetCurrentBitmap() {
+        if(nextBitmap == null) {
+            this.currentBitmap = null;
+        }
+    }
+
+    private void updateNotificationIsLoaded() {
+        if (notificationsIndex != 0) {
+            StressNotification notification = notifications.get(notificationsIndex - 1);
+            notification.setLoaded(true);
+            dbService.updateNotificationIsLoaded(notification);
+        }
+    }
+
+    private void setBitmaps() {
+        if(notificationsIndex == notifications.size()){
+            notifications.clear();
+        }
+
+        if (!notifications.isEmpty()) {
+            try {
+                StressNotification notification = notifications.get(notificationsIndex);
+                Drawable applicationIcon = context.getPackageManager().getApplicationIcon(notification.getApplication());
+                Bitmap bitmap = drawableToBitmap(applicationIcon);
+
+                this.currentBitmap = nextBitmap;
+                this.nextBitmap = bitmap;
+                notificationsIndex++;
+            } catch (PackageManager.NameNotFoundException e) {
+            }
+
+        } else {
+            notifications = dbService.getAllNotLoadedNotifications();
+            notificationsIndex = 0;
+            this.nextBitmap = null;
         }
     }
 
@@ -120,7 +177,6 @@ public class TetrisWorld {
                 fullLines.add(j);
             }
         }
-
         return fullLines;
     }
 
@@ -403,10 +459,6 @@ public class TetrisWorld {
         Bitmap resizedBitmap = Bitmap.createBitmap(
                 bm, 0, 0, width, height, matrix, false);
         return resizedBitmap;
-    }
-
-    public void setNextBitmap(Bitmap nextBitmap) {
-        this.nextBitmap = nextBitmap;
     }
 
     public Bitmap getCurrentBitmap() {
