@@ -14,7 +14,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             "( _id integer primary key autoincrement, content text, title text," +
             " application text, timestamp datetime default current_timestamp)";
 
-    public DatabaseHelper(Context context) {
+    private static DatabaseHelper dbHelper;
+
+    public static synchronized DatabaseHelper getInstance(Context context) {
+        if (dbHelper == null) {
+            dbHelper = new DatabaseHelper(context.getApplicationContext());
+        }
+        return dbHelper;
+    }
+
+    private DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
