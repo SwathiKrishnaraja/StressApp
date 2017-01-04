@@ -63,7 +63,6 @@ public class TetrisWorld {
     public TetrisWorld(Context context) {
         this.context = context;
         dbService = new DatabaseService(this.context);
-        Log.d("size", "" + dbService.getAllNotifications().size());
     }
 
     public void addItem(Block item) {
