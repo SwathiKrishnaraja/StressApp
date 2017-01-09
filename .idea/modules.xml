@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/StressApp.iml" filepath="$PROJECT_DIR$/StressApp.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/surveylib-release/surveylib-release.iml" filepath="$PROJECT_DIR$/surveylib-release/surveylib-release.iml" />
     </modules>
   </component>
 </project>
