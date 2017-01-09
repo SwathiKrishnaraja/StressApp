@@ -1,8 +1,11 @@
 package de.fachstudie.stressapp;
 
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
 
 import java.io.IOException;
@@ -12,18 +15,24 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import de.fachstudie.stressapp.db.DatabaseHelper;
+import de.fachstudie.stressapp.model.SurveyResult;
+
 public class SurveyActivity extends AppCompatActivity {
 
     private static final int SURVEY_REQUEST = 1337;
+    private DatabaseHelper dbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_survey);
 
+        dbHelper = DatabaseHelper.getInstance(SurveyActivity.this);
+
         Intent i_survey = new Intent(SurveyActivity.this, com.androidadvance.androidsurvey.SurveyActivity.class);
         //you have to pass as an extra the json string.
-        i_survey.putExtra("json_survey", loadSurveyJson("example_survey"));
+        i_survey.putExtra("json_survey", loadSurveyJson("example_survey.json"));
         startActivityForResult(i_survey, SURVEY_REQUEST);
     }
 
@@ -35,21 +44,17 @@ public class SurveyActivity extends AppCompatActivity {
                 String json_result = data.getExtras().getString("answers");
                 Log.v("JSON RESULT", json_result);
 
-                List<String> answers = getSurveyAnswers(json_result);
-                // TODO save answers in DB
+                String answers = TextUtils.join(",", getSurveyAnswers(json_result));
+
+                Log.d("answers", answers);
+                SQLiteDatabase db = dbHelper.getWritableDatabase();
+                ContentValues values = new ContentValues();
+                values.put(SurveyResult.SurveyResultEntry.ANSWERS, answers);
+                db.insert(SurveyResult.SurveyResultEntry.TABLE_NAME, null, values);
+                db.close();
+                finish();
             }
         }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        finish();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
     }
 
     private List<String> getSurveyAnswers(String answers_json) {

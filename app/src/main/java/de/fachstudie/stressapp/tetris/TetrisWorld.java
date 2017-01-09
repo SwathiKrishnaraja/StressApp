@@ -126,7 +126,7 @@ public class TetrisWorld {
             }
 
         } else {
-            notifications = dbService.getAllNotLoadedNotifications();
+            notifications = dbService.getNotLoadedNotifications();
             notificationsIndex = 0;
             this.nextBitmap = null;
         }

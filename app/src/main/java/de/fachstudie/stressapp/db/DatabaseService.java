@@ -4,15 +4,16 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
 import de.fachstudie.stressapp.model.StressNotification;
+import de.fachstudie.stressapp.model.SurveyResult;
 
 /**
  * Created by Sanjeev on 03.01.2017.
@@ -20,14 +21,22 @@ import de.fachstudie.stressapp.model.StressNotification;
 
 public class DatabaseService {
 
-    private final String[] columns = {StressNotification.NotificationEntry._ID, StressNotification
-            .NotificationEntry.TITLE, StressNotification.NotificationEntry.APPLICATION,
-            StressNotification.NotificationEntry.LOADED, StressNotification
-            .NotificationEntry.TIMESTAMP, StressNotification.NotificationEntry.CONTENT};
+    private final String[] notificationColumns = {StressNotification.NotificationEntry._ID,
+            StressNotification.NotificationEntry.TITLE,
+            StressNotification.NotificationEntry.APPLICATION,
+            StressNotification.NotificationEntry.LOADED,
+            StressNotification.NotificationEntry.TIMESTAMP,
+            StressNotification.NotificationEntry.CONTENT};
+
+    private final String[] surveyResultColumns = {SurveyResult.SurveyResultEntry._ID,
+            SurveyResult.SurveyResultEntry.ANSWERS};
 
     private final String SELECT_QUERY = "SELECT * FROM " + StressNotification.NotificationEntry
             .TABLE_NAME + " WHERE " + StressNotification.NotificationEntry.LOADED + " = ?" +
             " ORDER BY " + StressNotification.NotificationEntry.TIMESTAMP + " ASC";
+
+    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
 
     private DatabaseHelper dbHelper;
 
@@ -35,10 +44,21 @@ public class DatabaseService {
         dbHelper = DatabaseHelper.getInstance(context);
     }
 
-    public List<StressNotification> getAllNotifications() {
+    public List<SurveyResult> getSurveyResults() {
+        List<SurveyResult> results = new ArrayList<>();
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cursor c = db.query(SurveyResult.SurveyResultEntry.TABLE_NAME, surveyResultColumns, null,
+                null, null, null, null);
+
+        addAnswers(results, c);
+        closeDatabaseComponents(db, c);
+        return results;
+    }
+
+    public List<StressNotification> getNotifications() {
         List<StressNotification> notifications = new ArrayList<>();
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-        Cursor c = db.query(StressNotification.NotificationEntry.TABLE_NAME, columns, null,
+        Cursor c = db.query(StressNotification.NotificationEntry.TABLE_NAME, notificationColumns, null,
                 null, null, null, null);
 
         addNotifications(notifications, c);
@@ -46,7 +66,8 @@ public class DatabaseService {
         return notifications;
     }
 
-    public List<StressNotification> getAllNotLoadedNotifications() {
+
+    public List<StressNotification> getNotLoadedNotifications() {
         List<StressNotification> notifications = new ArrayList<>();
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
@@ -80,27 +101,48 @@ public class DatabaseService {
                         .TITLE));
                 String content = c.getString(c.getColumnIndex(StressNotification.NotificationEntry
                         .CONTENT));
-                String application = c.getString(c.getColumnIndex(StressNotification.NotificationEntry
-                        .APPLICATION));
+                String application = c.getString(c.getColumnIndex(StressNotification
+                        .NotificationEntry.APPLICATION));
                 String timeStampText = c.getString(c.getColumnIndex(StressNotification
                         .NotificationEntry
                         .TIMESTAMP));
 
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                Date timeStampDate = null;
-                try {
-                    timeStampDate = sdf.parse(timeStampText);
-                } catch (ParseException e) {
-                }
+                Date timeStampDate = getTimeStampDate(timeStampText);
 
                 boolean loaded = ("true".equals(c.getString(
                         c.getColumnIndex(StressNotification.NotificationEntry.LOADED))));
 
-                StressNotification notification = new StressNotification(id, title, application, content,
-                        timeStampDate, loaded);
+                StressNotification notification = new StressNotification(id, title, application,
+                        content, timeStampDate, loaded);
                 notifications.add(notification);
             }
         }
+    }
+
+    private void addAnswers(List<SurveyResult> results, Cursor c) {
+        if (c != null) {
+            while (c.moveToNext()) {
+                int id = c.getInt(c.getColumnIndex(StressNotification.NotificationEntry._ID));
+
+                String answers = c.getString(c.getColumnIndex(SurveyResult.SurveyResultEntry
+                        .ANSWERS));
+
+                List<String> items = Arrays.asList(answers.split(","));
+
+                SurveyResult result = new SurveyResult(id, items);
+                results.add(result);
+            }
+        }
+    }
+
+    private Date getTimeStampDate(String timeStampText) {
+        Date timeStampDate = null;
+        try {
+            timeStampDate = sdf.parse(timeStampText);
+        } catch (ParseException e) {
+        }
+
+        return timeStampDate;
     }
 
     private void closeDatabaseComponents(SQLiteDatabase db, Cursor c) {

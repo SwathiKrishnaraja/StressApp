@@ -10,9 +10,12 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "stress.db";
     private static final int DATABASE_VERSION = 1;
-    private static final String DATABASE_CREATE = "CREATE TABLE notification " +
+    private static final String NOTIFICATION_DATABASE_CREATE = "CREATE TABLE notification " +
             "( _id integer primary key autoincrement, content text, title text," +
             " application text, loaded text, timestamp datetime default current_timestamp)";
+
+    private static final String Survey_RESULT_DATABASE_CREATE = "CREATE TABLE survey_result " +
+            "( _id integer primary key autoincrement, answers text)";
 
     private static DatabaseHelper dbHelper;
 
@@ -29,7 +32,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL(DATABASE_CREATE);
+        db.execSQL(NOTIFICATION_DATABASE_CREATE);
+        db.execSQL(Survey_RESULT_DATABASE_CREATE);
     }
 
     @Override
