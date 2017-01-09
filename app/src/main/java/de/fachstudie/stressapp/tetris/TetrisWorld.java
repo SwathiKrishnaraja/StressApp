@@ -84,6 +84,7 @@ public class TetrisWorld {
             freezeCurrentBlock();
             calculateScore();
             clearFullLines();
+            clearTetrisField();
             this.currentBlock = nextBlock;
             this.nextBlock = randomItem();
             this.resetCurrentBitmap();
@@ -94,8 +95,23 @@ public class TetrisWorld {
         }
     }
 
+    private void clearTetrisField() {
+        boolean cellIsOccupied = false;
+        for (int i = 0; i < occupancy[0].length; i++) {
+            if (occupancy[0][i] != 0) {
+                cellIsOccupied = true;
+                break;
+            }
+        }
+        if (cellIsOccupied) {
+            this.occupancy = new int[HEIGHT][WIDTH];
+            this.bitmaps = new Bitmap[HEIGHT][WIDTH];
+            score = 0;
+        }
+    }
+
     private void resetCurrentBitmap() {
-        if(nextBitmap == null) {
+        if (nextBitmap == null) {
             this.currentBitmap = null;
         }
     }
@@ -109,7 +125,7 @@ public class TetrisWorld {
     }
 
     private void setBitmaps() {
-        if(notificationsIndex == notifications.size()){
+        if (notificationsIndex == notifications.size()) {
             notifications.clear();
         }
 
