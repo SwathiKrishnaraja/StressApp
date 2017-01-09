@@ -14,7 +14,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             "( _id integer primary key autoincrement, content text, title text," +
             " application text, loaded text, timestamp datetime default current_timestamp)";
 
-    private static final String Survey_RESULT_DATABASE_CREATE = "CREATE TABLE survey_result " +
+    private static final String SURVEY_RESULT_DATABASE_CREATE = "CREATE TABLE survey_result " +
             "( _id integer primary key autoincrement, answers text)";
 
     private static DatabaseHelper dbHelper;
@@ -33,7 +33,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(NOTIFICATION_DATABASE_CREATE);
-        db.execSQL(Survey_RESULT_DATABASE_CREATE);
+        db.execSQL(SURVEY_RESULT_DATABASE_CREATE);
     }
 
     @Override
