@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -24,6 +25,8 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
     private long lastUpdate = -1;
     private long lastTouchDown = -1;
 
+    private Handler handler;
+
     public TetrisView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
@@ -33,7 +36,7 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
         p.setColor(Color.GREEN);
 
         this.model = new TetrisWorld(context);
-        this.model.addItem(new Block(2, 0, 0, 0));
+        this.model.addItem(new Block(3, 0, 0, 0));
         this.model.createNextItem();
     }
 
@@ -78,6 +81,17 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     public void draw(Canvas canvas) {
+        if(this.model.isGameOver()){
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    handler.sendEmptyMessage(0);
+                }
+            });
+
+            thread.setPause(true);
+        }
+
         if (this.model.isDropping()) {
             if (System.currentTimeMillis() - lastUpdate > 70 && lastUpdate != 0) {
                 dropping = this.model.gravityStep();
@@ -126,5 +140,14 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
                 e.printStackTrace();
             }
         }
+    }
+
+    public void setHandler(Handler handler) {
+        this.handler = handler;
+    }
+
+    public void startNewGame(){
+        this.model.startNewGame();
+        thread.setPause(false);
     }
 }

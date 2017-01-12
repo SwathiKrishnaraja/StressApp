@@ -54,6 +54,7 @@ public class TetrisWorld {
     private int gridSize;
     private boolean dropping = false;
     private boolean blockChange = false;
+    private boolean gameOver = false;
 
     private int notificationsIndex = 0;
     private List<StressNotification> notifications = new ArrayList<>();
@@ -85,28 +86,31 @@ public class TetrisWorld {
             calculateScore();
             clearFullLines();
             clearTetrisField();
-            this.currentBlock = nextBlock;
-            this.nextBlock = randomItem();
-            this.resetCurrentBitmap();
-            this.updateNotificationIsLoaded();
-            this.setBitmaps();
-            this.blockChange = true;
+
+            if(!gameOver) {
+                this.currentBlock = nextBlock;
+                this.nextBlock = randomItem();
+                this.resetCurrentBitmap();
+                this.updateNotificationIsLoaded();
+                this.setBitmaps();
+                this.blockChange = true;
+            }
             return false;
         }
     }
 
     private void clearTetrisField() {
+        int lowerBound = 3;
+        int upperBound = 7;
         boolean cellIsOccupied = false;
-        for (int i = 0; i < occupancy[0].length; i++) {
+        for (int i = lowerBound; i < upperBound; i++) {
             if (occupancy[0][i] != 0) {
                 cellIsOccupied = true;
                 break;
             }
         }
         if (cellIsOccupied) {
-            this.occupancy = new int[HEIGHT][WIDTH];
-            this.bitmaps = new Bitmap[HEIGHT][WIDTH];
-            score = 0;
+            gameOver = true;
         }
     }
 
@@ -198,7 +202,7 @@ public class TetrisWorld {
     private Block randomItem() {
         Random r = new Random();
         int number = r.nextInt(7);
-        int x = r.nextInt(3);
+        int x = 3;
         if (number == 0) {
             return new Block(x, 0, 0, 0, L);
         } else if (number == 1) {
@@ -495,4 +499,21 @@ public class TetrisWorld {
     public boolean isBlockChange() {
         return blockChange;
     }
+
+    public boolean isGameOver() {
+        return gameOver;
+    }
+
+    public void setGameOver(boolean gameOver) {
+        this.gameOver = gameOver;
+    }
+
+    public void startNewGame(){
+        occupancy = new int[HEIGHT][WIDTH];
+        bitmaps = new Bitmap[HEIGHT][WIDTH];
+        score = 0;
+        gameOver = false;
+    }
+
+
 }

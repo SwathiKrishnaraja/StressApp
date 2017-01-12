@@ -1,12 +1,16 @@
 package de.fachstudie.stressapp;
 
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -26,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
     private IntentFilter filter;
     private IntentFilter filterLock;
     private TetrisView tetrisView;
+    private AlertDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +40,29 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         tetrisView = (TetrisView) findViewById(R.id.tetrisview);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle("Game over").setMessage("Highscore:");
+
+        builder.setPositiveButton("Start new game", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.dismiss();
+                tetrisView.startNewGame();
+            }
+        });
+
+
+        dialog = builder.create();
+
+        Handler handler = new Handler(){
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+                dialog.show();
+            }
+        };
+
+        tetrisView.setHandler(handler);
 
         notificationReceiver = new NotificationReceiver();
         filter = new IntentFilter();

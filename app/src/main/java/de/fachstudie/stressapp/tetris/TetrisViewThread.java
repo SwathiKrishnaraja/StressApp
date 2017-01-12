@@ -10,6 +10,7 @@ public class TetrisViewThread extends Thread {
     private TetrisView view;
     private SurfaceHolder holder;
     private boolean run = false;
+    private boolean pause = false;
     private long lastUpdateTime = -1;
 
     public TetrisViewThread(TetrisView view, SurfaceHolder holder) {
@@ -24,7 +25,9 @@ public class TetrisViewThread extends Thread {
             try {
                 canvas = holder.lockCanvas();
                 synchronized (holder) {
-                    view.draw(canvas);
+                    if(!pause) {
+                        view.draw(canvas);
+                    }
                 }
             } finally {
                 if (canvas != null) {
@@ -33,6 +36,10 @@ public class TetrisViewThread extends Thread {
             }
             lastUpdateTime = System.currentTimeMillis();
         }
+    }
+
+    public void setPause(boolean pause) {
+        this.pause = pause;
     }
 
     public void setRunnable(boolean run) {
