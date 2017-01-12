@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
         tetrisView = (TetrisView) findViewById(R.id.tetrisview);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-        builder.setTitle("Game over").setMessage("Highscore:");
+        builder.setTitle("GAME OVER").setMessage("HIGHSCORE:");
 
         builder.setPositiveButton("Start new game", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {

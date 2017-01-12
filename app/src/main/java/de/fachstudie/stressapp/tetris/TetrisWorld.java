@@ -35,6 +35,7 @@ public class TetrisWorld {
     // Various specification
     private final int WIDTH = 10;
     private final int HEIGHT = 20;
+    private final int FULL_HEIGHT = 22;
     private final int PREVIEW_WIDTH = 4;
     private final int PADDING = 140;
     private final int TOP_PADDING = 160;
@@ -42,8 +43,8 @@ public class TetrisWorld {
     private final int TEXT_SIZE = 40;
 
     // Initialization of the tetris field
-    private int[][] occupancy = new int[HEIGHT][WIDTH];
-    private Bitmap[][] bitmaps = new Bitmap[HEIGHT][WIDTH];
+    private int[][] occupancy = new int[FULL_HEIGHT][WIDTH];
+    private Bitmap[][] bitmaps = new Bitmap[FULL_HEIGHT][WIDTH];
 
     private Block currentBlock;
     private Block nextBlock;
@@ -78,7 +79,8 @@ public class TetrisWorld {
         int[][] state = copy(occupancy);
         currentBlock.simulateStepDown(state);
         this.blockChange = false;
-        if (!hasOverlap(state) && currentBlock.getY() + currentBlock.getHeight() < HEIGHT) {
+
+        if (!hasOverlap(state) && currentBlock.getY() + currentBlock.getHeight() < FULL_HEIGHT) {
             currentBlock.stepDown();
             return true;
         } else {
@@ -87,7 +89,7 @@ public class TetrisWorld {
             clearFullLines();
             clearTetrisField();
 
-            if(!gameOver) {
+            if (!gameOver) {
                 this.currentBlock = nextBlock;
                 this.nextBlock = randomItem();
                 this.resetCurrentBitmap();
@@ -291,16 +293,16 @@ public class TetrisWorld {
 
         drawNextItem(canvas, p, previewGridSize);
 
-        for (int j = 0; j < occupancy.length; j++) {
+        for (int j = 2; j < occupancy.length; j++) {
             for (int i = 0; i < occupancy[j].length; i++) {
                 if (occupancy[j][i] != 0) {
                     setColorForShape(p, occupancy[j][i]);
-                    canvas.drawRect(i * gridSize + PADDING + 1, j * gridSize + TOP_PADDING + 1,
-                            (i + 1) * gridSize + PADDING - 1, (j + 1) * gridSize + TOP_PADDING -
+                    canvas.drawRect(i * gridSize + PADDING + 1, (j - 2) * gridSize + TOP_PADDING + 1,
+                            (i + 1) * gridSize + PADDING - 1, (j - 1) * gridSize + TOP_PADDING -
                                     1, p);
 
                     if (bitmaps[j][i] != null) {
-                        canvas.drawBitmap(bitmaps[j][i], i * gridSize + PADDING + 1, j * gridSize +
+                        canvas.drawBitmap(bitmaps[j][i], i * gridSize + PADDING + 1, (j - 2) * gridSize +
                                 TOP_PADDING +
                                 1, p);
                     }
@@ -310,19 +312,21 @@ public class TetrisWorld {
     }
 
     public void drawCurrentItem(Canvas canvas, Paint p, Block item) {
-        int currentY = item.getY();
-        int currentX = item.getX();
-        int currentWidth = item.getWidth();
-        int currentHeight = item.getHeight();
-        for (int j = item.getY(); j < currentY + currentHeight; j++) {
-            for (int i = item.getX(); i < currentX + currentWidth; i++) {
-                int yOffset = j - currentY;
-                int xOffset = i - currentX;
-                if (indexExists(yOffset, currentBlock.getShape()) && indexExists(xOffset, currentBlock.getShape()[yOffset])
-                        && item.getShape()[yOffset][xOffset] == 1) {
-                    canvas.drawRect(i * gridSize + PADDING + 1, j * gridSize + TOP_PADDING + 1,
-                            (i + 1) * gridSize + PADDING - 1,
-                            (j + 1) * gridSize + TOP_PADDING - 1, p);
+        if (item.getY() > 1) {
+            int currentY = item.getY();
+            int currentX = item.getX();
+            int currentWidth = item.getWidth();
+            int currentHeight = item.getHeight();
+            for (int j = item.getY(); j < currentY + currentHeight; j++) {
+                for (int i = item.getX(); i < currentX + currentWidth; i++) {
+                    int yOffset = j - currentY;
+                    int xOffset = i - currentX;
+                    if (indexExists(yOffset, currentBlock.getShape()) && indexExists(xOffset, currentBlock.getShape()[yOffset])
+                            && item.getShape()[yOffset][xOffset] == 1) {
+                        canvas.drawRect(i * gridSize + PADDING + 1, (j - 2) * gridSize + TOP_PADDING + 1,
+                                (i + 1) * gridSize + PADDING - 1,
+                                (j - 1) * gridSize + TOP_PADDING - 1, p);
+                    }
                 }
             }
         }
@@ -369,17 +373,19 @@ public class TetrisWorld {
     }
 
     public void drawShadow(Canvas canvas, Paint p, Block item) {
-        int oldY = item.getY();
-        int[][] state = copy(occupancy);
+        if (item.getY() > 1) {
+            int oldY = item.getY();
+            int[][] state = copy(occupancy);
 
-        while (true) {
-            item.simulateStepDown(state);
-            if (!hasOverlap(state) && item.getY() + item.getHeight() < HEIGHT) {
-                item.stepDown();
-            } else {
-                drawCurrentItem(canvas, p, item);
-                item.setY(oldY);
-                return;
+            while (true) {
+                item.simulateStepDown(state);
+                if (!hasOverlap(state) && item.getY() + item.getHeight() < FULL_HEIGHT) {
+                    item.stepDown();
+                } else {
+                    drawCurrentItem(canvas, p, item);
+                    item.setY(oldY);
+                    return;
+                }
             }
         }
     }
@@ -390,7 +396,7 @@ public class TetrisWorld {
 
         while (true) {
             currentBlock.simulateStepDown(state);
-            if (!hasOverlap(state) && currentBlock.getY() + currentBlock.getHeight() < HEIGHT) {
+            if (!hasOverlap(state) && currentBlock.getY() + currentBlock.getHeight() < FULL_HEIGHT) {
                 currentBlock.stepDown();
             } else {
                 dropping = false;
@@ -441,23 +447,25 @@ public class TetrisWorld {
     }
 
     public void drawIcon(Canvas canvas, Paint p) {
-        int canvasWidth = canvas.getWidth();
-        int canvasHeight = canvas.getHeight();
+        if (currentBlock.getY() > 1) {
+            int canvasWidth = canvas.getWidth();
+            int canvasHeight = canvas.getHeight();
 
-        int gridSize = (canvasWidth - 2 * PADDING) / WIDTH;
-        this.currentBitmap = getResizedBitmap(this.currentBitmap, gridSize, gridSize);
+            int gridSize = (canvasWidth - 2 * PADDING) / WIDTH;
+            this.currentBitmap = getResizedBitmap(this.currentBitmap, gridSize, gridSize);
 
-        for (int j = currentBlock.getY(); j < currentBlock.getY() + currentBlock.getHeight(); j++) {
-            for (int i = currentBlock.getX(); i < currentBlock.getX() + currentBlock.getWidth(); i++) {
+            for (int j = currentBlock.getY(); j < currentBlock.getY() + currentBlock.getHeight(); j++) {
+                for (int i = currentBlock.getX(); i < currentBlock.getX() + currentBlock.getWidth(); i++) {
 
-                int yOffset = j - currentBlock.getY();
-                int xOffset = i - currentBlock.getX();
-                if (indexExists(yOffset, currentBlock.getShape()) && indexExists(xOffset, currentBlock.getShape()[yOffset]) &&
-                        currentBlock
-                                .getShape()[yOffset][xOffset] == 1) {
-                    canvas.drawBitmap(this.currentBitmap, i * gridSize + PADDING + 1, j * gridSize +
-                            TOP_PADDING +
-                            1, p);
+                    int yOffset = j - currentBlock.getY();
+                    int xOffset = i - currentBlock.getX();
+                    if (indexExists(yOffset, currentBlock.getShape()) && indexExists(xOffset, currentBlock.getShape()[yOffset]) &&
+                            currentBlock
+                                    .getShape()[yOffset][xOffset] == 1) {
+                        canvas.drawBitmap(this.currentBitmap, i * gridSize + PADDING + 1, j * gridSize +
+                                TOP_PADDING +
+                                1, p);
+                    }
                 }
             }
         }
@@ -508,12 +516,17 @@ public class TetrisWorld {
         this.gameOver = gameOver;
     }
 
-    public void startNewGame(){
-        occupancy = new int[HEIGHT][WIDTH];
-        bitmaps = new Bitmap[HEIGHT][WIDTH];
+    public void startNewGame() {
+        occupancy = new int[FULL_HEIGHT][WIDTH];
+        bitmaps = new Bitmap[FULL_HEIGHT][WIDTH];
         score = 0;
         gameOver = false;
     }
 
-
+    public boolean isBlockVisible(){
+        if(currentBlock.getY() > 1){
+            return true;
+        }
+        return false;
+    }
 }

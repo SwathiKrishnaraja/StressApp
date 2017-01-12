@@ -11,7 +11,6 @@ public class TetrisViewThread extends Thread {
     private SurfaceHolder holder;
     private boolean run = false;
     private boolean pause = false;
-    private long lastUpdateTime = -1;
 
     public TetrisViewThread(TetrisView view, SurfaceHolder holder) {
         this.view = view;
@@ -34,7 +33,6 @@ public class TetrisViewThread extends Thread {
                     holder.unlockCanvasAndPost(canvas);
                 }
             }
-            lastUpdateTime = System.currentTimeMillis();
         }
     }
 

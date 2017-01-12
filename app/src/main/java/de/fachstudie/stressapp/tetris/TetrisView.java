@@ -24,6 +24,7 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
     private boolean dropping = false;
     private long lastUpdate = -1;
     private long lastTouchDown = -1;
+    private int gravityTime = 20;
 
     private Handler handler;
 
@@ -88,7 +89,6 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
                     handler.sendEmptyMessage(0);
                 }
             });
-
             thread.setPause(true);
         }
 
@@ -101,7 +101,9 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
             }
         }
 
-        if (System.currentTimeMillis() - lastUpdateTime > 350 || lastUpdateTime == -1) {
+        setGravityTime();
+
+        if (System.currentTimeMillis() - lastUpdateTime > gravityTime || lastUpdateTime == -1) {
             model.gravityStep();
             lastUpdateTime = System.currentTimeMillis();
         }
@@ -111,6 +113,14 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
 
             if(model.getCurrentBitmap() != null)
                 model.drawIcon(canvas, p);
+        }
+    }
+
+    private void setGravityTime() {
+        if(model.isBlockVisible()){
+            gravityTime = 350;
+        }else{
+            gravityTime = 20;
         }
     }
 
