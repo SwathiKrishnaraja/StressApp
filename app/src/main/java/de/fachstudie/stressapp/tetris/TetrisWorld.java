@@ -12,12 +12,12 @@ import android.graphics.drawable.Drawable;
 import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
 import de.fachstudie.stressapp.db.DatabaseService;
 import de.fachstudie.stressapp.model.StressNotification;
+import de.fachstudie.stressapp.tetris.utils.ArrayUtils;
 
 import static de.fachstudie.stressapp.tetris.Block.Shape.I;
 import static de.fachstudie.stressapp.tetris.Block.Shape.J;
@@ -26,6 +26,7 @@ import static de.fachstudie.stressapp.tetris.Block.Shape.S;
 import static de.fachstudie.stressapp.tetris.Block.Shape.SQUARE;
 import static de.fachstudie.stressapp.tetris.Block.Shape.T;
 import static de.fachstudie.stressapp.tetris.Block.Shape.Z;
+import static de.fachstudie.stressapp.tetris.utils.ArrayUtils.copy;
 import static de.fachstudie.stressapp.tetris.utils.ArrayUtils.indexExists;
 import static de.fachstudie.stressapp.tetris.utils.BitmapUtils.drawableToBitmap;
 import static de.fachstudie.stressapp.tetris.utils.ColorUtils.setColorForShape;
@@ -75,14 +76,20 @@ public class TetrisWorld {
         this.nextBlock = randomItem();
     }
 
-    public boolean gravityStep() {
+    public synchronized boolean gravityStep() {
         int[][] state = copy(occupancy);
         currentBlock.simulateStepDown(state);
         this.blockChange = false;
 
+        if (nextBitmap == null) {
+            notifications = dbService.getNotLoadedNotifications();
+            setNextBitmap();
+        }
+
         if (!hasOverlap(state) && currentBlock.getY() + currentBlock.getHeight() < FULL_HEIGHT) {
             currentBlock.stepDown();
             return true;
+
         } else {
             freezeCurrentBlock();
             calculateScore();
@@ -92,12 +99,26 @@ public class TetrisWorld {
             if (!gameOver) {
                 this.currentBlock = nextBlock;
                 this.nextBlock = randomItem();
-                this.resetCurrentBitmap();
-                this.updateNotificationIsLoaded();
                 this.setBitmaps();
                 this.blockChange = true;
             }
             return false;
+        }
+    }
+
+    private void setNextBitmap() {
+        if (!notifications.isEmpty()) {
+            StressNotification notification = notifications.get(0);
+            Drawable applicationIcon = null;
+            try {
+                applicationIcon = context.getPackageManager().getApplicationIcon(notification.getApplication());
+            } catch (PackageManager.NameNotFoundException e) {
+                e.printStackTrace();
+            }
+            Bitmap bitmap = drawableToBitmap(applicationIcon);
+            this.nextBitmap = bitmap;
+            notifications.remove(0);
+            this.updateNotificationIsLoaded(notification);
         }
     }
 
@@ -116,41 +137,21 @@ public class TetrisWorld {
         }
     }
 
-    private void resetCurrentBitmap() {
-        if (nextBitmap == null) {
+
+    private void setBitmaps() {
+        if (nextBitmap != null) {
+            this.currentBitmap = nextBitmap;
+            this.nextBitmap = null;
+            setNextBitmap();
+        } else {
             this.currentBitmap = null;
         }
     }
 
-    private void updateNotificationIsLoaded() {
-        if (notificationsIndex != 0) {
-            StressNotification notification = notifications.get(notificationsIndex - 1);
+    private void updateNotificationIsLoaded(StressNotification notification) {
+        if (notification != null) {
             notification.setLoaded(true);
             dbService.updateNotificationIsLoaded(notification);
-        }
-    }
-
-    private void setBitmaps() {
-        if (notificationsIndex == notifications.size()) {
-            notifications.clear();
-        }
-
-        if (!notifications.isEmpty()) {
-            try {
-                StressNotification notification = notifications.get(notificationsIndex);
-                Drawable applicationIcon = context.getPackageManager().getApplicationIcon(notification.getApplication());
-                Bitmap bitmap = drawableToBitmap(applicationIcon);
-
-                this.currentBitmap = nextBitmap;
-                this.nextBitmap = bitmap;
-                notificationsIndex++;
-            } catch (PackageManager.NameNotFoundException e) {
-            }
-
-        } else {
-            notifications = dbService.getNotLoadedNotifications();
-            notificationsIndex = 0;
-            this.nextBitmap = null;
         }
     }
 
@@ -228,8 +229,7 @@ public class TetrisWorld {
 
                 int yOffset = j - currentBlock.getY();
                 int xOffset = i - currentBlock.getX();
-                if (currentBlock.getShape()[yOffset][xOffset] == 1 && yOffset >= 0 && xOffset >= 0 &&
-                        indexExists(j, occupancy) && indexExists(i, occupancy[j])) {
+                if (currentBlock.getShape()[yOffset][xOffset] == 1) {
                     occupancy[j][i] = currentBlock.getType().getN();
                     bitmaps[j][i] = currentBitmap;
                 }
@@ -246,14 +246,6 @@ public class TetrisWorld {
             }
         }
         return false;
-    }
-
-    public int[][] copy(int[][] input) {
-        int[][] target = new int[input.length][];
-        for (int i = 0; i < input.length; i++) {
-            target[i] = Arrays.copyOf(input[i], input[i].length);
-        }
-        return target;
     }
 
     public void drawState(Canvas canvas, Paint p) {
@@ -289,8 +281,8 @@ public class TetrisWorld {
 
         // Then the actual block, so it obscures the shadow if necessary
         setColorForShape(p, currentBlock.getType());
-        drawCurrentItem(canvas, p, currentBlock);
 
+        drawCurrentItem(canvas, p, currentBlock);
         drawNextItem(canvas, p, previewGridSize);
 
         for (int j = 2; j < occupancy.length; j++) {
@@ -390,8 +382,7 @@ public class TetrisWorld {
         }
     }
 
-    public void hardDrop() {
-        int oldY = currentBlock.getY();
+    public synchronized void hardDrop() {
         int[][] state = copy(occupancy);
 
         while (true) {
@@ -423,7 +414,7 @@ public class TetrisWorld {
     }
 
     public void moveRight() {
-        int[][] state = copy(occupancy);
+        int[][] state = ArrayUtils.copy(occupancy);
         this.currentBlock.simulateStepRight(state);
 
         if (!hasOverlap(state)) {
@@ -462,9 +453,8 @@ public class TetrisWorld {
                     if (indexExists(yOffset, currentBlock.getShape()) && indexExists(xOffset, currentBlock.getShape()[yOffset]) &&
                             currentBlock
                                     .getShape()[yOffset][xOffset] == 1) {
-                        canvas.drawBitmap(this.currentBitmap, i * gridSize + PADDING + 1, j * gridSize +
-                                TOP_PADDING +
-                                1, p);
+                        canvas.drawBitmap(this.currentBitmap, i * gridSize + PADDING + 1,
+                                (j - 2) * gridSize + TOP_PADDING + 1, p);
                     }
                 }
             }
@@ -523,10 +513,12 @@ public class TetrisWorld {
         gameOver = false;
     }
 
-    public boolean isBlockVisible(){
-        if(currentBlock.getY() > 1){
+    public boolean isBlockVisible() {
+        if (currentBlock.getY() > 1) {
             return true;
         }
         return false;
     }
+
+
 }

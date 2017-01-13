@@ -4,8 +4,6 @@ import android.util.Log;
 
 import de.fachstudie.stressapp.tetris.constants.BlockConfigurations;
 
-import static de.fachstudie.stressapp.tetris.utils.ArrayUtils.indexExists;
-
 public class Block extends Item {
 
     private final int[][] shift;
@@ -116,11 +114,8 @@ public class Block extends Item {
 
                 int yOffset = j - currentY;
                 int xOffset = i - currentX;
-                if (indexExists(yOffset, getShape()) && indexExists(xOffset, getShape()[yOffset])
-                        && getShape()[yOffset][xOffset] == 1) {
-                    if (j >= 0 && i >= 0 && state[j][i] > 0) {
-                        state[j][i] = -1;
-                    }
+                if (getShape()[yOffset][xOffset] == 1 && state[j][i] > 0) {
+                    state[j][i] = -1;
                 }
             }
         }

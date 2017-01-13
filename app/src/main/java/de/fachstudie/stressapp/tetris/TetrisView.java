@@ -49,14 +49,17 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
             }
             if (dropping && System.currentTimeMillis() - lastTouchDown < 150 && !this.model.isBlockChange()) {
                 this.model.hardDrop();
+
             } else if(dropping) {
                 this.model.stopDropping();
             }
             swiping = false;
             dropping = false;
+
         } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
             lastTouchX = event.getX();
             lastTouchY = event.getY();
+
         } else if (event.getAction() == MotionEvent.ACTION_MOVE) {
             if (lastTouchX - event.getX() > 50 && lastTouchX != -1 && !dropping) {
                 Log.d("Left", event.getX() + "");
@@ -103,7 +106,7 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
 
         setGravityTime();
 
-        if (System.currentTimeMillis() - lastUpdateTime > gravityTime || lastUpdateTime == -1) {
+        if (!model.isDropping() && (System.currentTimeMillis() - lastUpdateTime > gravityTime || lastUpdateTime == -1)) {
             model.gravityStep();
             lastUpdateTime = System.currentTimeMillis();
         }
