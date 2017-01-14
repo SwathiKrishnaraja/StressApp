@@ -4,7 +4,9 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -89,7 +91,12 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
             handler.post(new Runnable() {
                 @Override
                 public void run() {
-                    handler.sendEmptyMessage(0);
+                    final Message msg = new Message();
+                    final Bundle bundle = new Bundle();
+                    model.saveScore();
+                    bundle.putInt("highscore", model.getHighScore());
+                    msg.setData(bundle);
+                    handler.sendMessage(msg);
                 }
             });
             thread.setPause(true);

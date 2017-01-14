@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
         tetrisView = (TetrisView) findViewById(R.id.tetrisview);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-        builder.setTitle("GAME OVER").setMessage("HIGHSCORE:");
+        builder.setTitle("GAME OVER");
 
         builder.setPositiveButton("Start new game", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
@@ -58,6 +58,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
+                Bundle data = msg.getData();
+                dialog.setMessage("HIGHSCORE: " + data.getInt("highscore"));
                 dialog.show();
             }
         };
@@ -138,6 +140,7 @@ public class MainActivity extends AppCompatActivity {
             values.put(StressNotification.NotificationEntry.LOADED, "false");
             values.put(StressNotification.NotificationEntry.TIMESTAMP, timestamp);
             db.insert(StressNotification.NotificationEntry.TABLE_NAME, null, values);
+            db.close();
         }
     }
 

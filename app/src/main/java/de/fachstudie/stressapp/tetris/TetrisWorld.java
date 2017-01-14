@@ -5,7 +5,6 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
@@ -13,22 +12,16 @@ import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import de.fachstudie.stressapp.db.DatabaseService;
 import de.fachstudie.stressapp.model.StressNotification;
 import de.fachstudie.stressapp.tetris.utils.ArrayUtils;
 
-import static de.fachstudie.stressapp.tetris.Block.Shape.I;
-import static de.fachstudie.stressapp.tetris.Block.Shape.J;
-import static de.fachstudie.stressapp.tetris.Block.Shape.L;
-import static de.fachstudie.stressapp.tetris.Block.Shape.S;
-import static de.fachstudie.stressapp.tetris.Block.Shape.SQUARE;
-import static de.fachstudie.stressapp.tetris.Block.Shape.T;
-import static de.fachstudie.stressapp.tetris.Block.Shape.Z;
+import static de.fachstudie.stressapp.tetris.Block.randomItem;
 import static de.fachstudie.stressapp.tetris.utils.ArrayUtils.copy;
 import static de.fachstudie.stressapp.tetris.utils.ArrayUtils.indexExists;
 import static de.fachstudie.stressapp.tetris.utils.BitmapUtils.drawableToBitmap;
+import static de.fachstudie.stressapp.tetris.utils.BitmapUtils.getResizedBitmap;
 import static de.fachstudie.stressapp.tetris.utils.ColorUtils.setColorForShape;
 
 public class TetrisWorld {
@@ -200,27 +193,6 @@ public class TetrisWorld {
             }
         }
         return fullLines;
-    }
-
-    private Block randomItem() {
-        Random r = new Random();
-        int number = r.nextInt(7);
-        int x = 3;
-        if (number == 0) {
-            return new Block(x, 0, 0, 0, L);
-        } else if (number == 1) {
-            return new Block(x, 0, 0, 0, T);
-        } else if (number == 2) {
-            return new Block(x, 0, 0, 0, SQUARE);
-        } else if (number == 3) {
-            return new Block(x, 0, 0, 0, I);
-        } else if (number == 4) {
-            return new Block(x, 0, 0, 0, J);
-        } else if (number == 5) {
-            return new Block(x, 0, 0, 0, S);
-        } else {
-            return new Block(x, 0, 0, 0, Z);
-        }
     }
 
     private void freezeCurrentBlock() {
@@ -409,10 +381,6 @@ public class TetrisWorld {
         }
     }
 
-    public void drop() {
-        dropping = true;
-    }
-
     public void moveRight() {
         int[][] state = ArrayUtils.copy(occupancy);
         this.currentBlock.simulateStepRight(state);
@@ -461,25 +429,33 @@ public class TetrisWorld {
         }
     }
 
-
-    private Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight) {
-        int width = bm.getWidth();
-        int height = bm.getHeight();
-        float scaleWidth = ((float) newWidth) / width;
-        float scaleHeight = ((float) newHeight) / height;
-        // CREATE A MATRIX FOR THE MANIPULATION
-        Matrix matrix = new Matrix();
-        // RESIZE THE BIT MAP
-        matrix.postScale(scaleWidth, scaleHeight);
-
-        // "RECREATE" THE NEW BITMAP
-        Bitmap resizedBitmap = Bitmap.createBitmap(
-                bm, 0, 0, width, height, matrix, false);
-        return resizedBitmap;
+    public void startNewGame() {
+        occupancy = new int[FULL_HEIGHT][WIDTH];
+        bitmaps = new Bitmap[FULL_HEIGHT][WIDTH];
+        score = 0;
+        gameOver = false;
     }
 
-    public Bitmap getCurrentBitmap() {
-        return currentBitmap;
+    public boolean isBlockVisible() {
+        if (currentBlock.getY() > 1) {
+            return true;
+        }
+        return false;
+    }
+
+    public int getHighScore() {
+        int score = dbService.getHighScore();
+        return (score != 0 ? score : 0);
+    }
+
+    public void saveScore() {
+        if (score != 0) {
+            dbService.saveScore(score);
+        }
+    }
+
+    public void drop() {
+        dropping = true;
     }
 
     public void stopDropping() {
@@ -506,19 +482,7 @@ public class TetrisWorld {
         this.gameOver = gameOver;
     }
 
-    public void startNewGame() {
-        occupancy = new int[FULL_HEIGHT][WIDTH];
-        bitmaps = new Bitmap[FULL_HEIGHT][WIDTH];
-        score = 0;
-        gameOver = false;
+    public Bitmap getCurrentBitmap() {
+        return currentBitmap;
     }
-
-    public boolean isBlockVisible() {
-        if (currentBlock.getY() > 1) {
-            return true;
-        }
-        return false;
-    }
-
-
 }

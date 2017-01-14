@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import de.fachstudie.stressapp.model.Score;
 import de.fachstudie.stressapp.model.StressNotification;
 import de.fachstudie.stressapp.model.SurveyResult;
 
@@ -31,17 +32,40 @@ public class DatabaseService {
     private final String[] surveyResultColumns = {SurveyResult.SurveyResultEntry._ID,
             SurveyResult.SurveyResultEntry.ANSWERS};
 
-    private final String SELECT_QUERY = "SELECT * FROM " + StressNotification.NotificationEntry
+    private final String NOTIFICATION_SELECT_QUERY = "SELECT * FROM " + StressNotification.NotificationEntry
             .TABLE_NAME + " WHERE " + StressNotification.NotificationEntry.LOADED + " = ?" +
             " ORDER BY " + StressNotification.NotificationEntry.TIMESTAMP + " ASC";
 
-    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private final String SCORE_SELECT_QUERY = "SELECT MAX("+ Score.ScoreEntry.VALUE + ") AS " +
+            Score.ScoreEntry.VALUE + " FROM " + Score.ScoreEntry.TABLE_NAME;
 
+    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     private DatabaseHelper dbHelper;
 
     public DatabaseService(Context context) {
         dbHelper = DatabaseHelper.getInstance(context);
+    }
+
+    public int getHighScore() {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cursor c = db.rawQuery(SCORE_SELECT_QUERY, null);
+        int score = 0;
+
+        if (c != null && c.moveToFirst()) {
+            score = c.getInt(c.getColumnIndex(Score.ScoreEntry.VALUE));
+        }
+
+        closeDatabaseComponents(db, c);
+        return score;
+    }
+
+    public void saveScore(int score) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        ContentValues value = new ContentValues();
+        value.put(Score.ScoreEntry.VALUE, score);
+        db.insert(Score.ScoreEntry.TABLE_NAME, null, value);
+        db.close();
     }
 
     public List<SurveyResult> getSurveyResults() {
@@ -72,7 +96,7 @@ public class DatabaseService {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
         String[] selectionArgs = {"false"};
-        Cursor c = db.rawQuery(SELECT_QUERY, selectionArgs);
+        Cursor c = db.rawQuery(NOTIFICATION_SELECT_QUERY, selectionArgs);
 
         addNotifications(notifications, c);
         closeDatabaseComponents(db, c);

@@ -2,7 +2,18 @@ package de.fachstudie.stressapp.tetris;
 
 import android.util.Log;
 
+import java.util.Random;
+
 import de.fachstudie.stressapp.tetris.constants.BlockConfigurations;
+
+import static de.fachstudie.stressapp.tetris.Block.Shape.I;
+import static de.fachstudie.stressapp.tetris.Block.Shape.J;
+import static de.fachstudie.stressapp.tetris.Block.Shape.L;
+import static de.fachstudie.stressapp.tetris.Block.Shape.S;
+import static de.fachstudie.stressapp.tetris.Block.Shape.SQUARE;
+import static de.fachstudie.stressapp.tetris.Block.Shape.T;
+import static de.fachstudie.stressapp.tetris.Block.Shape.Z;
+import static de.fachstudie.stressapp.tetris.utils.ArrayUtils.indexExists;
 
 public class Block extends Item {
 
@@ -114,8 +125,11 @@ public class Block extends Item {
 
                 int yOffset = j - currentY;
                 int xOffset = i - currentX;
-                if (getShape()[yOffset][xOffset] == 1 && state[j][i] > 0) {
-                    state[j][i] = -1;
+                if (indexExists(yOffset, getShape()) && indexExists(xOffset, getShape()[yOffset])
+                        && getShape()[yOffset][xOffset] == 1) {
+                    if (j >= 0 && i >= 0 && state[j][i] > 0) {
+                        state[j][i] = -1;
+                    }
                 }
             }
         }
@@ -137,6 +151,27 @@ public class Block extends Item {
         this.moveLeft();
         computeOverlaps(state);
         this.moveRight();
+    }
+
+    public static Block randomItem() {
+        Random r = new Random();
+        int number = r.nextInt(7);
+        int x = 3;
+        if (number == 0) {
+            return new Block(x, 0, 0, 0, L);
+        } else if (number == 1) {
+            return new Block(x, 0, 0, 0, T);
+        } else if (number == 2) {
+            return new Block(x, 0, 0, 0, SQUARE);
+        } else if (number == 3) {
+            return new Block(x, 0, 0, 0, I);
+        } else if (number == 4) {
+            return new Block(x, 0, 0, 0, J);
+        } else if (number == 5) {
+            return new Block(x, 0, 0, 0, S);
+        } else {
+            return new Block(x, 0, 0, 0, Z);
+        }
     }
 
     public enum Shape {
