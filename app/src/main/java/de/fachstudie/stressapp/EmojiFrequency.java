@@ -11,18 +11,29 @@ import java.util.Map;
  */
 
 public class EmojiFrequency extends EmojiParser {
-    private Map<Emoji, Integer> frequencies;
+    private static final String DELIMITER = ",";
+    private static Map<Emoji, Integer> frequencies;
 
     public EmojiFrequency(){
         frequencies = new HashMap<>();
     }
 
-    public Map<Emoji, Integer> getEmojiFrequenciesFromText(String text){
-        for(UnicodeCandidate uc: getUnicodeCandidates(text)){
+    public static Map<Emoji, Integer> getEmoticons(String content){
+        for(UnicodeCandidate uc: getUnicodeCandidates(content)){
             Emoji emoji = uc.getEmoji();
             Integer previous = frequencies.get(emoji);
             frequencies.put(emoji, previous != null ? previous + 1 : 1);
         }
         return frequencies;
+    }
+
+    public static String getCommaSeparatedEmoticons(String content){
+        StringBuilder builder = new StringBuilder();
+        for(UnicodeCandidate uc: getUnicodeCandidates(content)){
+            Emoji emoji = uc.getEmoji();
+            builder.append(emoji.getUnicode());
+            builder.append(DELIMITER);
+        }
+        return builder.toString();
     }
 }

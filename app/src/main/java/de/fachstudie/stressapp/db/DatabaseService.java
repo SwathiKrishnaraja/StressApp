@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import de.fachstudie.stressapp.EmojiFrequency;
 import de.fachstudie.stressapp.model.Score;
 import de.fachstudie.stressapp.model.StressNotification;
 import de.fachstudie.stressapp.model.SurveyResult;
@@ -25,9 +26,10 @@ public class DatabaseService {
     private final String[] notificationColumns = {StressNotification.NotificationEntry._ID,
             StressNotification.NotificationEntry.TITLE,
             StressNotification.NotificationEntry.APPLICATION,
+            StressNotification.NotificationEntry.CONTENT_LENGTH,
+            StressNotification.NotificationEntry.EMOTICONS,
             StressNotification.NotificationEntry.LOADED,
-            StressNotification.NotificationEntry.TIMESTAMP,
-            StressNotification.NotificationEntry.CONTENT};
+            StressNotification.NotificationEntry.TIMESTAMP};
 
     private final String[] surveyResultColumns = {SurveyResult.SurveyResultEntry._ID,
             SurveyResult.SurveyResultEntry.ANSWERS};
@@ -36,7 +38,7 @@ public class DatabaseService {
             .TABLE_NAME + " WHERE " + StressNotification.NotificationEntry.LOADED + " = ?" +
             " ORDER BY " + StressNotification.NotificationEntry.TIMESTAMP + " ASC";
 
-    private final String SCORE_SELECT_QUERY = "SELECT MAX("+ Score.ScoreEntry.VALUE + ") AS " +
+    private final String SCORE_SELECT_QUERY = "SELECT MAX(" + Score.ScoreEntry.VALUE + ") AS " +
             Score.ScoreEntry.VALUE + " FROM " + Score.ScoreEntry.TABLE_NAME;
 
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -123,10 +125,12 @@ public class DatabaseService {
 
                 String title = c.getString(c.getColumnIndex(StressNotification.NotificationEntry
                         .TITLE));
-                String content = c.getString(c.getColumnIndex(StressNotification.NotificationEntry
-                        .CONTENT));
                 String application = c.getString(c.getColumnIndex(StressNotification
                         .NotificationEntry.APPLICATION));
+                int contentLength = c.getInt(c.getColumnIndex(StressNotification.NotificationEntry
+                        .CONTENT_LENGTH));
+                String emoticons = c.getString(c.getColumnIndex(StressNotification.NotificationEntry.
+                        EMOTICONS));
                 String timeStampText = c.getString(c.getColumnIndex(StressNotification
                         .NotificationEntry
                         .TIMESTAMP));
@@ -137,7 +141,8 @@ public class DatabaseService {
                         c.getColumnIndex(StressNotification.NotificationEntry.LOADED))));
 
                 StressNotification notification = new StressNotification(id, title, application,
-                        content, timeStampDate, loaded);
+                        contentLength, EmojiFrequency.getEmoticons(emoticons),
+                        loaded, timeStampDate);
                 notifications.add(notification);
             }
         }

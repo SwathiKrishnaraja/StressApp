@@ -2,7 +2,10 @@ package de.fachstudie.stressapp.model;
 
 import android.provider.BaseColumns;
 
+import com.vdurmont.emoji.Emoji;
+
 import java.util.Date;
+import java.util.Map;
 
 /**
  * Created by Paul Kuznecov on 13.11.2016.
@@ -12,18 +15,20 @@ public class StressNotification {
     private int id;
     private String title;
     private String application;
-    private String content;
-    private Date timestamp;
+    private int contentLength;
+    private Map<Emoji, Integer> emoticons;
     private boolean loaded;
+    private Date timestamp;
 
-    public StressNotification(int id, String title, String application, String content,
-                              Date timestamp, boolean loaded) {
+    public StressNotification(int id, String title, String application, int contentLength,
+                              Map<Emoji, Integer> emoticons, boolean loaded, Date timestamp) {
         this.id = id;
         this.title = title;
         this.application = application;
-        this.content = content;
-        this.timestamp = timestamp;
+        this.contentLength = contentLength;
+        this.emoticons = emoticons;
         this.loaded = loaded;
+        this.timestamp = timestamp;
     }
 
     public int getId() {
@@ -46,20 +51,24 @@ public class StressNotification {
         this.application = application;
     }
 
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
     public Date getTimestamp() {
         return timestamp;
     }
 
     public void setTimestamp(Date timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public int getContentLength() {
+        return contentLength;
+    }
+
+    public void setContentLength(int contentLength) {
+        this.contentLength = contentLength;
+    }
+
+    public Map<Emoji, Integer> getEmoticons() {
+        return emoticons;
     }
 
     public boolean isLoaded() {
@@ -73,9 +82,10 @@ public class StressNotification {
     public static class NotificationEntry implements BaseColumns {
         public static final String TABLE_NAME = "notification";
         public static final String TITLE = "title";
-        public static final String CONTENT = "content";
         public static final String APPLICATION = "application";
         public static final String TIMESTAMP = "timestamp";
+        public static final String CONTENT_LENGTH = "content_length";
+        public static final String EMOTICONS = "emoticons";
         public static final String LOADED = "loaded";
     }
 }

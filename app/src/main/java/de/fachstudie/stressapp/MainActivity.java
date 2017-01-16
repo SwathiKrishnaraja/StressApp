@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
 
         dialog = builder.create();
 
-        Handler handler = new Handler(){
+        Handler handler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
@@ -135,7 +135,9 @@ public class MainActivity extends AppCompatActivity {
             SQLiteDatabase db = dbHelper.getWritableDatabase();
             ContentValues values = new ContentValues();
             values.put(StressNotification.NotificationEntry.TITLE, title);
-            values.put(StressNotification.NotificationEntry.CONTENT, content);
+            values.put(StressNotification.NotificationEntry.CONTENT_LENGTH, content.length());
+            values.put(StressNotification.NotificationEntry.EMOTICONS,
+                    EmojiFrequency.getCommaSeparatedEmoticons(content));
             values.put(StressNotification.NotificationEntry.APPLICATION, application);
             values.put(StressNotification.NotificationEntry.LOADED, "false");
             values.put(StressNotification.NotificationEntry.TIMESTAMP, timestamp);
