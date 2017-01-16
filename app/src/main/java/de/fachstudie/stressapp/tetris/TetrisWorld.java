@@ -201,7 +201,8 @@ public class TetrisWorld {
 
                 int yOffset = j - currentBlock.getY();
                 int xOffset = i - currentBlock.getX();
-                if (currentBlock.getShape()[yOffset][xOffset] == 1) {
+                if ( indexExists(j, occupancy) && indexExists(i, occupancy[j]) &&
+                        currentBlock.getShape()[yOffset][xOffset] == 1) {
                     occupancy[j][i] = currentBlock.getType().getN();
                     bitmaps[j][i] = currentBitmap;
                 }

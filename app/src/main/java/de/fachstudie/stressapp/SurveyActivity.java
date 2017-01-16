@@ -32,7 +32,7 @@ public class SurveyActivity extends AppCompatActivity {
 
         Intent i_survey = new Intent(SurveyActivity.this, com.androidadvance.androidsurvey.SurveyActivity.class);
         //you have to pass as an extra the json string.
-        i_survey.putExtra("json_survey", loadSurveyJson("example_survey.json"));
+        i_survey.putExtra("json_survey", loadSurveyJson("survey.json"));
         startActivityForResult(i_survey, SURVEY_REQUEST);
     }
 
@@ -52,9 +52,9 @@ public class SurveyActivity extends AppCompatActivity {
                 values.put(SurveyResult.SurveyResultEntry.ANSWERS, answers);
                 db.insert(SurveyResult.SurveyResultEntry.TABLE_NAME, null, values);
                 db.close();
-                finish();
             }
         }
+        finish();
     }
 
     private List<String> getSurveyAnswers(String answers_json) {
