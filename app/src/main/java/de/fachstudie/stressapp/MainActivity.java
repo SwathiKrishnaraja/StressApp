@@ -9,6 +9,7 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -24,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
     private IntentFilter filter;
     private IntentFilter filterLock;
     private TetrisView tetrisView;
-    private AlertDialog dialog;
+    private AlertDialog gameOverDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,28 +36,9 @@ public class MainActivity extends AppCompatActivity {
 
         tetrisView = (TetrisView) findViewById(R.id.tetrisview);
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-        builder.setTitle("GAME OVER");
+        createGameOverDialog();
 
-        builder.setPositiveButton("Start new game", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                dialog.dismiss();
-                tetrisView.startNewGame();
-            }
-        });
-
-
-        dialog = builder.create();
-
-        Handler handler = new Handler() {
-            @Override
-            public void handleMessage(Message msg) {
-                super.handleMessage(msg);
-                Bundle data = msg.getData();
-                dialog.setMessage("HIGHSCORE: " + data.getInt("highscore"));
-                dialog.show();
-            }
-        };
+        Handler handler = createGameOverHandler();
 
         tetrisView.setHandler(handler);
 
@@ -71,6 +53,34 @@ public class MainActivity extends AppCompatActivity {
         filterLock.addAction(Intent.ACTION_SCREEN_OFF);
         filterLock.addAction(Intent.ACTION_USER_PRESENT);
         registerReceiver(lockScreenReceiver, filterLock);
+    }
+
+    @NonNull
+    private Handler createGameOverHandler() {
+        return new Handler() {
+                @Override
+                public void handleMessage(Message msg) {
+                    super.handleMessage(msg);
+                    Bundle data = msg.getData();
+                    gameOverDialog.setMessage("HIGHSCORE: " + data.getInt("highscore"));
+                    gameOverDialog.show();
+                }
+            };
+    }
+
+    private void createGameOverDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle("GAME OVER");
+
+        builder.setPositiveButton("Start new game", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.dismiss();
+                tetrisView.startNewGame();
+            }
+        });
+
+
+        gameOverDialog = builder.create();
     }
 
     @Override

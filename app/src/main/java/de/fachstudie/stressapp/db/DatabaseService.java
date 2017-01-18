@@ -40,7 +40,7 @@ public class DatabaseService {
             .TABLE_NAME + " WHERE " + StressNotification.NotificationEntry.LOADED + " = ?" +
             " ORDER BY " + StressNotification.NotificationEntry.TIMESTAMP + " ASC";
 
-    private static final String SCORE_SELECT_QUERY = "SELECT MAX(" + Score.ScoreEntry.VALUE + ") AS " +
+    private final String SCORE_SELECT_QUERY = "SELECT MAX(" + Score.ScoreEntry.VALUE + ") AS " +
             Score.ScoreEntry.VALUE + " FROM " + Score.ScoreEntry.TABLE_NAME;
 
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -60,7 +60,7 @@ public class DatabaseService {
         dbHelper = DatabaseHelper.getInstance(context);
     }
 
-    public static int getHighScore() {
+    public int getHighScore() {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         Cursor c = db.rawQuery(SCORE_SELECT_QUERY, null);
         int score = 0;
@@ -208,7 +208,7 @@ public class DatabaseService {
         return timeStampDate;
     }
 
-    private static void closeDatabaseComponents(SQLiteDatabase db, Cursor c) {
+    private void closeDatabaseComponents(SQLiteDatabase db, Cursor c) {
         c.close();
         db.close();
     }
