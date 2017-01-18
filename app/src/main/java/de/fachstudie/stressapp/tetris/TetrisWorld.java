@@ -58,7 +58,7 @@ public class TetrisWorld {
 
     public TetrisWorld(Context context) {
         this.context = context;
-        dbService = new DatabaseService(this.context);
+        dbService = DatabaseService.getInstance(this.context);
     }
 
     public void addItem(Block item) {

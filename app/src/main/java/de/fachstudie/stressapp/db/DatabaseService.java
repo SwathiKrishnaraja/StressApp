@@ -2,8 +2,10 @@ package de.fachstudie.stressapp.db;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -38,18 +40,27 @@ public class DatabaseService {
             .TABLE_NAME + " WHERE " + StressNotification.NotificationEntry.LOADED + " = ?" +
             " ORDER BY " + StressNotification.NotificationEntry.TIMESTAMP + " ASC";
 
-    private final String SCORE_SELECT_QUERY = "SELECT MAX(" + Score.ScoreEntry.VALUE + ") AS " +
+    private static final String SCORE_SELECT_QUERY = "SELECT MAX(" + Score.ScoreEntry.VALUE + ") AS " +
             Score.ScoreEntry.VALUE + " FROM " + Score.ScoreEntry.TABLE_NAME;
 
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-    private DatabaseHelper dbHelper;
+    private static DatabaseService dbService;
+    private static DatabaseHelper dbHelper;
 
-    public DatabaseService(Context context) {
+
+    public static synchronized DatabaseService getInstance(Context context) {
+        if (dbService == null) {
+            dbService = new DatabaseService(context.getApplicationContext());
+        }
+        return dbService;
+    }
+
+    private DatabaseService(Context context) {
         dbHelper = DatabaseHelper.getInstance(context);
     }
 
-    public int getHighScore() {
+    public static int getHighScore() {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         Cursor c = db.rawQuery(SCORE_SELECT_QUERY, null);
         int score = 0;
@@ -79,6 +90,29 @@ public class DatabaseService {
         addAnswers(results, c);
         closeDatabaseComponents(db, c);
         return results;
+    }
+
+    public void saveNotification(Intent intent){
+        String title = intent.getStringExtra("title");
+        String content = intent.getStringExtra("content");
+        String application = intent.getStringExtra("application");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String timestamp = dateFormat.format(new Date());
+
+        Log.d("Title", title);
+        Log.d("Received Notification", application);
+
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(StressNotification.NotificationEntry.TITLE, title);
+        values.put(StressNotification.NotificationEntry.CONTENT_LENGTH, content.length());
+        values.put(StressNotification.NotificationEntry.EMOTICONS,
+                EmojiFrequency.getCommaSeparatedEmoticons(content));
+        values.put(StressNotification.NotificationEntry.APPLICATION, application);
+        values.put(StressNotification.NotificationEntry.LOADED, "false");
+        values.put(StressNotification.NotificationEntry.TIMESTAMP, timestamp);
+        db.insert(StressNotification.NotificationEntry.TABLE_NAME, null, values);
+        db.close();
     }
 
     public List<StressNotification> getNotifications() {
@@ -174,7 +208,7 @@ public class DatabaseService {
         return timeStampDate;
     }
 
-    private void closeDatabaseComponents(SQLiteDatabase db, Cursor c) {
+    private static void closeDatabaseComponents(SQLiteDatabase db, Cursor c) {
         c.close();
         db.close();
     }
