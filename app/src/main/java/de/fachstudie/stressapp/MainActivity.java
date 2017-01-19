@@ -69,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
         filterLock.addAction(Intent.ACTION_USER_PRESENT);
         registerReceiver(lockScreenReceiver, filterLock);
 
+<<<<<<< HEAD
         receiversCreated = true;
     }
 
@@ -99,6 +100,8 @@ public class MainActivity extends AppCompatActivity {
 
         permissionDialog = builder.create();
         permissionDialog.show();
+=======
+>>>>>>> db669884e472c904be7ec6bfd36ab205ee3269e7
         new SendTask().execute(this);
     }
 
