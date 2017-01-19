@@ -80,7 +80,6 @@ public class DatabaseService {
         ContentValues value = new ContentValues();
         value.put(Score.ScoreEntry.VALUE, score);
         db.insert(Score.ScoreEntry.TABLE_NAME, null, value);
-        db.close();
     }
 
     public List<SurveyResult> getSurveyResults() {
@@ -116,7 +115,6 @@ public class DatabaseService {
         values.put(StressNotification.NotificationEntry.TIMESTAMP, timestamp);
         values.put(StressNotification.NotificationEntry.EVENT, event);
         db.insert(StressNotification.NotificationEntry.TABLE_NAME, null, values);
-        db.close();
     }
 
     public List<StressNotification> getNotifications() {
