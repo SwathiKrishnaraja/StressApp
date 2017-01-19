@@ -44,7 +44,6 @@ public class MainActivity extends AppCompatActivity {
 
         tetrisView = (TetrisView) findViewById(R.id.tetrisview);
         tetrisView.setHandler(handler);
-
         tetrisView.pauseGame();
 
         if (!isNLServiceRunning()) {

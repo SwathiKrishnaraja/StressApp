@@ -71,7 +71,7 @@ public class DatabaseService {
             score = c.getInt(c.getColumnIndex(Score.ScoreEntry.VALUE));
         }
 
-        closeDatabaseComponents(db, c);
+        closeDatabaseComponents(c);
         return score;
     }
 
@@ -90,7 +90,7 @@ public class DatabaseService {
                 null, null, null, null);
 
         addAnswers(results, c);
-        closeDatabaseComponents(db, c);
+        closeDatabaseComponents(c);
         return results;
     }
 
@@ -125,7 +125,7 @@ public class DatabaseService {
                 null, null, null, null);
 
         addNotifications(notifications, c);
-        closeDatabaseComponents(db, c);
+        closeDatabaseComponents(c);
         return notifications;
     }
 
@@ -138,7 +138,7 @@ public class DatabaseService {
         Cursor c = db.rawQuery(NOTIFICATION_SELECT_QUERY, selectionArgs);
 
         addNotifications(notifications, c);
-        closeDatabaseComponents(db, c);
+        closeDatabaseComponents(c);
         return notifications;
     }
 
@@ -212,9 +212,8 @@ public class DatabaseService {
         return timeStampDate;
     }
 
-    private void closeDatabaseComponents(SQLiteDatabase db, Cursor c) {
+    private void closeDatabaseComponents(Cursor c) {
         c.close();
-        db.close();
     }
 
     public void saveScreenEvent(String event) {
