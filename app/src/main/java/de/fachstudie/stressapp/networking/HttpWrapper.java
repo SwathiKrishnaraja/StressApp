@@ -4,6 +4,8 @@ import android.content.Context;
 import android.provider.Settings;
 import android.util.Log;
 
+import org.json.JSONObject;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -17,6 +19,7 @@ import java.security.KeyStore;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.util.UUID;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
@@ -61,7 +64,7 @@ public class HttpWrapper {
         return sslContext.getSocketFactory();
     }
 
-    public static boolean doPost(Context context, String body) {
+    public static boolean doPost(Context context, JSONObject body) {
         HttpsURLConnection client = null;
         try {
             SSLSocketFactory sslSocketFactory = getSocketFactory(context);
@@ -82,9 +85,10 @@ public class HttpWrapper {
 
             OutputStream os = client.getOutputStream();
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
-            writer.write("data=" + body + "&deviceid=" +
-                    Settings.Secure.getString(context.getContentResolver(),
-                            Settings.Secure.ANDROID_ID));
+            body.put("deviceid", Settings.Secure.getString(context.getContentResolver(),
+                    Settings.Secure.ANDROID_ID));
+            body.put("id", UUID.randomUUID().toString());
+            writer.write("data=" + body.toString());
             writer.flush();
             writer.close();
 

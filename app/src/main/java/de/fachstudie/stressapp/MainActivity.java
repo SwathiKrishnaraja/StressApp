@@ -210,7 +210,7 @@ public class MainActivity extends AppCompatActivity {
                         .getStringExtra("content")));
             } catch (JSONException e) {
             }
-            new SendTask(context).execute(event.toString());
+            new SendTask(context).execute(event);
         }
     }
 
@@ -233,9 +233,13 @@ public class MainActivity extends AppCompatActivity {
                         event.put("event", "SCREEN_ON");
                         String timestamp = dateFormat.format(new Date());
                         event.put("timestamp", timestamp);
+                        event.put("application", "");
+                        event.put("title", "");
+                        event.put("content_length", 0);
+                        event.put("emoticons", "");
                     } catch (JSONException e) {
                     }
-                    new SendTask(context).execute(event.toString());
+                    new SendTask(context).execute(event);
                 } else if (intent.getAction().equals(Intent.ACTION_SCREEN_OFF)) {
                     // Screen is locked
                     Log.i("LockScreenReceiver", "Screen is locked");
@@ -245,9 +249,13 @@ public class MainActivity extends AppCompatActivity {
                         event.put("event", "SCREEN_LOCK");
                         String timestamp = dateFormat.format(new Date());
                         event.put("timestamp", timestamp);
+                        event.put("application", "");
+                        event.put("title", "");
+                        event.put("content_length", 0);
+                        event.put("emoticons", "");
                     } catch (JSONException e) {
                     }
-                    new SendTask(context).execute(event.toString());
+                    new SendTask(context).execute(event);
                 } else if (intent.getAction().equals(Intent.ACTION_USER_PRESENT)) {
                     // Screen is unlocked
                     Log.i("LockScreenReceiver", "Screen is unlocked");
@@ -257,15 +265,19 @@ public class MainActivity extends AppCompatActivity {
                         event.put("event", "SCREEN_UNLOCK");
                         String timestamp = dateFormat.format(new Date());
                         event.put("timestamp", timestamp);
+                        event.put("application", "");
+                        event.put("title", "");
+                        event.put("content_length", 0);
+                        event.put("emoticons", "");
                     } catch (JSONException e) {
                     }
-                    new SendTask(context).execute(event.toString());
+                    new SendTask(context).execute(event);
                 }
             }
         }
     }
 
-    public class SendTask extends AsyncTask<String, Void, Void> {
+    public class SendTask extends AsyncTask<JSONObject, Void, Void> {
 
         private final Context context;
 
@@ -274,8 +286,8 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        protected Void doInBackground(String... text) {
-            HttpWrapper.doPost(this.context, text[0]);
+        protected Void doInBackground(JSONObject... json) {
+            HttpWrapper.doPost(this.context, json[0]);
             return null;
         }
     }
