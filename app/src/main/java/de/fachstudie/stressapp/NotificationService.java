@@ -21,8 +21,10 @@ public class NotificationService extends NotificationListenerService {
     @Override
     public void onNotificationPosted(StatusBarNotification sbn) {
         super.onNotificationPosted(sbn);
-        String text = sbn.getNotification().extras.getCharSequence(Notification.EXTRA_TEXT).toString();
-        String title = sbn.getNotification().extras.getCharSequence(Notification.EXTRA_TITLE).toString();
+        String text = sbn.getNotification().extras.getCharSequence(Notification.EXTRA_TEXT)
+                .toString();
+        String title = sbn.getNotification().extras.getCharSequence(Notification.EXTRA_TITLE)
+                .toString();
         String app = sbn.getPackageName();
 
         Log.d("Notification App: ", app);
@@ -33,17 +35,21 @@ public class NotificationService extends NotificationListenerService {
         i.putExtra("application", app);
         i.putExtra("title", title);
         i.putExtra("content", text);
-        i.putExtra("event" ,"NOTIFICATION");
+        i.putExtra("event", "NOTIFICATION");
         sendBroadcast(i);
     }
 
     @Override
     public void onNotificationRemoved(StatusBarNotification sbn) {
         String app = sbn.getPackageName();
-        String text = sbn.getNotification().extras.getCharSequence(Notification.EXTRA_TEXT).toString();
-        String title = sbn.getNotification().extras.getCharSequence(Notification.EXTRA_TITLE).toString();
+        CharSequence textSequence = sbn.getNotification().extras.getCharSequence(Notification
+                .EXTRA_TEXT);
+        String text = textSequence != null ? textSequence.toString() : "";
+        CharSequence titleSequence = sbn.getNotification().extras.getCharSequence(Notification
+                .EXTRA_TITLE);
+        String title = titleSequence != null ? titleSequence.toString() : "";
 
-        Log.d("Notification removed",app);
+        Log.d("Notification removed", app);
 
         Intent i = new Intent("de.fachstudie.stressapp.notification");
         i.putExtra("application", app);
