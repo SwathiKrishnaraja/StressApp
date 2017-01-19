@@ -104,7 +104,9 @@ public class TetrisWorld {
             StressNotification notification = notifications.get(0);
             Drawable applicationIcon = null;
             try {
-                applicationIcon = context.getPackageManager().getApplicationIcon(notification.getApplication());
+                if(!notification.getApplication().isEmpty()){
+                    applicationIcon = context.getPackageManager().getApplicationIcon(notification.getApplication());
+                }
             } catch (PackageManager.NameNotFoundException e) {
                 e.printStackTrace();
             }

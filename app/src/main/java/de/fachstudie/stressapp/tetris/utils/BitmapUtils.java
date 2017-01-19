@@ -22,7 +22,7 @@ public class BitmapUtils {
             }
         }
 
-        if (drawable.getIntrinsicWidth() <= 0 || drawable.getIntrinsicHeight() <= 0) {
+        if (drawable != null && (drawable.getIntrinsicWidth() <= 0 || drawable.getIntrinsicHeight() <= 0)) {
             // will be created of 1x1 pixel
             bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888); // Single color bitmap
         } else {

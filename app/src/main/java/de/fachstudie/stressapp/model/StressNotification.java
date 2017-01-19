@@ -12,6 +12,7 @@ import java.util.Map;
  */
 public class StressNotification {
 
+    private String event;
     private int id;
     private String title;
     private String application;
@@ -21,7 +22,8 @@ public class StressNotification {
     private Date timestamp;
 
     public StressNotification(int id, String title, String application, int contentLength,
-                              Map<Emoji, Integer> emoticons, boolean loaded, Date timestamp) {
+                              Map<Emoji, Integer> emoticons, boolean loaded, Date timestamp,
+                              String event) {
         this.id = id;
         this.title = title;
         this.application = application;
@@ -29,6 +31,7 @@ public class StressNotification {
         this.emoticons = emoticons;
         this.loaded = loaded;
         this.timestamp = timestamp;
+        this.event = "NOTIFICATION";
     }
 
     public int getId() {
@@ -87,5 +90,6 @@ public class StressNotification {
         public static final String CONTENT_LENGTH = "content_length";
         public static final String EMOTICONS = "emoticons";
         public static final String LOADED = "loaded";
+        public static final String EVENT = "event";
     }
 }
