@@ -39,7 +39,7 @@ public class DatabaseService {
 
     private final String NOTIFICATION_SELECT_QUERY = "SELECT * FROM " + StressNotification.NotificationEntry
             .TABLE_NAME + " WHERE " + StressNotification.NotificationEntry.LOADED + " = ?" +
-            " AND WHERE " + StressNotification.NotificationEntry.EVENT + " = ?" +
+            " AND " + StressNotification.NotificationEntry.EVENT + " = ?" +
             " ORDER BY " + StressNotification.NotificationEntry.TIMESTAMP + " ASC";
 
     private final String SCORE_SELECT_QUERY = "SELECT MAX(" + Score.ScoreEntry.VALUE + ") AS " +
