@@ -104,7 +104,7 @@ public class TetrisWorld {
             StressNotification notification = notifications.get(0);
             Drawable applicationIcon = null;
             try {
-                if(!notification.getApplication().isEmpty()){
+                if (!notification.getApplication().isEmpty()) {
                     applicationIcon = context.getPackageManager().getApplicationIcon(notification.getApplication());
                 }
             } catch (PackageManager.NameNotFoundException e) {
@@ -203,7 +203,7 @@ public class TetrisWorld {
 
                 int yOffset = j - currentBlock.getY();
                 int xOffset = i - currentBlock.getX();
-                if ( indexExists(j, occupancy) && indexExists(i, occupancy[j]) &&
+                if (indexExists(j, occupancy) && indexExists(i, occupancy[j]) &&
                         currentBlock.getShape()[yOffset][xOffset] == 1) {
                     occupancy[j][i] = currentBlock.getType().getN();
                     bitmaps[j][i] = currentBitmap;
@@ -286,13 +286,15 @@ public class TetrisWorld {
             int currentHeight = item.getHeight();
             for (int j = item.getY(); j < currentY + currentHeight; j++) {
                 for (int i = item.getX(); i < currentX + currentWidth; i++) {
-                    int yOffset = j - currentY;
-                    int xOffset = i - currentX;
-                    if (indexExists(yOffset, currentBlock.getShape()) && indexExists(xOffset, currentBlock.getShape()[yOffset])
-                            && item.getShape()[yOffset][xOffset] == 1) {
-                        canvas.drawRect(i * gridSize + PADDING + 1, (j - 2) * gridSize + TOP_PADDING + 1,
-                                (i + 1) * gridSize + PADDING - 1,
-                                (j - 1) * gridSize + TOP_PADDING - 1, p);
+                    synchronized (item) {
+                        int yOffset = j - currentY;
+                        int xOffset = i - currentX;
+                        if (indexExists(yOffset, currentBlock.getShape()) && indexExists(xOffset, currentBlock.getShape()[yOffset])
+                                && item.getShape()[yOffset][xOffset] == 1) {
+                            canvas.drawRect(i * gridSize + PADDING + 1, (j - 2) * gridSize + TOP_PADDING + 1,
+                                    (i + 1) * gridSize + PADDING - 1,
+                                    (j - 1) * gridSize + TOP_PADDING - 1, p);
+                        }
                     }
                 }
             }
