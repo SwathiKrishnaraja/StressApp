@@ -17,6 +17,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -27,6 +28,7 @@ import java.util.Date;
 import de.fachstudie.stressapp.db.DatabaseService;
 import de.fachstudie.stressapp.networking.HttpWrapper;
 import de.fachstudie.stressapp.tetris.TetrisView;
+import de.fachstudie.stressapp.tetris.constants.StringConstants;
 
 public class MainActivity extends AppCompatActivity {
     public static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -90,12 +92,12 @@ public class MainActivity extends AppCompatActivity {
 
     private void createUserInfoDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-        builder.setTitle("User Information");
+        builder.setTitle(StringConstants.USER_INFORMATION);
+        builder.setMessage(StringConstants.USER_INFORMATION_INFO);
 
         builder.setPositiveButton("Go to Settings", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                Intent settingsIntent = new Intent("android.settings" +
-                        ".ACTION_NOTIFICATION_LISTENER_SETTINGS");
+                Intent settingsIntent = new Intent(StringConstants.ANDROID_SETTINGS_NOTIFICATION_LISTENER);
                 startActivity(settingsIntent);
                 permissionDialog.dismiss();
             }
@@ -105,6 +107,9 @@ public class MainActivity extends AppCompatActivity {
 
         permissionDialog = builder.create();
         permissionDialog.show();
+
+        TextView textView = (TextView) permissionDialog.findViewById(android.R.id.message);
+        textView.setTextSize(15);
     }
 
     @NonNull
