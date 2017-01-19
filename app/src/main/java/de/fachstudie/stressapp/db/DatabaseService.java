@@ -31,7 +31,8 @@ public class DatabaseService {
             StressNotification.NotificationEntry.CONTENT_LENGTH,
             StressNotification.NotificationEntry.EMOTICONS,
             StressNotification.NotificationEntry.LOADED,
-            StressNotification.NotificationEntry.TIMESTAMP};
+            StressNotification.NotificationEntry.TIMESTAMP,
+            StressNotification.NotificationEntry.EVENT};
 
     private final String[] surveyResultColumns = {SurveyResult.SurveyResultEntry._ID,
             SurveyResult.SurveyResultEntry.ANSWERS};
@@ -111,6 +112,7 @@ public class DatabaseService {
         values.put(StressNotification.NotificationEntry.APPLICATION, application);
         values.put(StressNotification.NotificationEntry.LOADED, "false");
         values.put(StressNotification.NotificationEntry.TIMESTAMP, timestamp);
+        values.put(StressNotification.NotificationEntry.EVENT, "NOTIFICATION");
         db.insert(StressNotification.NotificationEntry.TABLE_NAME, null, values);
         db.close();
     }
@@ -168,6 +170,7 @@ public class DatabaseService {
                 String timeStampText = c.getString(c.getColumnIndex(StressNotification
                         .NotificationEntry
                         .TIMESTAMP));
+                String event = c.getString(c.getColumnIndex(StressNotification.NotificationEntry.EVENT));
 
                 Date timeStampDate = getTimeStampDate(timeStampText);
 
@@ -176,7 +179,7 @@ public class DatabaseService {
 
                 StressNotification notification = new StressNotification(id, title, application,
                         contentLength, EmojiFrequency.getEmoticons(emoticons),
-                        loaded, timeStampDate);
+                        loaded, timeStampDate, event);
                 notifications.add(notification);
             }
         }
@@ -210,6 +213,27 @@ public class DatabaseService {
 
     private void closeDatabaseComponents(SQLiteDatabase db, Cursor c) {
         c.close();
+        db.close();
+    }
+
+    public void saveScreenEvent(String event) {
+        String title = "";
+        String content = "";
+        String application = "";
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String timestamp = dateFormat.format(new Date());
+
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(StressNotification.NotificationEntry.TITLE, title);
+        values.put(StressNotification.NotificationEntry.CONTENT_LENGTH, content.length());
+        values.put(StressNotification.NotificationEntry.EMOTICONS,
+                EmojiFrequency.getCommaSeparatedEmoticons(content));
+        values.put(StressNotification.NotificationEntry.APPLICATION, application);
+        values.put(StressNotification.NotificationEntry.LOADED, "false");
+        values.put(StressNotification.NotificationEntry.TIMESTAMP, timestamp);
+        values.put(StressNotification.NotificationEntry.EVENT, event);
+        db.insert(StressNotification.NotificationEntry.TABLE_NAME, null, values);
         db.close();
     }
 }

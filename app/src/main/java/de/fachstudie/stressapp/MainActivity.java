@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -17,6 +18,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import de.fachstudie.stressapp.db.DatabaseService;
+import de.fachstudie.stressapp.networking.HttpWrapper;
 import de.fachstudie.stressapp.tetris.TetrisView;
 
 public class MainActivity extends AppCompatActivity {
@@ -53,19 +55,21 @@ public class MainActivity extends AppCompatActivity {
         filterLock.addAction(Intent.ACTION_SCREEN_OFF);
         filterLock.addAction(Intent.ACTION_USER_PRESENT);
         registerReceiver(lockScreenReceiver, filterLock);
+
+        new SendTask().execute(this);
     }
 
     @NonNull
     private Handler createGameOverHandler() {
         return new Handler() {
-                @Override
-                public void handleMessage(Message msg) {
-                    super.handleMessage(msg);
-                    Bundle data = msg.getData();
-                    gameOverDialog.setMessage("HIGHSCORE: " + data.getInt("highscore"));
-                    gameOverDialog.show();
-                }
-            };
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+                Bundle data = msg.getData();
+                gameOverDialog.setMessage("HIGHSCORE: " + data.getInt("highscore"));
+                gameOverDialog.show();
+            }
+        };
     }
 
     private void createGameOverDialog() {
@@ -78,7 +82,6 @@ public class MainActivity extends AppCompatActivity {
                 tetrisView.startNewGame();
             }
         });
-
 
         gameOverDialog = builder.create();
     }
@@ -132,20 +135,38 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private class LockScreenReceiver extends BroadcastReceiver {
+        DatabaseService dbService = null;
+
+        public LockScreenReceiver() {
+            dbService = DatabaseService.getInstance(MainActivity.this);
+        }
+
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent != null && intent.getAction() != null) {
                 if (intent.getAction().equals(Intent.ACTION_SCREEN_ON)) {
                     // Screen is on but not unlocked (if any locking mechanism present)
                     Log.i("LockScreenReceiver", "Screen is on but not unlocked");
+                    dbService.saveScreenEvent("SCREEN_ON");
                 } else if (intent.getAction().equals(Intent.ACTION_SCREEN_OFF)) {
                     // Screen is locked
                     Log.i("LockScreenReceiver", "Screen is locked");
+                    dbService.saveScreenEvent("SCREEN_LOCK");
                 } else if (intent.getAction().equals(Intent.ACTION_USER_PRESENT)) {
                     // Screen is unlocked
                     Log.i("LockScreenReceiver", "Screen is unlocked");
+                    dbService.saveScreenEvent("SCREEN_UNLOCKED");
                 }
             }
+        }
+    }
+
+    public class SendTask extends AsyncTask<Context, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Context... contexts) {
+            HttpWrapper.doPost(contexts[0], "data=Hello World");
+            return null;
         }
     }
 }
