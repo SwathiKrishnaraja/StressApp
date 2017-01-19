@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
     private void createReceivers() {
         notificationReceiver = new NotificationReceiver();
         filter = new IntentFilter();
-        filter.addAction("com.test");
+        filter.addAction("de.fachstudie.stressapp.notification");
         registerReceiver(notificationReceiver, filter);
 
         lockScreenReceiver = new LockScreenReceiver();
