@@ -29,21 +29,27 @@ public class NotificationService extends NotificationListenerService {
         Log.d("Notification Text: ", text);
         Log.d("Notification Title: ", title);
 
-        Intent i = new Intent("com.test");
+        Intent i = new Intent("de.fachstudie.stressapp.notification");
         i.putExtra("application", app);
         i.putExtra("title", title);
         i.putExtra("content", text);
+        i.putExtra("event" ,"NOTIFICATION");
         sendBroadcast(i);
     }
 
     @Override
     public void onNotificationRemoved(StatusBarNotification sbn) {
         String app = sbn.getPackageName();
+        String text = sbn.getNotification().extras.getCharSequence(Notification.EXTRA_TEXT).toString();
+        String title = sbn.getNotification().extras.getCharSequence(Notification.EXTRA_TITLE).toString();
 
         Log.d("Notification removed",app);
 
-        Intent i = new Intent();
-        i.putExtra("Notification event", app);
+        Intent i = new Intent("de.fachstudie.stressapp.notification");
+        i.putExtra("application", app);
+        i.putExtra("title", title);
+        i.putExtra("content", text);
+        i.putExtra("event", "NOTIFICATION_REMOVED");
         sendBroadcast(i);
     }
 }

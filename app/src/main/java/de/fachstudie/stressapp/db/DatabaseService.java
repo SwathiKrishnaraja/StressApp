@@ -100,6 +100,7 @@ public class DatabaseService {
         String application = intent.getStringExtra("application");
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String timestamp = dateFormat.format(new Date());
+        String event = intent.getStringExtra("event");
 
         Log.d("Title", title);
         Log.d("Received Notification", application);
@@ -113,7 +114,7 @@ public class DatabaseService {
         values.put(StressNotification.NotificationEntry.APPLICATION, application);
         values.put(StressNotification.NotificationEntry.LOADED, "false");
         values.put(StressNotification.NotificationEntry.TIMESTAMP, timestamp);
-        values.put(StressNotification.NotificationEntry.EVENT, "NOTIFICATION");
+        values.put(StressNotification.NotificationEntry.EVENT, event);
         db.insert(StressNotification.NotificationEntry.TABLE_NAME, null, values);
         db.close();
     }
@@ -152,12 +153,11 @@ public class DatabaseService {
         String[] selectionArgs = {"" + notification.getId()};
 
         db.update(StressNotification.NotificationEntry.TABLE_NAME, values, selection, selectionArgs);
-        db.close();
     }
 
     private void addNotifications(List<StressNotification> notifications, Cursor c) {
         if (c != null) {
-            while (c.moveToNext()) {
+            while (!c.isClosed() && c.moveToNext()) {
                 int id = c.getInt(c.getColumnIndex(StressNotification.NotificationEntry._ID));
 
                 String title = c.getString(c.getColumnIndex(StressNotification.NotificationEntry
@@ -234,6 +234,5 @@ public class DatabaseService {
         values.put(StressNotification.NotificationEntry.TIMESTAMP, timestamp);
         values.put(StressNotification.NotificationEntry.EVENT, event);
         db.insert(StressNotification.NotificationEntry.TABLE_NAME, null, values);
-        db.close();
     }
 }
