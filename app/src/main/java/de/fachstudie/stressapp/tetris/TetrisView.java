@@ -173,13 +173,11 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
 
     public void pauseGame(){
         createNewThread();
-        Log.d("pause", "" + (thread == null));
         thread.setPause(true);
     }
 
     public  void resumeGame(){
         createNewThread();
-        Log.d("resume", "" + (thread == null));
         thread.setPause(false);
     }
 

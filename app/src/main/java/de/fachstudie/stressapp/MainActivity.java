@@ -18,11 +18,18 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import de.fachstudie.stressapp.db.DatabaseService;
 import de.fachstudie.stressapp.networking.HttpWrapper;
 import de.fachstudie.stressapp.tetris.TetrisView;
 
 public class MainActivity extends AppCompatActivity {
+    public static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private NotificationReceiver notificationReceiver;
     private LockScreenReceiver lockScreenReceiver;
     private IntentFilter filter;
@@ -51,8 +58,6 @@ public class MainActivity extends AppCompatActivity {
         } else {
             createReceivers();
         }
-
-        new SendTask().execute(this);
     }
 
     private void createReceivers() {
@@ -74,7 +79,8 @@ public class MainActivity extends AppCompatActivity {
     private boolean isNLServiceRunning() {
         ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
 
-        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer
+                .MAX_VALUE)) {
             if (NotificationService.class.getName().equals(service.service.getClassName())) {
                 return true;
             }
@@ -88,7 +94,8 @@ public class MainActivity extends AppCompatActivity {
 
         builder.setPositiveButton("Go to Settings", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                Intent settingsIntent = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
+                Intent settingsIntent = new Intent("android.settings" +
+                        ".ACTION_NOTIFICATION_LISTENER_SETTINGS");
                 startActivity(settingsIntent);
                 permissionDialog.dismiss();
             }
@@ -134,9 +141,9 @@ public class MainActivity extends AppCompatActivity {
         if (!isNLServiceRunning()) {
             permissionDialog.show();
             tetrisView.pauseGame();
-        } else if(!receiversCreated) {
+        } else if (!receiversCreated) {
             createReceivers();
-        }else{
+        } else {
             tetrisView.resumeGame();
         }
     }
@@ -186,6 +193,19 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             dbService.saveNotification(intent);
+            JSONObject event = new JSONObject();
+            try {
+                event.put("event", intent.getStringExtra("event"));
+                event.put("application", intent.getStringExtra("application"));
+                event.put("title", intent.getStringExtra("title"));
+                event.put("content_length", intent.getStringExtra("content").length());
+                String timestamp = dateFormat.format(new Date());
+                event.put("timestamp", timestamp);
+                event.put("emoticons", EmojiFrequency.getCommaSeparatedEmoticons(intent
+                        .getStringExtra("content")));
+            } catch (JSONException e) {
+            }
+            new SendTask(context).execute(event.toString());
         }
     }
 
@@ -203,24 +223,54 @@ public class MainActivity extends AppCompatActivity {
                     // Screen is on but not unlocked (if any locking mechanism present)
                     Log.i("LockScreenReceiver", "Screen is on but not unlocked");
                     dbService.saveScreenEvent("SCREEN_ON");
+                    JSONObject event = new JSONObject();
+                    try {
+                        event.put("event", "SCREEN_ON");
+                        String timestamp = dateFormat.format(new Date());
+                        event.put("timestamp", timestamp);
+                    } catch (JSONException e) {
+                    }
+                    new SendTask(context).execute(event.toString());
                 } else if (intent.getAction().equals(Intent.ACTION_SCREEN_OFF)) {
                     // Screen is locked
                     Log.i("LockScreenReceiver", "Screen is locked");
                     dbService.saveScreenEvent("SCREEN_LOCK");
+                    JSONObject event = new JSONObject();
+                    try {
+                        event.put("event", "SCREEN_LOCK");
+                        String timestamp = dateFormat.format(new Date());
+                        event.put("timestamp", timestamp);
+                    } catch (JSONException e) {
+                    }
+                    new SendTask(context).execute(event.toString());
                 } else if (intent.getAction().equals(Intent.ACTION_USER_PRESENT)) {
                     // Screen is unlocked
                     Log.i("LockScreenReceiver", "Screen is unlocked");
                     dbService.saveScreenEvent("SCREEN_UNLOCKED");
+                    JSONObject event = new JSONObject();
+                    try {
+                        event.put("event", "SCREEN_UNLOCK");
+                        String timestamp = dateFormat.format(new Date());
+                        event.put("timestamp", timestamp);
+                    } catch (JSONException e) {
+                    }
+                    new SendTask(context).execute(event.toString());
                 }
             }
         }
     }
 
-    public class SendTask extends AsyncTask<Context, Void, Void> {
+    public class SendTask extends AsyncTask<String, Void, Void> {
+
+        private final Context context;
+
+        public SendTask(Context context) {
+            this.context = context;
+        }
 
         @Override
-        protected Void doInBackground(Context... contexts) {
-            HttpWrapper.doPost(contexts[0], "data=Hello World");
+        protected Void doInBackground(String... text) {
+            HttpWrapper.doPost(this.context, text[0]);
             return null;
         }
     }

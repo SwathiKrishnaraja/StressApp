@@ -4,8 +4,6 @@ import android.content.Context;
 import android.provider.Settings;
 import android.util.Log;
 
-import org.json.JSONObject;
-
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -82,12 +80,9 @@ public class HttpWrapper {
                 }
             });
 
-            JSONObject data = new JSONObject();
-            data.put("data", "Hello World");
-
             OutputStream os = client.getOutputStream();
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
-            writer.write("data=Du Lappen!&deviceid=" +
+            writer.write("data=" + body + "&deviceid=" +
                     Settings.Secure.getString(context.getContentResolver(),
                             Settings.Secure.ANDROID_ID));
             writer.flush();
