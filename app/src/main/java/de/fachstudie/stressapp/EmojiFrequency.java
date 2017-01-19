@@ -12,13 +12,9 @@ import java.util.Map;
 
 public class EmojiFrequency extends EmojiParser {
     private static final String DELIMITER = ",";
-    private static Map<Emoji, Integer> frequencies;
-
-    public EmojiFrequency(){
-        frequencies = new HashMap<>();
-    }
 
     public static Map<Emoji, Integer> getEmoticons(String content){
+       Map<Emoji, Integer> frequencies = new HashMap<>();
         for(UnicodeCandidate uc: getUnicodeCandidates(content)){
             Emoji emoji = uc.getEmoji();
             Integer previous = frequencies.get(emoji);
