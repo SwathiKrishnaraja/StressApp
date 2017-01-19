@@ -11,6 +11,13 @@ import android.util.Log;
  */
 
 public class NotificationService extends NotificationListenerService {
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        Log.d("notification service", " created");
+    }
+
     @Override
     public void onNotificationPosted(StatusBarNotification sbn) {
         super.onNotificationPosted(sbn);

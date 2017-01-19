@@ -99,7 +99,7 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
                     handler.sendMessage(msg);
                 }
             });
-            thread.setPause(true);
+            this.resumeGame();
         }
 
         if (this.model.isDropping()) {
@@ -169,5 +169,23 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
     public void startNewGame(){
         this.model.startNewGame();
         thread.setPause(false);
+    }
+
+    public void pauseGame(){
+        createNewThread();
+        Log.d("pause", "" + (thread == null));
+        thread.setPause(true);
+    }
+
+    public  void resumeGame(){
+        createNewThread();
+        Log.d("resume", "" + (thread == null));
+        thread.setPause(false);
+    }
+
+    public void createNewThread(){
+        if(thread == null) {
+            thread = new TetrisViewThread(this, getHolder());
+        }
     }
 }

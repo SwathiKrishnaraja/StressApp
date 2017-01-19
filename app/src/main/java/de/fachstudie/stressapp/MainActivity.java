@@ -1,5 +1,6 @@
 package de.fachstudie.stressapp;
 
+import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -26,6 +27,8 @@ public class MainActivity extends AppCompatActivity {
     private IntentFilter filterLock;
     private TetrisView tetrisView;
     private AlertDialog gameOverDialog;
+    private AlertDialog permissionDialog;
+    private boolean receiversCreated = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,14 +37,22 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        tetrisView = (TetrisView) findViewById(R.id.tetrisview);
-
         createGameOverDialog();
-
         Handler handler = createGameOverHandler();
 
+        tetrisView = (TetrisView) findViewById(R.id.tetrisview);
         tetrisView.setHandler(handler);
 
+        tetrisView.pauseGame();
+
+        if (!isNLServiceRunning()) {
+            createUserInfoDialog();
+        } else {
+            createReceivers();
+        }
+    }
+
+    private void createReceivers() {
         notificationReceiver = new NotificationReceiver();
         filter = new IntentFilter();
         filter.addAction("com.test");
@@ -53,19 +64,50 @@ public class MainActivity extends AppCompatActivity {
         filterLock.addAction(Intent.ACTION_SCREEN_OFF);
         filterLock.addAction(Intent.ACTION_USER_PRESENT);
         registerReceiver(lockScreenReceiver, filterLock);
+
+        receiversCreated = true;
+    }
+
+    private boolean isNLServiceRunning() {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (NotificationService.class.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void createUserInfoDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle("User Information");
+
+        builder.setPositiveButton("Go to Settings", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                Intent settingsIntent = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
+                startActivity(settingsIntent);
+                permissionDialog.dismiss();
+            }
+        });
+
+        builder.setCancelable(false);
+
+        permissionDialog = builder.create();
+        permissionDialog.show();
     }
 
     @NonNull
     private Handler createGameOverHandler() {
         return new Handler() {
-                @Override
-                public void handleMessage(Message msg) {
-                    super.handleMessage(msg);
-                    Bundle data = msg.getData();
-                    gameOverDialog.setMessage("HIGHSCORE: " + data.getInt("highscore"));
-                    gameOverDialog.show();
-                }
-            };
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+                Bundle data = msg.getData();
+                gameOverDialog.setMessage("HIGHSCORE: " + data.getInt("highscore"));
+                gameOverDialog.show();
+            }
+        };
     }
 
     private void createGameOverDialog() {
@@ -79,20 +121,33 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
         gameOverDialog = builder.create();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        Log.d("onResume", " ");
+        if (!isNLServiceRunning()) {
+            permissionDialog.show();
+            tetrisView.pauseGame();
+        } else if(!receiversCreated) {
+            createReceivers();
+        }else{
+            tetrisView.resumeGame();
+        }
     }
 
     @Override
     protected void onDestroy() {
         super.onPause();
-        unregisterReceiver(notificationReceiver);
-        unregisterReceiver(lockScreenReceiver);
+        if (notificationReceiver != null) {
+            unregisterReceiver(notificationReceiver);
+        }
+
+        if (lockScreenReceiver != null) {
+            unregisterReceiver(lockScreenReceiver);
+        }
     }
 
     @Override
