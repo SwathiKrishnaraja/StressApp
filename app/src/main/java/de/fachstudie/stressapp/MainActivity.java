@@ -98,8 +98,9 @@ public class MainActivity extends AppCompatActivity {
         builder.setPositiveButton("Go to Settings", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 Intent settingsIntent = new Intent(StringConstants.ANDROID_SETTINGS_NOTIFICATION_LISTENER);
-                startActivity(settingsIntent);
-                permissionDialog.dismiss();
+                settingsIntent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                startActivityForResult(settingsIntent, 0);
+                dialog.dismiss();
             }
         });
 
@@ -131,8 +132,8 @@ public class MainActivity extends AppCompatActivity {
 
         builder.setPositiveButton("Start new game", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                dialog.dismiss();
                 tetrisView.startNewGame();
+                dialog.dismiss();
             }
         });
 
@@ -198,6 +199,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             dbService.saveNotification(intent);
+            tetrisView.notificationReceived();
             JSONObject event = new JSONObject();
             try {
                 event.put("event", intent.getStringExtra("event"));
