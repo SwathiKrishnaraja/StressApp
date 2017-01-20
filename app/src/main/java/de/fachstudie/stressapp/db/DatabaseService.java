@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -38,9 +37,10 @@ public class DatabaseService {
             SurveyResult.SurveyResultEntry.ANSWERS};
 
     private final String NOTIFICATION_SELECT_QUERY = "SELECT * FROM " + StressNotification.NotificationEntry
-            .TABLE_NAME + " WHERE " + StressNotification.NotificationEntry.LOADED + " = ?" +
+            .TABLE_NAME + " WHERE " + StressNotification.NotificationEntry.APPLICATION + " != ''" +
+            " AND " + StressNotification.NotificationEntry.LOADED + " = ?" +
             " AND " + StressNotification.NotificationEntry.EVENT + " = ?" +
-            " ORDER BY " + StressNotification.NotificationEntry.TIMESTAMP + " ASC";
+            " ORDER BY " + StressNotification.NotificationEntry.TIMESTAMP + " DESC";
 
     private final String SCORE_SELECT_QUERY = "SELECT MAX(" + Score.ScoreEntry.VALUE + ") AS " +
             Score.ScoreEntry.VALUE + " FROM " + Score.ScoreEntry.TABLE_NAME;
@@ -101,9 +101,6 @@ public class DatabaseService {
         String timestamp = dateFormat.format(new Date());
         String event = intent.getStringExtra("event");
 
-        Log.d("Title", title);
-        Log.d("Received Notification", application);
-
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(StressNotification.NotificationEntry.TITLE, title);
@@ -129,11 +126,11 @@ public class DatabaseService {
     }
 
 
-    public List<StressNotification> getNotLoadedNotifications() {
+    public List<StressNotification> getSpecificNotifications(String loaded) {
         List<StressNotification> notifications = new ArrayList<>();
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
-        String[] selectionArgs = {"false", "NOTIFICATION"};
+        String[] selectionArgs = {loaded, "NOTIFICATION"};
         Cursor c = db.rawQuery(NOTIFICATION_SELECT_QUERY, selectionArgs);
 
         addNotifications(notifications, c);
@@ -169,7 +166,6 @@ public class DatabaseService {
                 String timeStampText = c.getString(c.getColumnIndex(StressNotification
                         .NotificationEntry
                         .TIMESTAMP));
-                String event = c.getString(c.getColumnIndex(StressNotification.NotificationEntry.EVENT));
 
                 Date timeStampDate = getTimeStampDate(timeStampText);
 
@@ -178,7 +174,7 @@ public class DatabaseService {
 
                 StressNotification notification = new StressNotification(id, title, application,
                         contentLength, EmojiFrequency.getEmoticons(emoticons),
-                        loaded, timeStampDate, event);
+                        loaded, timeStampDate);
                 notifications.add(notification);
             }
         }

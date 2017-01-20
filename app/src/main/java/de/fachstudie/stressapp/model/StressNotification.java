@@ -22,8 +22,7 @@ public class StressNotification {
     private Date timestamp;
 
     public StressNotification(int id, String title, String application, int contentLength,
-                              Map<Emoji, Integer> emoticons, boolean loaded, Date timestamp,
-                              String event) {
+                              Map<Emoji, Integer> emoticons, boolean loaded, Date timestamp) {
         this.id = id;
         this.title = title;
         this.application = application;
@@ -80,6 +79,10 @@ public class StressNotification {
 
     public void setLoaded(boolean loaded) {
         this.loaded = loaded;
+    }
+
+    public String getEvent() {
+        return event;
     }
 
     public static class NotificationEntry implements BaseColumns {
