@@ -1,7 +1,5 @@
 package de.fachstudie.stressapp.tetris;
 
-import android.util.Log;
-
 import java.util.Random;
 
 import de.fachstudie.stressapp.tetris.constants.BlockConfigurations;
@@ -100,8 +98,6 @@ public class Block extends Item {
             this.x -= shift[(rotationIndex - 1) % 4][1];
         }
         this.rotationIndex += direction;
-
-        Log.d("RotationIndex", rotationIndex + "");
 
         if (this.x < 0) {
             this.x = 0;

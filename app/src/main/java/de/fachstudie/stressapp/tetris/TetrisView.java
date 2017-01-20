@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -52,7 +51,7 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
             if (dropping && System.currentTimeMillis() - lastTouchDown < 150 && !this.model.isBlockChange()) {
                 this.model.hardDrop();
 
-            } else if(dropping) {
+            } else if (dropping) {
                 this.model.stopDropping();
             }
             swiping = false;
@@ -64,13 +63,11 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
 
         } else if (event.getAction() == MotionEvent.ACTION_MOVE) {
             if (lastTouchX - event.getX() > 50 && lastTouchX != -1 && !dropping) {
-                Log.d("Left", event.getX() + "");
                 this.model.moveLeft();
                 lastTouchX = event.getX();
                 lastTouchY = event.getY();
                 swiping = true;
             } else if (event.getX() - lastTouchX > 50 && lastTouchX != -1 && !dropping) {
-                Log.d("Right", event.getX() + "");
                 this.model.moveRight();
                 lastTouchX = event.getX();
                 lastTouchY = event.getY();
@@ -87,26 +84,10 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     public void draw(Canvas canvas) {
-        if(this.model.isGameOver()){
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    final Message msg = new Message();
-                    final Bundle bundle = new Bundle();
-                    model.saveScore();
-                    bundle.putInt("highscore", model.getHighScore());
-                    msg.setData(bundle);
-                    handler.sendMessage(msg);
-                }
-            });
-            this.resumeGame();
-        }
-
         if (this.model.isDropping()) {
             if (System.currentTimeMillis() - lastUpdate > 70 && lastUpdate != 0) {
                 dropping = this.model.gravityStep();
                 this.model.setDropping(dropping);
-                Log.d("Dropping", dropping + "");
                 lastUpdate = System.currentTimeMillis();
             }
         }
@@ -121,22 +102,38 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
             canvas.drawColor(Color.WHITE);
             model.drawState(canvas, p);
 
-            if(model.getCurrentBitmap() != null)
+            if (model.getCurrentBitmap() != null)
                 model.drawIcon(canvas, p);
+        }
+
+        if (this.model.isGameOver()) {
+            this.pauseGame();
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    final Message msg = new Message();
+                    final Bundle bundle = new Bundle();
+                    model.saveScore();
+                    model.setGameOver(false);
+                    bundle.putInt("highscore", model.getHighScore());
+                    msg.setData(bundle);
+                    handler.sendMessage(msg);
+                }
+            });
         }
     }
 
     private void setGravityTime() {
-        if(model.isBlockVisible()){
+        if (model.isBlockVisible()) {
             gravityTime = 350;
-        }else{
+        } else {
             gravityTime = 20;
         }
     }
 
     @Override
     public void surfaceCreated(SurfaceHolder surfaceHolder) {
-        if(thread == null){
+        if (thread == null) {
             thread = new TetrisViewThread(this, getHolder());
         }
         thread.setRunnable(true);
@@ -166,24 +163,28 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
         this.handler = handler;
     }
 
-    public void startNewGame(){
+    public void startNewGame() {
         this.model.startNewGame();
         thread.setPause(false);
     }
 
-    public void pauseGame(){
+    public void pauseGame() {
         createNewThread();
         thread.setPause(true);
     }
 
-    public  void resumeGame(){
+    public void resumeGame() {
         createNewThread();
         thread.setPause(false);
     }
 
-    public void createNewThread(){
-        if(thread == null) {
+    public void createNewThread() {
+        if (thread == null) {
             thread = new TetrisViewThread(this, getHolder());
         }
+    }
+
+    public void notificationReceived() {
+        model.notificationReceived();
     }
 }

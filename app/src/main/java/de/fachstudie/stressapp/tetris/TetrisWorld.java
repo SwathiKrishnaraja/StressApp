@@ -8,7 +8,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,7 +74,7 @@ public class TetrisWorld {
         this.blockChange = false;
 
         if (nextBitmap == null) {
-            notifications = dbService.getNotLoadedNotifications();
+            notifications = dbService.getSpecificNotifications("false");
             setNextBitmap();
         }
 
@@ -87,7 +86,7 @@ public class TetrisWorld {
             freezeCurrentBlock();
             calculateScore();
             clearFullLines();
-            clearTetrisField();
+            checkGameOver();
 
             if (!gameOver) {
                 this.currentBlock = nextBlock;
@@ -104,20 +103,21 @@ public class TetrisWorld {
             StressNotification notification = notifications.get(0);
             Drawable applicationIcon = null;
             try {
-                if (!notification.getApplication().isEmpty()) {
-                    applicationIcon = context.getPackageManager().getApplicationIcon(notification.getApplication());
-                }
+                applicationIcon = context.getPackageManager().getApplicationIcon(notification.getApplication());
             } catch (PackageManager.NameNotFoundException e) {
                 e.printStackTrace();
             }
-            Bitmap bitmap = drawableToBitmap(applicationIcon);
-            this.nextBitmap = bitmap;
+
+            if (applicationIcon != null) {
+                Bitmap bitmap = drawableToBitmap(applicationIcon);
+                this.nextBitmap = bitmap;
+                this.updateNotificationIsLoaded(notification);
+            }
             notifications.remove(0);
-            this.updateNotificationIsLoaded(notification);
         }
     }
 
-    private void clearTetrisField() {
+    private void checkGameOver() {
         int lowerBound = 3;
         int upperBound = 7;
         boolean cellIsOccupied = false;
@@ -228,6 +228,7 @@ public class TetrisWorld {
         int canvasHeight = canvas.getHeight();
 
         gridSize = (canvasWidth - 2 * PADDING) / WIDTH;
+        int iconSize = gridSize - 2 * (gridSize / 8);
         int previewGridSize = (PADDING - 2 * PREVIEW_PADDING) / PREVIEW_WIDTH;
 
         // Font settings
@@ -269,9 +270,9 @@ public class TetrisWorld {
                                     1, p);
 
                     if (bitmaps[j][i] != null) {
-                        canvas.drawBitmap(bitmaps[j][i], i * gridSize + PADDING + 1, (j - 2) * gridSize +
-                                TOP_PADDING +
-                                1, p);
+                        Bitmap bitmap = getResizedBitmap(bitmaps[j][i], iconSize, iconSize);
+                        canvas.drawBitmap(bitmap, i * gridSize + PADDING + 1 + (gridSize / 8),
+                                (j - 2) * gridSize + TOP_PADDING + 1 + (gridSize / 8), p);
                     }
                 }
             }
@@ -306,6 +307,9 @@ public class TetrisWorld {
         int xStart = 0;
         int yLimit = 3;
         int xLimit = 3;
+        int previewIconSize = previewGridSize - 2 * (previewGridSize / 8);
+        Bitmap bitmap = null;
+
 
         switch (nextBlock.getType()) {
             case SQUARE:
@@ -317,8 +321,8 @@ public class TetrisWorld {
                 break;
         }
 
-        if (nextBitmap != null)
-            this.nextBitmap = getResizedBitmap(this.nextBitmap, previewGridSize, previewGridSize);
+        if(nextBitmap != null)
+            bitmap = getResizedBitmap(this.nextBitmap, previewIconSize, previewIconSize);
 
         for (int j = yStart; j < yLimit; j++) {
             for (int i = xStart; i < xLimit; i++) {
@@ -332,10 +336,36 @@ public class TetrisWorld {
                             (i + 1) * previewGridSize + PADDING + WIDTH * gridSize + PREVIEW_PADDING - 1,
                             (j + 1) * previewGridSize + TOP_PADDING - 1, p);
 
-                    if (nextBitmap != null)
-                        canvas.drawBitmap(nextBitmap,
-                                i * previewGridSize + PADDING + WIDTH * gridSize + PREVIEW_PADDING + 1,
-                                j * previewGridSize + TOP_PADDING + 1, p);
+                    if (bitmap != null)
+                        canvas.drawBitmap(bitmap,
+                                i * previewGridSize + PADDING + WIDTH * gridSize + PREVIEW_PADDING + 1
+                                        + (previewGridSize / 8),
+                                j * previewGridSize + TOP_PADDING + 1 + (previewGridSize / 8), p);
+                }
+            }
+        }
+    }
+
+    public void drawIcon(Canvas canvas, Paint p) {
+        if (currentBlock.getY() > 1) {
+            int canvasWidth = canvas.getWidth();
+            int canvasHeight = canvas.getHeight();
+
+            int gridSize = (canvasWidth - 2 * PADDING) / WIDTH;
+            int iconSize = gridSize - 2 * (gridSize / 8);
+            Bitmap bitmap = getResizedBitmap(this.currentBitmap, iconSize, iconSize);
+
+            for (int j = currentBlock.getY(); j < currentBlock.getY() + currentBlock.getHeight(); j++) {
+                for (int i = currentBlock.getX(); i < currentBlock.getX() + currentBlock.getWidth(); i++) {
+
+                    int yOffset = j - currentBlock.getY();
+                    int xOffset = i - currentBlock.getX();
+                    if (indexExists(yOffset, currentBlock.getShape()) && indexExists(xOffset, currentBlock.getShape()[yOffset]) &&
+                            currentBlock
+                                    .getShape()[yOffset][xOffset] == 1) {
+                        canvas.drawBitmap(bitmap, i * gridSize + PADDING + 1 + (gridSize / 8),
+                                (j - 2) * gridSize + TOP_PADDING + 1 + (gridSize / 8), p);
+                    }
                 }
             }
         }
@@ -406,39 +436,12 @@ public class TetrisWorld {
         if (!hasOverlap(state)) {
             this.currentBlock.moveLeft();
         }
-
-        Log.d("X", currentBlock.getX() + "");
-    }
-
-    public void drawIcon(Canvas canvas, Paint p) {
-        if (currentBlock.getY() > 1) {
-            int canvasWidth = canvas.getWidth();
-            int canvasHeight = canvas.getHeight();
-
-            int gridSize = (canvasWidth - 2 * PADDING) / WIDTH;
-            this.currentBitmap = getResizedBitmap(this.currentBitmap, gridSize, gridSize);
-
-            for (int j = currentBlock.getY(); j < currentBlock.getY() + currentBlock.getHeight(); j++) {
-                for (int i = currentBlock.getX(); i < currentBlock.getX() + currentBlock.getWidth(); i++) {
-
-                    int yOffset = j - currentBlock.getY();
-                    int xOffset = i - currentBlock.getX();
-                    if (indexExists(yOffset, currentBlock.getShape()) && indexExists(xOffset, currentBlock.getShape()[yOffset]) &&
-                            currentBlock
-                                    .getShape()[yOffset][xOffset] == 1) {
-                        canvas.drawBitmap(this.currentBitmap, i * gridSize + PADDING + 1,
-                                (j - 2) * gridSize + TOP_PADDING + 1, p);
-                    }
-                }
-            }
-        }
     }
 
     public void startNewGame() {
         occupancy = new int[FULL_HEIGHT][WIDTH];
         bitmaps = new Bitmap[FULL_HEIGHT][WIDTH];
         score = 0;
-        gameOver = false;
     }
 
     public boolean isBlockVisible() {
@@ -489,5 +492,9 @@ public class TetrisWorld {
 
     public Bitmap getCurrentBitmap() {
         return currentBitmap;
+    }
+
+    public void notificationReceived() {
+        nextBitmap = null;
     }
 }
