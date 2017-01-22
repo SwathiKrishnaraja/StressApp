@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="5dp">
+
+    <Button
+        android:text="Start new game"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/white"
+        android:background="@color/green"
+        android:layout_marginBottom="5dp"
+        android:id="@+id/new_game_btn" />
+
+    <Button
+        android:text="Resume game"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/white"
+        android:background="@color/amber"
+        android:layout_marginBottom="5dp"
+        android:id="@+id/resume_game_btn" />
+
+    <Button
+        android:text="Finish game"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/white"
+        android:background="@color/red"
+        android:id="@+id/finish_game_btn"/>
+</LinearLayout>

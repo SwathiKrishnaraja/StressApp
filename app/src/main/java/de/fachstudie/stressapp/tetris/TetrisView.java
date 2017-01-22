@@ -134,7 +134,7 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
     @Override
     public void surfaceCreated(SurfaceHolder surfaceHolder) {
         if (thread == null) {
-            thread = new TetrisViewThread(this, getHolder());
+            thread = new TetrisViewThread(this, surfaceHolder);
         }
         thread.setRunnable(true);
         thread.start();
@@ -184,7 +184,13 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
         }
     }
 
+    public boolean isGameOver(){
+        return this.model.isGameOver();
+    }
+
     public void notificationReceived() {
         model.notificationReceived();
     }
+
+
 }

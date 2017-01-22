@@ -4,7 +4,6 @@ import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.AsyncTask;
@@ -17,7 +16,8 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.TextView;
+import android.view.View;
+import android.widget.Button;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -28,7 +28,7 @@ import java.util.Date;
 import de.fachstudie.stressapp.db.DatabaseService;
 import de.fachstudie.stressapp.networking.HttpWrapper;
 import de.fachstudie.stressapp.tetris.TetrisView;
-import de.fachstudie.stressapp.tetris.constants.StringConstants;
+import de.fachstudie.stressapp.tetris.utils.DialogUtils;
 
 public class MainActivity extends AppCompatActivity {
     public static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -37,8 +37,8 @@ public class MainActivity extends AppCompatActivity {
     private IntentFilter filter;
     private IntentFilter filterLock;
     private TetrisView tetrisView;
+    private AlertDialog userInfoDialog;
     private AlertDialog gameOverDialog;
-    private AlertDialog permissionDialog;
     private boolean receiversCreated = false;
 
     @Override
@@ -48,15 +48,15 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        createGameOverDialog();
+        gameOverDialog = getGameActionsDialog(false);
         Handler handler = createGameOverHandler();
 
         tetrisView = (TetrisView) findViewById(R.id.tetrisview);
         tetrisView.setHandler(handler);
-        tetrisView.pauseGame();
 
         if (!isNLServiceRunning()) {
-            createUserInfoDialog();
+            if (userInfoDialog == null)
+                userInfoDialog = DialogUtils.getUserInfoDialog(this);
         } else {
             createReceivers();
         }
@@ -90,28 +90,6 @@ public class MainActivity extends AppCompatActivity {
         return false;
     }
 
-    private void createUserInfoDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-        builder.setTitle(StringConstants.USER_INFORMATION);
-        builder.setMessage(StringConstants.USER_INFORMATION_INFO);
-
-        builder.setPositiveButton("Go to Settings", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                Intent settingsIntent = new Intent(StringConstants.ANDROID_SETTINGS_NOTIFICATION_LISTENER);
-                settingsIntent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-                startActivityForResult(settingsIntent, 0);
-                dialog.dismiss();
-            }
-        });
-
-        builder.setCancelable(false);
-
-        permissionDialog = builder.create();
-        permissionDialog.show();
-
-        TextView textView = (TextView) permissionDialog.findViewById(android.R.id.message);
-        textView.setTextSize(15);
-    }
 
     @NonNull
     private Handler createGameOverHandler() {
@@ -120,24 +98,58 @@ public class MainActivity extends AppCompatActivity {
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
                 Bundle data = msg.getData();
+                gameOverDialog.setTitle("Game over");
                 gameOverDialog.setMessage("HIGHSCORE: " + data.getInt("highscore"));
-                gameOverDialog.show();
+                if (!isFinishing()) {
+                    gameOverDialog.show();
+                }
             }
         };
     }
 
-    private void createGameOverDialog() {
+    private AlertDialog getGameActionsDialog(boolean resume) {
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-        builder.setTitle("GAME OVER");
+        View view = getLayoutInflater().inflate(R.layout.dialog_gameover, null);
+        builder.setView(view);
+        builder.setCancelable(false);
 
-        builder.setPositiveButton("Start new game", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
+        Button newGameBtn = (Button) view.findViewById(R.id.new_game_btn);
+        newGameBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
                 tetrisView.startNewGame();
-                dialog.dismiss();
+                gameOverDialog.dismiss();
             }
         });
 
-        gameOverDialog = builder.create();
+        Button resumeGameBtn = (Button) view.findViewById(R.id.resume_game_btn);
+        resumeGameBtn.setVisibility(View.GONE);
+
+        if (resume) {
+            resumeGameBtn.setVisibility(View.VISIBLE);
+            resumeGameBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (tetrisView != null && !tetrisView.isGameOver()) {
+                        tetrisView.resumeGame();
+                    }
+                }
+            });
+        }
+
+        Button finishGameBtn = (Button) view.findViewById(R.id.finish_game_btn);
+        finishGameBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                System.exit(0);
+            }
+        });
+
+        return builder.create();
+    }
+
+    @Override
+    public void onBackPressed() {
     }
 
     @Override
@@ -145,7 +157,7 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         Log.d("onResume", " ");
         if (!isNLServiceRunning()) {
-            permissionDialog.show();
+            userInfoDialog.show();
             tetrisView.pauseGame();
         } else if (!receiversCreated) {
             createReceivers();
@@ -156,7 +168,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        super.onPause();
+        super.onDestroy();
         if (notificationReceiver != null) {
             unregisterReceiver(notificationReceiver);
         }
@@ -167,6 +179,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
