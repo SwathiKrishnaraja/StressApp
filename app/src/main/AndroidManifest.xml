@@ -38,6 +38,8 @@
             android:windowSoftInputMode="stateHidden"></activity>
 
         <activity android:name=".SurveyActivity"></activity>
+
+        <receiver android:name=".AlarmReceiver"></receiver>
     </application>
 
 </manifest>

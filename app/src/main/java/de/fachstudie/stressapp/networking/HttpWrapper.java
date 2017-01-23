@@ -64,7 +64,7 @@ public class HttpWrapper {
         return sslContext.getSocketFactory();
     }
 
-    public static boolean doPost(Context context, JSONObject body) {
+    public static boolean sendNotificationEvent(Context context, JSONObject body) {
         HttpsURLConnection client = null;
         try {
             SSLSocketFactory sslSocketFactory = getSocketFactory(context);
@@ -89,6 +89,51 @@ public class HttpWrapper {
                     Settings.Secure.ANDROID_ID));
             body.put("id", UUID.randomUUID().toString());
             writer.write("data=" + body.toString());
+            writer.flush();
+            writer.close();
+
+            InputStream in = new BufferedInputStream(client.getInputStream());
+            Log.d("Input", convertInputStreamToString(in));
+            in.close();
+            os.close();
+        } catch (Exception e) {
+            Log.e("Network exception", e.getClass().toString() + e.getMessage());
+            return false;
+        } finally {
+            if (client != null) {
+                client.disconnect();
+            }
+        }
+        return true;
+    }
+
+    public static boolean sendScore(Context context, JSONObject body) {
+        HttpsURLConnection client = null;
+        try {
+            SSLSocketFactory sslSocketFactory = getSocketFactory(context);
+            URL url = new URL("https://129.69.197.6/score");
+            client = (HttpsURLConnection) url.openConnection();
+            client.setSSLSocketFactory(sslSocketFactory);
+            client.setRequestMethod("POST");
+            client.setDoOutput(true);
+            client.setDoInput(true);
+            client.setRequestProperty("Content-Type", "application/x-www-form-urlencoded;" +
+                    "charset=UTF-8");
+            client.setHostnameVerifier(new HostnameVerifier() {
+                @Override
+                public boolean verify(String hostname, SSLSession sslSession) {
+                    return true;
+                }
+            });
+
+            OutputStream os = client.getOutputStream();
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+            body.put("deviceid", Settings.Secure.getString(context.getContentResolver(),
+                    Settings.Secure.ANDROID_ID));
+            body.put("value", 100);
+            body.put("username", "Sanjeev");
+            writer.write("deviceid=" + Settings.Secure.getString(context.getContentResolver(),
+                    Settings.Secure.ANDROID_ID) + "&value=100&username=Sanjeev");
             writer.flush();
             writer.close();
 
