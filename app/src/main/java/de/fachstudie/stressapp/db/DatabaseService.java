@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -101,6 +102,10 @@ public class DatabaseService {
         String timestamp = dateFormat.format(new Date());
         String event = intent.getStringExtra("event");
 
+        Log.d("title", title);
+        Log.d("app", application);
+        Log.d("content", content);
+
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(StressNotification.NotificationEntry.TITLE, title);
@@ -125,7 +130,6 @@ public class DatabaseService {
         return notifications;
     }
 
-
     public List<StressNotification> getSpecificNotifications(String loaded) {
         List<StressNotification> notifications = new ArrayList<>();
         SQLiteDatabase db = dbHelper.getReadableDatabase();
@@ -135,6 +139,12 @@ public class DatabaseService {
 
         addNotifications(notifications, c);
         closeDatabaseComponents(c);
+
+        for(StressNotification notification: notifications){
+            Log.d("spec app", notification.getApplication());
+            Log.d("spec loaded", "" + notification.isLoaded());
+            Log.d("spec event", notification.getEvent());
+        }
         return notifications;
     }
 
@@ -163,6 +173,9 @@ public class DatabaseService {
                         .CONTENT_LENGTH));
                 String emoticons = c.getString(c.getColumnIndex(StressNotification.NotificationEntry.
                         EMOTICONS));
+
+                Log.d("emoticons", emoticons);
+
                 String timeStampText = c.getString(c.getColumnIndex(StressNotification
                         .NotificationEntry
                         .TIMESTAMP));

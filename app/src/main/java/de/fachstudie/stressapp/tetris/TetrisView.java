@@ -184,14 +184,8 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
             thread = new TetrisViewThread(this, getHolder());
         }
     }
-
-    public boolean isGameOver(){
-        return this.model.isGameOver();
-    }
-
+    
     public void notificationReceived() {
         model.notificationReceived();
     }
-
-
 }
