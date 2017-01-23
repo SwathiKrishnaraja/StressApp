@@ -181,8 +181,12 @@ public class MainActivity extends AppCompatActivity {
 
         switch (item.getItemId()) {
             case R.id.action_survey:
-                Intent intent = new Intent(MainActivity.this, SurveyActivity.class);
-                startActivity(intent);
+                Intent survey_activity = new Intent(MainActivity.this, SurveyActivity.class);
+                startActivity(survey_activity);
+                return true;
+            case R.id.action_score:
+                Intent score_activity = new Intent(MainActivity.this, ScoreActivity.class);
+                startActivity(score_activity);
                 return true;
         }
         return super.onOptionsItemSelected(item);

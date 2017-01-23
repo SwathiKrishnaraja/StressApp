@@ -3,6 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="de.fachstudie.stressapp.MainActivity">
     <item
+        android:id="@+id/action_score"
+        android:orderInCategory="100"
+        android:icon="@mipmap/ic_format_list_numbered_white_24dp"
+        android:title="Score"
+        android:tint="@color/white"
+        app:showAsAction="always" />
+    <item
         android:id="@+id/action_survey"
         android:orderInCategory="100"
         android:icon="@mipmap/ic_format_list_bulleted_white_24dp"
