@@ -14,19 +14,10 @@
         android:id="@+id/new_game_btn" />
 
     <Button
-        android:text="Resume game"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="@android:color/white"
-        android:background="@color/amber"
-        android:layout_marginBottom="5dp"
-        android:id="@+id/resume_game_btn" />
-
-    <Button
-        android:text="Finish game"
+        android:text="Exit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="@android:color/white"
         android:background="@color/red"
-        android:id="@+id/finish_game_btn"/>
+        android:id="@+id/exit_btn"/>
 </LinearLayout>

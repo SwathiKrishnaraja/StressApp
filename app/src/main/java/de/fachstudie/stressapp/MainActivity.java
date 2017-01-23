@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        gameOverDialog = getGameActionsDialog(false);
+        gameOverDialog = getGameOverDialog();
         Handler handler = createGameOverHandler();
 
         tetrisView = (TetrisView) findViewById(R.id.tetrisview);
@@ -107,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
         };
     }
 
-    private AlertDialog getGameActionsDialog(boolean resume) {
+    private AlertDialog getGameOverDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
         View view = getLayoutInflater().inflate(R.layout.dialog_gameover, null);
         builder.setView(view);
@@ -122,34 +122,19 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Button resumeGameBtn = (Button) view.findViewById(R.id.resume_game_btn);
-        resumeGameBtn.setVisibility(View.GONE);
-
-        if (resume) {
-            resumeGameBtn.setVisibility(View.VISIBLE);
-            resumeGameBtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (tetrisView != null && !tetrisView.isGameOver()) {
-                        tetrisView.resumeGame();
-                    }
-                }
-            });
-        }
-
-        Button finishGameBtn = (Button) view.findViewById(R.id.finish_game_btn);
-        finishGameBtn.setOnClickListener(new View.OnClickListener() {
+        Button exitBtn = (Button) view.findViewById(R.id.exit_btn);
+        exitBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 System.exit(0);
             }
         });
-
         return builder.create();
     }
 
     @Override
     public void onBackPressed() {
+        super.onBackPressed();
     }
 
     @Override
