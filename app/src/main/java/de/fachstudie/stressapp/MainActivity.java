@@ -99,7 +99,8 @@ public class MainActivity extends AppCompatActivity {
                 super.handleMessage(msg);
                 Bundle data = msg.getData();
                 gameOverDialog.setTitle("Game over");
-                gameOverDialog.setMessage("HIGHSCORE: " + data.getInt("highscore"));
+                gameOverDialog.setMessage("HIGHSCORE: " + data.getInt("highscore") + "\n" + "\n" +
+                        "SCORE: " + data.getInt("score"));
                 if (!isFinishing()) {
                     gameOverDialog.show();
                 }

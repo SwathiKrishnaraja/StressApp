@@ -455,6 +455,10 @@ public class TetrisWorld {
         return (score != 0 ? score : 0);
     }
 
+    public int getScore() {
+        return score;
+    }
+
     public void saveScore() {
         if (score != 0) {
             dbService.saveScore(score);

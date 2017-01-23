@@ -34,7 +34,6 @@ public class DialogUtils {
 
         TextView view = (TextView) dialog.findViewById(android.R.id.message);
         view.setTextSize(15);
-
         return dialog;
     }
 }
