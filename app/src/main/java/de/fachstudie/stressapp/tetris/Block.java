@@ -118,13 +118,14 @@ public class Block extends Item {
         for (int j = currentY; j < currentY + currentHeight && j < state.length; j++) {
             for (int i = getX(); i < currentX + currentWidth && j >= 0 && i < state[j].length;
                  i++) {
-
-                int yOffset = j - currentY;
-                int xOffset = i - currentX;
-                if (indexExists(yOffset, getShape()) && indexExists(xOffset, getShape()[yOffset])
-                        && getShape()[yOffset][xOffset] == 1) {
-                    if (j >= 0 && i >= 0 && state[j][i] > 0) {
-                        state[j][i] = -1;
+                synchronized (this) {
+                    int yOffset = j - currentY;
+                    int xOffset = i - currentX;
+                    if (indexExists(yOffset, getShape()) && indexExists(xOffset, getShape()[yOffset])
+                            && getShape()[yOffset][xOffset] == 1) {
+                        if (j >= 0 && i >= 0 && state[j][i] > 0) {
+                            state[j][i] = -1;
+                        }
                     }
                 }
             }

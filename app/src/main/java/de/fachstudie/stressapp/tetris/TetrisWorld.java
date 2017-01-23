@@ -50,7 +50,6 @@ public class TetrisWorld {
     private boolean blockChange = false;
     private boolean gameOver = false;
 
-    private int notificationsIndex = 0;
     private List<StressNotification> notifications = new ArrayList<>();
     private DatabaseService dbService;
     private Context context;
