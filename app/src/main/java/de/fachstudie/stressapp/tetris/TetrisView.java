@@ -180,6 +180,7 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     public boolean isPause() {
+        createNewThread();
         return thread.isPause();
     }
 
