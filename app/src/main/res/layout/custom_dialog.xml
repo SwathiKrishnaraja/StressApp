@@ -11,7 +11,7 @@
         android:textColor="@android:color/white"
         android:background="@color/green"
         android:layout_marginBottom="5dp"
-        android:id="@+id/new_game_btn" />
+        android:id="@+id/start_new_game_btn" />
 
     <Button
         android:text="Exit"
@@ -19,5 +19,14 @@
         android:layout_height="wrap_content"
         android:textColor="@android:color/white"
         android:background="@color/red"
+        android:layout_marginBottom="5dp"
         android:id="@+id/exit_btn"/>
+
+    <Button
+        android:text="Cancel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/white"
+        android:background="@color/blue"
+        android:id="@+id/cancel_btn"/>
 </LinearLayout>

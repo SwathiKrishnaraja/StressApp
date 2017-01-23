@@ -36,6 +36,10 @@ public class TetrisViewThread extends Thread {
         }
     }
 
+    public boolean isPause() {
+        return pause;
+    }
+
     public void setPause(boolean pause) {
         this.pause = pause;
     }

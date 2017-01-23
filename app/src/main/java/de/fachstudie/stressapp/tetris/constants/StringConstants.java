@@ -26,4 +26,7 @@ public class StringConstants {
 
     public static final String ANDROID_SETTINGS_NOTIFICATION_LISTENER = "android.settings." +
             "ACTION_NOTIFICATION_LISTENER_SETTINGS";
+
+    public static final String CLOSE_APP_MESSAGE = "If you close StressApp, the current game state will be deleted!"
+            + "\n" + "\n" + "Do you want to close StressApp?";
 }

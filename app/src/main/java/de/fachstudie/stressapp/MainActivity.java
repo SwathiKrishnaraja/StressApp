@@ -28,6 +28,7 @@ import java.util.Date;
 import de.fachstudie.stressapp.db.DatabaseService;
 import de.fachstudie.stressapp.networking.HttpWrapper;
 import de.fachstudie.stressapp.tetris.TetrisView;
+import de.fachstudie.stressapp.tetris.constants.StringConstants;
 import de.fachstudie.stressapp.tetris.utils.DialogUtils;
 
 public class MainActivity extends AppCompatActivity {
@@ -38,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
     private IntentFilter filterLock;
     private TetrisView tetrisView;
     private AlertDialog userInfoDialog;
+    private AlertDialog exitDialog;
     private AlertDialog gameOverDialog;
     private boolean receiversCreated = false;
 
@@ -48,7 +50,9 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        gameOverDialog = getGameOverDialog();
+        exitDialog = getCustomDialog(false, true);
+
+        gameOverDialog = getCustomDialog(true, false);
         Handler handler = createGameOverHandler();
 
         tetrisView = (TetrisView) findViewById(R.id.tetrisview);
@@ -108,20 +112,25 @@ public class MainActivity extends AppCompatActivity {
         };
     }
 
-    private AlertDialog getGameOverDialog() {
+    private AlertDialog getCustomDialog(boolean newGame, boolean cancel) {
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-        View view = getLayoutInflater().inflate(R.layout.dialog_gameover, null);
+        View view = getLayoutInflater().inflate(R.layout.custom_dialog, null);
         builder.setView(view);
         builder.setCancelable(false);
 
-        Button newGameBtn = (Button) view.findViewById(R.id.new_game_btn);
-        newGameBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                tetrisView.startNewGame();
-                gameOverDialog.dismiss();
-            }
-        });
+        Button newGameBtn = (Button) view.findViewById(R.id.start_new_game_btn);
+        newGameBtn.setVisibility(View.GONE);
+
+        if (newGame) {
+            newGameBtn.setVisibility(View.VISIBLE);
+            newGameBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    tetrisView.startNewGame();
+                    gameOverDialog.dismiss();
+                }
+            });
+        }
 
         Button exitBtn = (Button) view.findViewById(R.id.exit_btn);
         exitBtn.setOnClickListener(new View.OnClickListener() {
@@ -130,12 +139,29 @@ public class MainActivity extends AppCompatActivity {
                 System.exit(0);
             }
         });
+
+        Button cancelBtn = (Button) view.findViewById(R.id.cancel_btn);
+        cancelBtn.setVisibility(View.GONE);
+
+        if (cancel) {
+            exitBtn.setText("Close");
+            cancelBtn.setVisibility(View.VISIBLE);
+            cancelBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    tetrisView.resumeGame();
+                    exitDialog.dismiss();
+                }
+            });
+        }
         return builder.create();
     }
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
+        tetrisView.pauseGame();
+        exitDialog.setMessage(StringConstants.CLOSE_APP_MESSAGE);
+        exitDialog.show();
     }
 
     @Override
@@ -147,7 +173,7 @@ public class MainActivity extends AppCompatActivity {
             tetrisView.pauseGame();
         } else if (!receiversCreated) {
             createReceivers();
-        } else {
+        } else if(!tetrisView.isPause()) {
             tetrisView.resumeGame();
         }
     }

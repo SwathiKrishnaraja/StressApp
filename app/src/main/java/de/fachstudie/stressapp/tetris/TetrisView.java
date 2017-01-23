@@ -179,12 +179,16 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
         thread.setPause(false);
     }
 
+    public boolean isPause() {
+        return thread.isPause();
+    }
+
     public void createNewThread() {
         if (thread == null) {
             thread = new TetrisViewThread(this, getHolder());
         }
     }
-    
+
     public void notificationReceived() {
         model.notificationReceived();
     }
