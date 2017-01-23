@@ -1,7 +1,9 @@
 package de.fachstudie.stressapp;
 
 import android.app.ActivityManager;
+import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -23,6 +25,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 import de.fachstudie.stressapp.db.DatabaseService;
@@ -64,6 +67,40 @@ public class MainActivity extends AppCompatActivity {
         } else {
             createReceivers();
         }
+
+        // get a Calendar object with current time
+        Calendar cal = Calendar.getInstance();
+        int currentHour = cal.get(Calendar.HOUR_OF_DAY);
+        if (currentHour < 11) {
+            cal.set(Calendar.HOUR_OF_DAY, 11);
+            cal.set(Calendar.MINUTE, 0);
+        } else if (currentHour < 14) {
+            cal.set(Calendar.HOUR_OF_DAY, 14);
+            cal.set(Calendar.MINUTE, 0);
+        } else if (currentHour < 17) {
+            cal.set(Calendar.HOUR_OF_DAY, 17);
+            cal.set(Calendar.MINUTE, 0);
+        } else if (currentHour < 20) {
+            cal.set(Calendar.HOUR_OF_DAY, 20);
+            cal.set(Calendar.MINUTE, 0);
+        } else {
+            cal.set(Calendar.HOUR_OF_DAY, 11);
+            cal.set(Calendar.MINUTE, 0);
+            cal.add(Calendar.DAY_OF_YEAR, 1);
+        }
+
+        Intent intent = new Intent(this, AlarmReceiver.class);
+        intent.putExtra("de.fachstudie.stressapp.notification", "Test");
+
+        // In reality, you would want to have a static variable for the request code instead of
+        // 192837
+        PendingIntent sender = PendingIntent.getBroadcast(this, 10, intent, PendingIntent
+                .FLAG_UPDATE_CURRENT);
+
+        // Get the AlarmManager service
+        AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
+        // am.set(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), sender);
+        am.setExact(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), sender);
     }
 
     private void createReceivers() {
@@ -93,7 +130,6 @@ public class MainActivity extends AppCompatActivity {
         }
         return false;
     }
-
 
     @NonNull
     private Handler createGameOverHandler() {
@@ -318,7 +354,8 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected Void doInBackground(JSONObject... json) {
-            HttpWrapper.doPost(this.context, json[0]);
+            HttpWrapper.sendNotificationEvent(this.context, json[0]);
+
             return null;
         }
     }
