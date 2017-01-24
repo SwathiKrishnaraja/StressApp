@@ -169,11 +169,11 @@ public class MainActivity extends AppCompatActivity {
             });
         }
 
-        Button topScoresBtn = (Button) view.findViewById(R.id.top_scores_btn);
-        topScoresBtn.setVisibility(View.GONE);
+        Button scoreboardBtn = (Button) view.findViewById(R.id.scoreboard_btn);
+        scoreboardBtn.setVisibility(View.GONE);
         if(topScores) {
-            topScoresBtn.setVisibility(View.VISIBLE);
-            topScoresBtn.setOnClickListener(new View.OnClickListener() {
+            scoreboardBtn.setVisibility(View.VISIBLE);
+            scoreboardBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Intent score_activity = new Intent(MainActivity.this, ScoreActivity.class);

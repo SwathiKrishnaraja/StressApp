@@ -30,7 +30,7 @@ public class ScoreActivity extends AppCompatActivity {
     @NonNull
     private TextView getTextView() {
         TextView textView = new TextView(this);
-        textView.setText("Top 10 Scores");
+        textView.setText("Scoreboard");
         textView.setTextColor(Color.BLACK);
         textView.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
         textView.setTextSize(20);
