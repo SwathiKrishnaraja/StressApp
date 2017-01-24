@@ -49,6 +49,7 @@ public class TetrisWorld {
     private boolean dropping = false;
     private boolean blockChange = false;
     private boolean gameOver = false;
+    private boolean notificationPosted = false;
 
     private List<StressNotification> notifications = new ArrayList<>();
     private DatabaseService dbService;
@@ -72,8 +73,9 @@ public class TetrisWorld {
         currentBlock.simulateStepDown(state);
         this.blockChange = false;
 
-        if (nextBitmap == null) {
+        if (nextBitmap == null || notificationPosted) {
             notifications = dbService.getSpecificNotifications("false");
+            notificationPosted = false;
             setNextBitmap();
         }
 
@@ -497,7 +499,7 @@ public class TetrisWorld {
         return currentBitmap;
     }
 
-    public void notificationReceived() {
-        nextBitmap = null;
+    public void notificationPosted() {
+        notificationPosted = true;
     }
 }

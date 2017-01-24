@@ -282,7 +282,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             dbService.saveNotification(intent);
-            tetrisView.notificationReceived();
+            tetrisView.notificationPosted();
             JSONObject event = new JSONObject();
             try {
                 event.put("event", intent.getStringExtra("event"));

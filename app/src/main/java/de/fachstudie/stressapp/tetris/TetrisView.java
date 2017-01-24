@@ -190,7 +190,7 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
         }
     }
 
-    public void notificationReceived() {
-        model.notificationReceived();
+    public void notificationPosted() {
+        model.notificationPosted();
     }
 }
