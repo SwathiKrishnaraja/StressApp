@@ -1,6 +1,8 @@
 package de.fachstudie.stressapp.tetris;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -11,6 +13,8 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+
+import de.fachstudie.stressapp.R;
 
 public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
     private final TetrisWorld model;
@@ -37,9 +41,13 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
         p = new Paint();
         p.setColor(Color.GREEN);
 
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(),
+                R.mipmap.ic_event_available);
+
         this.model = new TetrisWorld(context);
         this.model.addItem(new Block(3, 0, 0, 0));
         this.model.createNextItem();
+        this.model.setNotificationBitmap(bitmap);
     }
 
     @Override

@@ -140,7 +140,7 @@ public class MainActivity extends AppCompatActivity {
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
                 Bundle data = msg.getData();
-                gameOverDialog.setTitle("Game over");
+                gameOverDialog.setTitle("GAME OVER");
                 gameOverDialog.setMessage("HIGHSCORE: " + data.getInt("highscore") + "\n" + "\n" +
                         "SCORE: " + data.getInt("score"));
                 if (!isFinishing()) {

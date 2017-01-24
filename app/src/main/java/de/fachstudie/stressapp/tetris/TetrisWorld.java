@@ -33,7 +33,8 @@ public class TetrisWorld {
     private final int PREVIEW_WIDTH = 4;
     private final int PADDING = 140;
     private final int TOP_PADDING = 180;
-    private final int PREVIEW_PADDING = 10;
+    private final int NEXT_BLOCK_PREVIEW_PADDING = 10;
+    private final int NOTIFICATIONS_SIZE_PREVIEW_PADDING = 20;
     private final int TEXT_SIZE = 40;
 
     // Initialization of the tetris field
@@ -44,6 +45,7 @@ public class TetrisWorld {
     private Block nextBlock;
     private Bitmap currentBitmap;
     private Bitmap nextBitmap;
+    private Bitmap notificationBitmap;
 
     private int score;
     private int gridSize;
@@ -233,25 +235,45 @@ public class TetrisWorld {
 
         gridSize = (canvasWidth - 2 * PADDING) / WIDTH;
         int iconSize = gridSize - 2 * (gridSize / 8);
-        int previewGridSize = (PADDING - 2 * PREVIEW_PADDING) / PREVIEW_WIDTH;
+        int previewGridSize = (PADDING - 2 * NEXT_BLOCK_PREVIEW_PADDING) / PREVIEW_WIDTH;
 
         // Font settings
         p.setTextSize(TEXT_SIZE);
         p.setColor(Color.BLACK);
         p.setTypeface(Typeface.create("sans-serif-medium", Typeface.BOLD));
 
+        // Draw current score
         canvas.drawText("" + score, PADDING + (WIDTH * gridSize / 2), TOP_PADDING - 20, p);
+
+        // Draw number of notifications
+        p.setTextSize(TEXT_SIZE - 10);
+        canvas.drawText("" + notifications.size(),
+                PADDING + WIDTH * gridSize + NEXT_BLOCK_PREVIEW_PADDING + 50,
+                TOP_PADDING + PADDING - HEIGHT + NOTIFICATIONS_SIZE_PREVIEW_PADDING + (PADDING / 2),
+                p);
+
 
         p.setStyle(Paint.Style.STROKE);
         p.setColor(Color.DKGRAY);
         canvas.drawRect(PADDING, TOP_PADDING, PADDING + WIDTH * gridSize, TOP_PADDING + HEIGHT *
                 gridSize, p);
 
-        // Draw boundary of the preview
-        canvas.drawRect(PADDING + WIDTH * gridSize + PREVIEW_PADDING,
+        // Draw boundary of the next block preview
+        canvas.drawRect(PADDING + WIDTH * gridSize + NEXT_BLOCK_PREVIEW_PADDING,
                 TOP_PADDING,
-                PADDING + WIDTH * gridSize + PADDING - PREVIEW_PADDING,
+                PADDING + WIDTH * gridSize + PADDING - NEXT_BLOCK_PREVIEW_PADDING,
                 TOP_PADDING + PADDING - HEIGHT, p);
+
+        // Draw boundary of the notifications number preview
+        canvas.drawRect(PADDING + WIDTH * gridSize + NEXT_BLOCK_PREVIEW_PADDING,
+                TOP_PADDING + PADDING - HEIGHT + 20,
+                PADDING + WIDTH * gridSize + PADDING - NEXT_BLOCK_PREVIEW_PADDING,
+                TOP_PADDING + 2 * PADDING - HEIGHT, p);
+
+        // Draw icon for number of notifications preview
+        notificationBitmap = getResizedBitmap(notificationBitmap, TEXT_SIZE + 5, TEXT_SIZE + 5);
+        canvas.drawBitmap(notificationBitmap, PADDING + WIDTH * gridSize + NEXT_BLOCK_PREVIEW_PADDING,
+                TOP_PADDING + PADDING - HEIGHT + 20 + 35, p);
 
         p.setStyle(Paint.Style.FILL);
 
@@ -270,7 +292,7 @@ public class TetrisWorld {
                 if (occupancy[j][i] != 0) {
                     setColorForShape(p, occupancy[j][i]);
                     canvas.drawRect(i * gridSize + PADDING + 1, (j - 2) * gridSize + TOP_PADDING
-                            + 1,
+                                    + 1,
                             (i + 1) * gridSize + PADDING - 1, (j - 1) * gridSize + TOP_PADDING -
                                     1, p);
 
@@ -299,7 +321,7 @@ public class TetrisWorld {
                                 currentBlock.getShape()[yOffset])
                                 && item.getShape()[yOffset][xOffset] == 1) {
                             canvas.drawRect(i * gridSize + PADDING + 1, (j - 2) * gridSize +
-                                    TOP_PADDING + 1,
+                                            TOP_PADDING + 1,
                                     (i + 1) * gridSize + PADDING - 1,
                                     (j - 1) * gridSize + TOP_PADDING - 1, p);
                         }
@@ -338,16 +360,16 @@ public class TetrisWorld {
                 if (nextBlock.getShape()[yOffset][xOffset] == 1) {
                     setColorForShape(p, nextBlock.getType());
                     canvas.drawRect(i * previewGridSize + PADDING + WIDTH * gridSize +
-                            PREVIEW_PADDING + 1,
+                                    NEXT_BLOCK_PREVIEW_PADDING + 1,
                             j * previewGridSize + TOP_PADDING + 1,
                             (i + 1) * previewGridSize + PADDING + WIDTH * gridSize +
-                                    PREVIEW_PADDING - 1,
+                                    NEXT_BLOCK_PREVIEW_PADDING - 1,
                             (j + 1) * previewGridSize + TOP_PADDING - 1, p);
 
                     if (bitmap != null)
                         canvas.drawBitmap(bitmap,
                                 i * previewGridSize + PADDING + WIDTH * gridSize +
-                                        PREVIEW_PADDING + 1
+                                        NEXT_BLOCK_PREVIEW_PADDING + 1
                                         + (previewGridSize / 8),
                                 j * previewGridSize + TOP_PADDING + 1 + (previewGridSize / 8), p);
                 }
@@ -515,5 +537,9 @@ public class TetrisWorld {
 
     public void notificationPosted() {
         notificationPosted = true;
+    }
+
+    public void setNotificationBitmap(Bitmap notificationBitmap) {
+        this.notificationBitmap = notificationBitmap;
     }
 }
