@@ -29,7 +29,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 import de.fachstudie.stressapp.db.DatabaseService;
-import de.fachstudie.stressapp.networking.HttpWrapper;
+import de.fachstudie.stressapp.networking.StressAppClient;
 import de.fachstudie.stressapp.tetris.TetrisView;
 import de.fachstudie.stressapp.tetris.constants.StringConstants;
 import de.fachstudie.stressapp.tetris.utils.DialogUtils;
@@ -45,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
     private AlertDialog exitDialog;
     private AlertDialog gameOverDialog;
     private boolean receiversCreated = false;
+    private StressAppClient client;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
 
         exitDialog = getCustomDialog(false, false, true, true);
 
+        client = new StressAppClient(this);
         gameOverDialog = getCustomDialog(true, true, false, false);
         Handler handler = createGameOverHandler();
 
@@ -372,7 +374,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected Void doInBackground(JSONObject... json) {
-            HttpWrapper.sendNotificationEvent(this.context, json[0]);
+            client.sendNotificationEvent(this.context, json[0]);
 
             return null;
         }
