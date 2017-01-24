@@ -46,7 +46,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                             .setContentTitle("Are you feeling stressed?")
                             .setContentText("Please take a minute to answer your survey!");
             // Creates an explicit intent for an Activity in your app
-            Intent resultIntent = new Intent(context, MainActivity.class);
+            Intent resultIntent = new Intent(context, SurveyActivity.class);
 
             // The stack builder object will contain an artificial back stack for the
             // started Activity.
