@@ -214,7 +214,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         tetrisView.pauseGame();
-        exitDialog.setMessage(StringConstants.CLOSE_APP_MESSAGE);
+        exitDialog.setMessage(StringConstants.EXIT_MESSAGE);
         exitDialog.show();
     }
 
