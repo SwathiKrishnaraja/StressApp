@@ -9,11 +9,4 @@
         android:title="Score"
         android:tint="@color/white"
         app:showAsAction="always" />
-    <item
-        android:id="@+id/action_survey"
-        android:orderInCategory="100"
-        android:icon="@mipmap/ic_format_list_bulleted_white_24dp"
-        android:title="Survey"
-        android:tint="@color/white"
-        app:showAsAction="always" />
 </menu>
