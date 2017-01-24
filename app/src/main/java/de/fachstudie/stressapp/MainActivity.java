@@ -53,9 +53,9 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        exitDialog = getCustomDialog(false, true);
+        exitDialog = getCustomDialog(false, false, true, true);
 
-        gameOverDialog = getCustomDialog(true, false);
+        gameOverDialog = getCustomDialog(true, true, false, false);
         Handler handler = createGameOverHandler();
 
         tetrisView = (TetrisView) findViewById(R.id.tetrisview);
@@ -148,7 +148,8 @@ public class MainActivity extends AppCompatActivity {
         };
     }
 
-    private AlertDialog getCustomDialog(boolean newGame, boolean cancel) {
+    private AlertDialog getCustomDialog(boolean newGame, boolean topScores, boolean exit,
+                                        boolean cancel) {
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
         View view = getLayoutInflater().inflate(R.layout.custom_dialog, null);
         builder.setView(view);
@@ -168,19 +169,36 @@ public class MainActivity extends AppCompatActivity {
             });
         }
 
+        Button topScoresBtn = (Button) view.findViewById(R.id.top_scores_btn);
+        topScoresBtn.setVisibility(View.GONE);
+        if(topScores) {
+            topScoresBtn.setVisibility(View.VISIBLE);
+            topScoresBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent score_activity = new Intent(MainActivity.this, ScoreActivity.class);
+                    startActivity(score_activity);
+                    gameOverDialog.dismiss();
+                }
+            });
+        }
+
         Button exitBtn = (Button) view.findViewById(R.id.exit_btn);
-        exitBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                System.exit(0);
-            }
-        });
+        exitBtn.setVisibility(View.GONE);
+        if(exit) {
+            exitBtn.setVisibility(View.VISIBLE);
+            exitBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    System.exit(0);
+                }
+            });
+        }
 
         Button cancelBtn = (Button) view.findViewById(R.id.cancel_btn);
         cancelBtn.setVisibility(View.GONE);
 
         if (cancel) {
-            exitBtn.setText("Close");
             cancelBtn.setVisibility(View.VISIBLE);
             cancelBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -209,7 +227,7 @@ public class MainActivity extends AppCompatActivity {
             tetrisView.pauseGame();
         } else if (!receiversCreated) {
             createReceivers();
-        } else if(!tetrisView.isPause()) {
+        } else if (!tetrisView.isPause()) {
             tetrisView.resumeGame();
         }
     }

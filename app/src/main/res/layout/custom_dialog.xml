@@ -14,6 +14,15 @@
         android:id="@+id/start_new_game_btn" />
 
     <Button
+        android:text="Top 10 Scores"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/white"
+        android:background="@color/orange"
+        android:layout_marginBottom="5dp"
+        android:id="@+id/top_scores_btn" />
+
+    <Button
         android:text="Exit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
