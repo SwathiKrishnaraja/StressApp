@@ -123,7 +123,7 @@ public class Block extends Item {
                     int xOffset = i - currentX;
                     if (indexExists(yOffset, getShape()) && indexExists(xOffset, getShape()[yOffset])
                             && getShape()[yOffset][xOffset] == 1) {
-                        if (j >= 0 && i >= 0 && state[j][i] > 0) {
+                        if (indexExists(j, state) && indexExists(i, state[j]) && state[j][i] > 0) {
                             state[j][i] = -1;
                         }
                     }
