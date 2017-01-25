@@ -255,7 +255,6 @@ public class TetrisWorld {
                 TOP_PADDING + PADDING - HEIGHT + NOTIFICATIONS_SIZE_PREVIEW_PADDING + (PADDING / 2),
                 p);
 
-
         p.setStyle(Paint.Style.STROKE);
         p.setColor(Color.DKGRAY);
         canvas.drawRect(PADDING, TOP_PADDING, PADDING + WIDTH * gridSize, TOP_PADDING + HEIGHT *
@@ -275,7 +274,8 @@ public class TetrisWorld {
 
         // Draw icon for number of notifications preview
         notificationBitmap = getResizedBitmap(notificationBitmap, TEXT_SIZE + 5, TEXT_SIZE + 5);
-        canvas.drawBitmap(notificationBitmap, PADDING + WIDTH * gridSize + NEXT_BLOCK_PREVIEW_PADDING,
+        canvas.drawBitmap(notificationBitmap, PADDING + WIDTH * gridSize +
+                NEXT_BLOCK_PREVIEW_PADDING,
                 TOP_PADDING + PADDING - HEIGHT + 20 + 35, p);
 
         p.setStyle(Paint.Style.FILL);
@@ -501,8 +501,9 @@ public class TetrisWorld {
     public void saveScore() {
         if (score != 0) {
             dbService.saveScore(score);
-
-            client.sendScore(this.context, score, "testuser");
+            client.sendScore(this.context, score,
+                    context.getSharedPreferences("de.fachstudie.stressapp.preferences", Context
+                            .MODE_PRIVATE).getString("username", "You"));
         }
     }
 

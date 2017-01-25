@@ -63,6 +63,7 @@ public class ScoreActivity extends AppCompatActivity {
     private TextView getTextView() {
         TextView textView = new TextView(this);
         textView.setText("Scoreboard");
+        textView.setPadding(0, 10, 0, 30);
         textView.setTextColor(Color.BLACK);
         textView.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
         textView.setTextSize(20);

@@ -8,12 +8,15 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
@@ -21,6 +24,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -163,7 +168,8 @@ public class MainActivity extends AppCompatActivity {
         builder.setView(view);
         builder.setCancelable(false);
 
-        Button newGameBtn = (Button) view.findViewById(R.id.start_new_game_btn);
+        final LinearLayout usernameLayout = (LinearLayout) view.findViewById(R.id.username_layout);
+        final Button newGameBtn = (Button) view.findViewById(R.id.start_new_game_btn);
         newGameBtn.setVisibility(View.GONE);
 
         if (newGame) {
@@ -172,12 +178,13 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View view) {
                     tetrisView.startNewGame();
+                    usernameLayout.setVisibility(View.GONE);
                     gameOverDialog.dismiss();
                 }
             });
         }
 
-        Button scoreboardBtn = (Button) view.findViewById(R.id.scoreboard_btn);
+        final Button scoreboardBtn = (Button) view.findViewById(R.id.scoreboard_btn);
         scoreboardBtn.setVisibility(View.GONE);
         if (topScores) {
             scoreboardBtn.setVisibility(View.VISIBLE);
@@ -186,6 +193,7 @@ public class MainActivity extends AppCompatActivity {
                 public void onClick(View view) {
                     Intent score_activity = new Intent(MainActivity.this, ScoreActivity.class);
                     startActivity(score_activity);
+                    usernameLayout.setVisibility(View.GONE);
                     gameOverDialog.dismiss();
                 }
             });
@@ -216,6 +224,47 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
         }
+
+        final EditText usernameEdit = (EditText) view.findViewById(R.id.username_edit);
+        final SharedPreferences preferences = this.getSharedPreferences("de.fachstudie.stressapp" +
+                ".preferences", Context.MODE_PRIVATE);
+        if (preferences.getString("username", "").isEmpty() && (newGame || topScores)) {
+            usernameLayout.setVisibility(View.VISIBLE);
+            newGameBtn.setEnabled(false);
+            newGameBtn.setBackgroundColor(getResources().getColor(R.color.lightgray));
+            scoreboardBtn.setEnabled(false);
+            scoreboardBtn.setBackgroundColor(getResources().getColor(R.color.lightgray));
+            usernameEdit.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                }
+
+                @Override
+                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                }
+
+                @Override
+                public void afterTextChanged(Editable editable) {
+                    if (!editable.toString().isEmpty()) {
+                        newGameBtn.setEnabled(true);
+                        newGameBtn.setBackgroundColor(getResources().getColor(R.color.green));
+                        scoreboardBtn.setEnabled(true);
+                        scoreboardBtn.setBackgroundColor(getResources().getColor(R.color.orange));
+                        preferences.edit().putString("username", editable.toString()).commit();
+                    } else {
+                        newGameBtn.setEnabled(false);
+                        newGameBtn.setBackgroundColor(getResources().getColor(R.color.lightgray));
+                        scoreboardBtn.setEnabled(false);
+                        scoreboardBtn.setBackgroundColor(getResources().getColor(R.color
+                                .lightgray));
+                    }
+                }
+            });
+        } else {
+            usernameLayout.setVisibility(View.GONE);
+            Log.d("Invisible", "true");
+        }
+
         return builder.create();
     }
 
