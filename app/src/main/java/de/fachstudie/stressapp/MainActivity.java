@@ -8,14 +8,15 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -60,8 +61,13 @@ public class MainActivity extends AppCompatActivity {
         gameOverDialog = getCustomDialog(true, true, false, false);
         Handler handler = createGameOverHandler();
 
+        Display display = getWindowManager().getDefaultDisplay();
+        DisplayMetrics metrics = new DisplayMetrics();
+        display.getMetrics(metrics);
+
         tetrisView = (TetrisView) findViewById(R.id.tetrisview);
         tetrisView.setHandler(handler);
+        tetrisView.setHeight(metrics.heightPixels);
 
         if (!isNLServiceRunning()) {
             if (userInfoDialog == null)
@@ -173,7 +179,7 @@ public class MainActivity extends AppCompatActivity {
 
         Button scoreboardBtn = (Button) view.findViewById(R.id.scoreboard_btn);
         scoreboardBtn.setVisibility(View.GONE);
-        if(topScores) {
+        if (topScores) {
             scoreboardBtn.setVisibility(View.VISIBLE);
             scoreboardBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -187,7 +193,7 @@ public class MainActivity extends AppCompatActivity {
 
         Button exitBtn = (Button) view.findViewById(R.id.exit_btn);
         exitBtn.setVisibility(View.GONE);
-        if(exit) {
+        if (exit) {
             exitBtn.setVisibility(View.VISIBLE);
             exitBtn.setOnClickListener(new View.OnClickListener() {
                 @Override

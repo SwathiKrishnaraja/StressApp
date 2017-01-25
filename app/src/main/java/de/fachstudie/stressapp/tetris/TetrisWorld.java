@@ -32,7 +32,7 @@ public class TetrisWorld {
     private final int FULL_HEIGHT = 22;
     private final int PREVIEW_WIDTH = 4;
     private final int PADDING = 140;
-    private final int TOP_PADDING = 170;
+    private int TOP_PADDING = 0;
     private final int NEXT_BLOCK_PREVIEW_PADDING = 10;
     private final int NOTIFICATIONS_SIZE_PREVIEW_PADDING = 20;
     private final int TEXT_SIZE = 40;
@@ -544,5 +544,9 @@ public class TetrisWorld {
 
     public void setNotificationBitmap(Bitmap notificationBitmap) {
         this.notificationBitmap = notificationBitmap;
+    }
+
+    public void setTopPadding(int heightPixels) {
+        TOP_PADDING = (int) (heightPixels * 0.15);
     }
 }

@@ -201,4 +201,8 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
     public void notificationPosted() {
         model.notificationPosted();
     }
+
+    public void setHeight(int heightPixels) {
+        model.setTopPadding(heightPixels);
+    }
 }
