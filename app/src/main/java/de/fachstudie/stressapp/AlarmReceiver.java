@@ -44,7 +44,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                     new NotificationCompat.Builder(context)
                             .setSmallIcon(android.R.drawable.ic_input_add)
                             .setContentTitle("Are you feeling stressed?")
-                            .setContentText("Please take a minute to answer your survey!");
+                            .setContentText("Please take a minute to answer our survey!");
             // Creates an explicit intent for an Activity in your app
             Intent resultIntent = new Intent(context, SurveyActivity.class);
 

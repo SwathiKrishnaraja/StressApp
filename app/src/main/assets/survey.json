@@ -1,8 +1,8 @@
 {
   "survey_properties": {
     "intro_message": "<p><strong>Dear User, <br>your feedback helps us to analyze <br>the effects of smartphone notifications <br>on the stress level.</strong></p>   <p>Therefore you have to fill a survey. <br> It will take less than 5 minutes <br> to answer the questions.</p> <p>The collected data is securely stored. <br> We do guarantee no data misuse and <br> privacy is completely preserved. <br> Thank you.</p>",
-    "end_message": "Thank you for having the time to take our survey.",
-    "skip_intro": false
+    "end_message": "Thank you for answering our survey.",
+    "skip_intro": true
   },
   "questions": [
     {
