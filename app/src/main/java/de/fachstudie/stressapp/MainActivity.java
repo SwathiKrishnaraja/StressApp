@@ -293,7 +293,7 @@ public class MainActivity extends AppCompatActivity {
                         .getStringExtra("content")));
             } catch (JSONException e) {
             }
-            new SendTask(context).execute(event);
+            client.sendNotificationEvent(event);
         }
     }
 
@@ -322,7 +322,7 @@ public class MainActivity extends AppCompatActivity {
                         event.put("emoticons", "");
                     } catch (JSONException e) {
                     }
-                    new SendTask(context).execute(event);
+                    client.sendNotificationEvent(event);
                 } else if (intent.getAction().equals(Intent.ACTION_SCREEN_OFF)) {
                     // Screen is locked
                     Log.i("LockScreenReceiver", "Screen is locked");
@@ -338,7 +338,7 @@ public class MainActivity extends AppCompatActivity {
                         event.put("emoticons", "");
                     } catch (JSONException e) {
                     }
-                    new SendTask(context).execute(event);
+                    client.sendNotificationEvent(event);
                 } else if (intent.getAction().equals(Intent.ACTION_USER_PRESENT)) {
                     // Screen is unlocked
                     Log.i("LockScreenReceiver", "Screen is unlocked");
@@ -354,25 +354,9 @@ public class MainActivity extends AppCompatActivity {
                         event.put("emoticons", "");
                     } catch (JSONException e) {
                     }
-                    new SendTask(context).execute(event);
+                    client.sendNotificationEvent(event);
                 }
             }
-        }
-    }
-
-    public class SendTask extends AsyncTask<JSONObject, Void, Void> {
-
-        private final Context context;
-
-        public SendTask(Context context) {
-            this.context = context;
-        }
-
-        @Override
-        protected Void doInBackground(JSONObject... json) {
-            client.sendNotificationEvent(this.context, json[0]);
-
-            return null;
         }
     }
 }

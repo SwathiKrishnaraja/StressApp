@@ -10,6 +10,7 @@ public class Score {
 
     private int id;
     private int value;
+    private String username;
 
     public Score(int id, int value) {
         this.id = id;
@@ -26,6 +27,14 @@ public class Score {
 
     public void setValue(int value) {
         this.value = value;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getUsername() {
+        return username;
     }
 
     public static class ScoreEntry implements BaseColumns {

@@ -2,6 +2,9 @@ package de.fachstudie.stressapp.networking;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.provider.Settings;
 import android.util.Log;
 
@@ -83,7 +86,14 @@ public class StressAppClient {
         return sslContext.getSocketFactory();
     }
 
-    public boolean sendNotificationEvent(Context context, JSONObject body) {
+    public void getScores(Handler.Callback callback) {
+        String url = "score?top=10&deviceid=" + Settings.Secure.getString(context
+                        .getContentResolver(),
+                Settings.Secure.ANDROID_ID);
+        new GetTask(callback).execute(url);
+    }
+
+    public boolean sendNotificationEvent(JSONObject body) {
         try {
             body.put("deviceid", Settings.Secure.getString(context.getContentResolver(),
                     Settings.Secure.ANDROID_ID));
@@ -125,7 +135,7 @@ public class StressAppClient {
                 client.setHostnameVerifier(new HostnameVerifier() {
                     @Override
                     public boolean verify(String hostname, SSLSession sslSession) {
-                        return true;
+                        return hostname.equals("129.69.197.6");
                     }
                 });
 
@@ -137,8 +147,9 @@ public class StressAppClient {
 
                 InputStream in = new BufferedInputStream(client.getInputStream());
                 Log.d("Client request", "POST /" + endpoint + ": " + data[0]);
-                Log.d("Backend response", "POST /" + endpoint + ": " + convertInputStreamToString
-                        (in));
+                String response = convertInputStreamToString
+                        (in);
+                Log.d("Backend response", "POST /" + endpoint + ": " + response);
                 in.close();
                 os.close();
             } catch (Exception e) {
@@ -150,6 +161,59 @@ public class StressAppClient {
                 }
             }
             return true;
+        }
+    }
+
+    public class GetTask extends AsyncTask<String, Void, String> {
+        private Handler.Callback callback;
+
+        public GetTask(Handler.Callback callback) {
+            this.callback = callback;
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            String endpoint = params[0];
+            HttpsURLConnection client = null;
+            String response = "";
+            try {
+                SSLSocketFactory sslSocketFactory = getSocketFactory();
+                URL url = new URL("https://129.69.197.6/" + endpoint);
+                client = (HttpsURLConnection) url.openConnection();
+                client.setSSLSocketFactory(sslSocketFactory);
+                client.setRequestMethod("GET");
+                client.setRequestProperty("Content-Type", "application/x-www-form-urlencoded;" +
+                        "charset=UTF-8");
+                client.setHostnameVerifier(new HostnameVerifier() {
+                    @Override
+                    public boolean verify(String hostname, SSLSession sslSession) {
+                        return hostname.equals("129.69.197.6");
+                    }
+                });
+
+                InputStream in = new BufferedInputStream(client.getInputStream());
+                response = convertInputStreamToString(in);
+                Log.d("Client request", "GET /" + endpoint);
+                Log.d("Backend response", "GET /" + endpoint + ": " + response);
+                in.close();
+            } catch (Exception e) {
+                Log.e("Network exception", e.getClass().toString() + " " + e.getMessage());
+                return "Network exception";
+            } finally {
+                if (client != null) {
+                    client.disconnect();
+                }
+            }
+            return response;
+        }
+
+        @Override
+        protected void onPostExecute(String response) {
+            Message message = Message.obtain();
+            Bundle bundle = new Bundle();
+            bundle.putString("response", response);
+            message.setData(bundle);
+            callback.handleMessage(message);
         }
     }
 }
