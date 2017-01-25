@@ -32,7 +32,7 @@ public class TetrisWorld {
     private final int FULL_HEIGHT = 22;
     private final int PREVIEW_WIDTH = 4;
     private final int PADDING = 140;
-    private final int TOP_PADDING = 180;
+    private final int TOP_PADDING = 170;
     private final int NEXT_BLOCK_PREVIEW_PADDING = 10;
     private final int NOTIFICATIONS_SIZE_PREVIEW_PADDING = 20;
     private final int TEXT_SIZE = 40;
@@ -49,6 +49,7 @@ public class TetrisWorld {
 
     private int score;
     private int gridSize;
+    private int notificationsCount = 0;
     private boolean dropping = false;
     private boolean blockChange = false;
     private boolean gameOver = false;
@@ -80,6 +81,7 @@ public class TetrisWorld {
 
         if (nextBitmap == null || notificationPosted) {
             notifications = dbService.getSpecificNotifications("false");
+            notificationsCount = notifications.size();
             notificationPosted = false;
             setNextBitmap();
         }
@@ -97,6 +99,7 @@ public class TetrisWorld {
                 this.currentBlock = nextBlock;
                 this.nextBlock = randomItem();
                 this.setBitmaps();
+                notificationsCount = (notificationsCount != 0) ? notificationsCount - 1 : 0;
                 this.blockChange = true;
             }
             return false;
@@ -243,11 +246,11 @@ public class TetrisWorld {
         p.setTypeface(Typeface.create("sans-serif-medium", Typeface.BOLD));
 
         // Draw current score
-        canvas.drawText("" + score, PADDING + (WIDTH * gridSize / 2), TOP_PADDING - 20, p);
+        canvas.drawText("" + score, PADDING + (WIDTH * gridSize / 2), TOP_PADDING - 15, p);
 
         // Draw number of notifications
         p.setTextSize(TEXT_SIZE - 10);
-        canvas.drawText("" + notifications.size(),
+        canvas.drawText("" + notificationsCount,
                 PADDING + WIDTH * gridSize + NEXT_BLOCK_PREVIEW_PADDING + 50,
                 TOP_PADDING + PADDING - HEIGHT + NOTIFICATIONS_SIZE_PREVIEW_PADDING + (PADDING / 2),
                 p);
