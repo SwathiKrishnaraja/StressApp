@@ -59,6 +59,7 @@ public class TetrisWorld {
     private DatabaseService dbService;
     private Context context;
     private StressAppClient client;
+    private String scoreString = "0000";
 
     public TetrisWorld(Context context) {
         this.context = context;
@@ -169,6 +170,10 @@ public class TetrisWorld {
         } else if (fullLines.size() == 4) {
             this.score += 1200;
         }
+        scoreString = String.valueOf(score);
+        while (scoreString.length() < 4) {
+            scoreString = "0" + scoreString;
+        }
     }
 
     private void clearFullLines() {
@@ -246,11 +251,6 @@ public class TetrisWorld {
         p.setStyle(Paint.Style.FILL);
         p.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
 
-        // Draw current score
-        String scoreString = String.valueOf(score);
-        while (scoreString.length() < 4) {
-            scoreString = "0" + scoreString;
-        }
         boolean notZero = false;
         for (int i = 0; i < 4; i++) {
             if (scoreString.charAt(i) != '0') {
