@@ -60,6 +60,8 @@ public class TetrisWorld {
     private Context context;
     private StressAppClient client;
     private String scoreString = "0000";
+    private long lastScoreChange = -1;
+    private int lastScoreDelta = 0;
 
     public TetrisWorld(Context context) {
         this.context = context;
@@ -161,6 +163,7 @@ public class TetrisWorld {
 
     private void calculateScore() {
         List<Integer> fullLines = getFullLines();
+        int oldScore = this.score;
         if (fullLines.size() == 1) {
             this.score += 40;
         } else if (fullLines.size() == 2) {
@@ -170,9 +173,13 @@ public class TetrisWorld {
         } else if (fullLines.size() == 4) {
             this.score += 1200;
         }
-        scoreString = String.valueOf(score);
-        while (scoreString.length() < 4) {
-            scoreString = "0" + scoreString;
+        if (oldScore != this.score) {
+            scoreString = String.valueOf(score);
+            while (scoreString.length() < 4) {
+                scoreString = "0" + scoreString;
+            }
+            lastScoreChange = System.currentTimeMillis();
+            lastScoreDelta = this.score - oldScore;
         }
     }
 
@@ -257,7 +264,9 @@ public class TetrisWorld {
                 notZero = true;
             }
             if (notZero) {
-                if (score >= 1000) {
+                if (score >= 2000) {
+                    p.setColor(context.getResources().getColor(R.color.colorPrimary));
+                } else if (score >= 1000) {
                     p.setColor(context.getResources().getColor(R.color.red));
                 } else if (score >= 300) {
                     p.setColor(context.getResources().getColor(R.color.orange));
@@ -281,6 +290,11 @@ public class TetrisWorld {
                     TOP_PADDING - 10, p);
         }
         p.setColor(Color.parseColor("black"));
+
+        if (System.currentTimeMillis() - lastScoreChange < 1500 && System.currentTimeMillis() -
+                lastScoreChange > 100) {
+            canvas.drawText("+" + lastScoreDelta + "!", PADDING + (WIDTH * gridSize / 2), 500, p);
+        }
 
         // Draw number of notifications
         p.setTextSize(TEXT_SIZE - 10);
@@ -352,15 +366,19 @@ public class TetrisWorld {
             for (int j = item.getY(); j < currentY + currentHeight; j++) {
                 for (int i = item.getX(); i < currentX + currentWidth; i++) {
                     synchronized (item) {
-                        int yOffset = j - currentY;
-                        int xOffset = i - currentX;
-                        if (indexExists(yOffset, currentBlock.getShape()) && indexExists(xOffset,
-                                currentBlock.getShape()[yOffset])
-                                && item.getShape()[yOffset][xOffset] == 1) {
-                            canvas.drawRect(i * gridSize + PADDING + 1, (j - 2) * gridSize +
-                                            TOP_PADDING + 1,
-                                    (i + 1) * gridSize + PADDING - 1,
-                                    (j - 1) * gridSize + TOP_PADDING - 1, p);
+                        synchronized (currentBlock) {
+                            int yOffset = j - currentY;
+                            int xOffset = i - currentX;
+                            if (indexExists(yOffset, currentBlock.getShape()) && indexExists
+                                    (xOffset,
+
+                                    currentBlock.getShape()[yOffset])
+                                    && item.getShape()[yOffset][xOffset] == 1) {
+                                canvas.drawRect(i * gridSize + PADDING + 1, (j - 2) * gridSize +
+                                                TOP_PADDING + 1,
+                                        (i + 1) * gridSize + PADDING - 1,
+                                        (j - 1) * gridSize + TOP_PADDING - 1, p);
+                            }
                         }
                     }
                 }

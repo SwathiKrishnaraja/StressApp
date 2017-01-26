@@ -70,12 +70,12 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
             lastTouchY = event.getY();
 
         } else if (event.getAction() == MotionEvent.ACTION_MOVE) {
-            if (lastTouchX - event.getX() > 50 && lastTouchX != -1 && !dropping) {
+            if (lastTouchX - event.getX() > 60 && lastTouchX != -1 && !dropping) {
                 this.model.moveLeft();
                 lastTouchX = event.getX();
                 lastTouchY = event.getY();
                 swiping = true;
-            } else if (event.getX() - lastTouchX > 50 && lastTouchX != -1 && !dropping) {
+            } else if (event.getX() - lastTouchX > 60 && lastTouchX != -1 && !dropping) {
                 this.model.moveRight();
                 lastTouchX = event.getX();
                 lastTouchY = event.getY();
