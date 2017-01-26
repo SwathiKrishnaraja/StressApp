@@ -514,6 +514,7 @@ public class TetrisWorld {
         occupancy = new int[FULL_HEIGHT][WIDTH];
         bitmaps = new Bitmap[FULL_HEIGHT][WIDTH];
         score = 0;
+        scoreString = "0000";
     }
 
     public boolean isBlockVisible() {
