@@ -67,6 +67,27 @@ public class Block extends Item {
         }
     }
 
+    public static Block randomItem() {
+        Random r = new Random();
+        int number = r.nextInt(7);
+        int x = 3;
+        if (number == 0) {
+            return new Block(x, 0, 0, 0, L);
+        } else if (number == 1) {
+            return new Block(x, 0, 0, 0, T);
+        } else if (number == 2) {
+            return new Block(x, 0, 0, 0, SQUARE);
+        } else if (number == 3) {
+            return new Block(x, 0, 0, 0, I);
+        } else if (number == 4) {
+            return new Block(x, 0, 0, 0, J);
+        } else if (number == 5) {
+            return new Block(x, 0, 0, 0, S);
+        } else {
+            return new Block(x, 0, 0, 0, Z);
+        }
+    }
+
     public Shape getType() {
         return type;
     }
@@ -119,12 +140,16 @@ public class Block extends Item {
             for (int i = getX(); i < currentX + currentWidth && j >= 0 && i < state[j].length;
                  i++) {
                 synchronized (this) {
-                    int yOffset = j - currentY;
-                    int xOffset = i - currentX;
-                    if (indexExists(yOffset, getShape()) && indexExists(xOffset, getShape()[yOffset])
-                            && getShape()[yOffset][xOffset] == 1) {
-                        if (indexExists(j, state) && indexExists(i, state[j]) && state[j][i] > 0) {
-                            state[j][i] = -1;
+                    synchronized (getShape()) {
+                        int yOffset = j - currentY;
+                        int xOffset = i - currentX;
+                        if (indexExists(yOffset, getShape()) && indexExists(xOffset, getShape()
+                                [yOffset])
+                                && getShape()[yOffset][xOffset] == 1) {
+                            if (indexExists(j, state) && indexExists(i, state[j]) && state[j][i]
+                                    > 0) {
+                                state[j][i] = -1;
+                            }
                         }
                     }
                 }
@@ -148,27 +173,6 @@ public class Block extends Item {
         this.moveLeft();
         computeOverlaps(state);
         this.moveRight();
-    }
-
-    public static Block randomItem() {
-        Random r = new Random();
-        int number = r.nextInt(7);
-        int x = 3;
-        if (number == 0) {
-            return new Block(x, 0, 0, 0, L);
-        } else if (number == 1) {
-            return new Block(x, 0, 0, 0, T);
-        } else if (number == 2) {
-            return new Block(x, 0, 0, 0, SQUARE);
-        } else if (number == 3) {
-            return new Block(x, 0, 0, 0, I);
-        } else if (number == 4) {
-            return new Block(x, 0, 0, 0, J);
-        } else if (number == 5) {
-            return new Block(x, 0, 0, 0, S);
-        } else {
-            return new Block(x, 0, 0, 0, Z);
-        }
     }
 
     public enum Shape {

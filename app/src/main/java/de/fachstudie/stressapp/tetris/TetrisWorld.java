@@ -12,6 +12,7 @@ import android.graphics.drawable.Drawable;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.fachstudie.stressapp.R;
 import de.fachstudie.stressapp.db.DatabaseService;
 import de.fachstudie.stressapp.model.StressNotification;
 import de.fachstudie.stressapp.networking.StressAppClient;
@@ -31,12 +32,11 @@ public class TetrisWorld {
     private final int HEIGHT = 20;
     private final int FULL_HEIGHT = 22;
     private final int PREVIEW_WIDTH = 4;
-    private final int PADDING = 140;
-    private int TOP_PADDING = 0;
+    private final int PADDING = 150;
     private final int NEXT_BLOCK_PREVIEW_PADDING = 10;
     private final int NOTIFICATIONS_SIZE_PREVIEW_PADDING = 20;
     private final int TEXT_SIZE = 40;
-
+    private int TOP_PADDING = 0;
     // Initialization of the tetris field
     private int[][] occupancy = new int[FULL_HEIGHT][WIDTH];
     private Bitmap[][] bitmaps = new Bitmap[FULL_HEIGHT][WIDTH];
@@ -242,11 +242,45 @@ public class TetrisWorld {
 
         // Font settings
         p.setTextSize(TEXT_SIZE);
-        p.setColor(Color.BLACK);
-        p.setTypeface(Typeface.create("sans-serif-medium", Typeface.BOLD));
+        p.setColor(Color.parseColor("#D3D3D3"));
+        p.setStyle(Paint.Style.FILL);
+        p.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
 
         // Draw current score
-        canvas.drawText("" + score, PADDING + (WIDTH * gridSize / 2), TOP_PADDING - 15, p);
+        String scoreString = String.valueOf(score);
+        while (scoreString.length() < 4) {
+            scoreString = "0" + scoreString;
+        }
+        boolean notZero = false;
+        for (int i = 0; i < 4; i++) {
+            if (scoreString.charAt(i) != '0') {
+                notZero = true;
+            }
+            if (notZero) {
+                if (score >= 1000) {
+                    p.setColor(context.getResources().getColor(R.color.red));
+                } else if (score >= 300) {
+                    p.setColor(context.getResources().getColor(R.color.orange));
+                } else if (score >= 100) {
+                    p.setColor(context.getResources().getColor(R.color.amber));
+                } else {
+                    p.setColor(context.getResources().getColor(R.color.yellow));
+                }
+            } else {
+                p.setColor(Color.parseColor("#D3D3D3"));
+            }
+            canvas.drawRect(
+                    PADDING + (WIDTH * gridSize / 2) + i * (gridSize + 5) - 2 * gridSize,
+                    TOP_PADDING - 5 - gridSize,
+                    PADDING + (WIDTH * gridSize / 2) + i * (gridSize + 5) - gridSize,
+                    TOP_PADDING - 5, p);
+            p.setColor(Color.parseColor("white"));
+            canvas.drawText(scoreString.charAt(i) + "",
+                    PADDING + (WIDTH * gridSize / 2) + i * (gridSize + 5) - 2 * gridSize + 0.25f *
+                            gridSize,
+                    TOP_PADDING - 10, p);
+        }
+        p.setColor(Color.parseColor("black"));
 
         // Draw number of notifications
         p.setTextSize(TEXT_SIZE - 10);
@@ -275,8 +309,8 @@ public class TetrisWorld {
         // Draw icon for number of notifications preview
         notificationBitmap = getResizedBitmap(notificationBitmap, TEXT_SIZE + 5, TEXT_SIZE + 5);
         canvas.drawBitmap(notificationBitmap, PADDING + WIDTH * gridSize +
-                NEXT_BLOCK_PREVIEW_PADDING,
-                TOP_PADDING + PADDING - HEIGHT + 20 + 35, p);
+                        NEXT_BLOCK_PREVIEW_PADDING,
+                TOP_PADDING + PADDING - HEIGHT + 20 + 40, p);
 
         p.setStyle(Paint.Style.FILL);
 
