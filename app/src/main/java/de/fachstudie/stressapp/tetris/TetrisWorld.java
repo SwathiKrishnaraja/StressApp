@@ -24,6 +24,7 @@ import static de.fachstudie.stressapp.tetris.utils.ArrayUtils.indexExists;
 import static de.fachstudie.stressapp.tetris.utils.BitmapUtils.drawableToBitmap;
 import static de.fachstudie.stressapp.tetris.utils.BitmapUtils.getResizedBitmap;
 import static de.fachstudie.stressapp.tetris.utils.ColorUtils.setColorForShape;
+import static de.fachstudie.stressapp.tetris.utils.ColorUtils.setColorForShapeAlpha;
 
 public class TetrisWorld {
 
@@ -40,6 +41,7 @@ public class TetrisWorld {
     // Initialization of the tetris field
     private int[][] occupancy = new int[FULL_HEIGHT][WIDTH];
     private Bitmap[][] bitmaps = new Bitmap[FULL_HEIGHT][WIDTH];
+    private int[][] highlightings = new int[FULL_HEIGHT][WIDTH];
 
     private Block currentBlock;
     private Block nextBlock;
@@ -54,6 +56,7 @@ public class TetrisWorld {
     private boolean blockChange = false;
     private boolean gameOver = false;
     private boolean notificationPosted = false;
+    private boolean highlighting = false;
 
     private List<StressNotification> notifications = new ArrayList<>();
     private DatabaseService dbService;
@@ -61,6 +64,7 @@ public class TetrisWorld {
     private StressAppClient client;
     private String scoreString = "0000";
     private long lastScoreChange = -1;
+    private long lastFreezedTime = -1;
     private int lastScoreDelta = 0;
 
     public TetrisWorld(Context context) {
@@ -218,6 +222,8 @@ public class TetrisWorld {
     }
 
     private void freezeCurrentBlock() {
+        highlighting = true;
+        lastFreezedTime = System.currentTimeMillis();
         for (int j = currentBlock.getY(); j < currentBlock.getY() + currentBlock.getHeight(); j++) {
             for (int i = currentBlock.getX(); i < currentBlock.getX() + currentBlock.getWidth();
                  i++) {
@@ -228,6 +234,7 @@ public class TetrisWorld {
                         currentBlock.getShape()[yOffset][xOffset] == 1) {
                     occupancy[j][i] = currentBlock.getType().getN();
                     bitmaps[j][i] = currentBitmap;
+                    highlightings[j][i] = 1;
                 }
             }
         }
@@ -347,6 +354,19 @@ public class TetrisWorld {
                             (i + 1) * gridSize + PADDING - 1, (j - 1) * gridSize + TOP_PADDING -
                                     1, p);
 
+                    if(highlightings[j][i] == 1){
+                        if(highlighting && System.currentTimeMillis() - lastFreezedTime < 500) {
+                            setColorForShapeAlpha(p, occupancy[j][i]);
+                            canvas.drawRect(i * gridSize + PADDING + 1, (j - 2) * gridSize + TOP_PADDING
+                                            + 1,
+                                    (i + 1) * gridSize + PADDING - 1, (j - 1) * gridSize + TOP_PADDING -
+                                            1, p);
+                        }else{
+                            highlighting = false;
+                            ArrayUtils.resetArray(highlightings);
+                        }
+                    }
+
                     if (bitmaps[j][i] != null) {
                         Bitmap bitmap = getResizedBitmap(bitmaps[j][i], iconSize, iconSize);
                         canvas.drawBitmap(bitmap, i * gridSize + PADDING + 1 + (gridSize / 8),
@@ -371,8 +391,7 @@ public class TetrisWorld {
                             int xOffset = i - currentX;
                             if (indexExists(yOffset, currentBlock.getShape()) && indexExists
                                     (xOffset,
-
-                                    currentBlock.getShape()[yOffset])
+                                            currentBlock.getShape()[yOffset])
                                     && item.getShape()[yOffset][xOffset] == 1) {
                                 canvas.drawRect(i * gridSize + PADDING + 1, (j - 2) * gridSize +
                                                 TOP_PADDING + 1,

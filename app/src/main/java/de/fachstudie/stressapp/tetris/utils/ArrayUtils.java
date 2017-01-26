@@ -20,6 +20,14 @@ public class ArrayUtils {
         return false;
     }
 
+    public static void resetArray(int[][] array){
+        for(int j = 0; j < array.length; j++){
+            for(int i = 0; i < array[j].length; i++){
+                array[j][i] = 0;
+            }
+        }
+    }
+
     private static void printRow(int[] row) {
         for (int i : row) {
             System.out.print(i);

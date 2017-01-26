@@ -58,4 +58,32 @@ public class ColorUtils {
                 break;
         }
     }
+
+    public static void setColorForShapeAlpha(Paint p, int i) {
+
+        int color;
+        switch (i) {
+            case 1:
+                p.setColor(Color.parseColor(BlockColors.LIGHT_RED));
+                break;
+            case 2:
+                p.setColor(Color.parseColor(BlockColors.LIGHT_PURPLE));
+                break;
+            case 3:
+                p.setColor(Color.parseColor(BlockColors.LIGHT_TEAL));
+                break;
+            case 4:
+                p.setColor(Color.parseColor(BlockColors.LIGHT_CYAN));
+                break;
+            case 5:
+                p.setColor(Color.parseColor(BlockColors.LIGHT_INDIGO));
+                break;
+            case 6:
+                p.setColor(Color.parseColor(BlockColors.LIGHT_BLUE));
+                break;
+            case 7:
+                p.setColor(Color.parseColor(BlockColors.LIGHT_ORANGE));
+                break;
+        }
+    }
 }
