@@ -66,6 +66,8 @@ public class TetrisWorld {
     private long lastScoreChange = -1;
     private long lastFreezedTime = -1;
     private int lastScoreDelta = 0;
+    private boolean clearedLastTime;
+    private long lastShowCombo = -1;
 
     public TetrisWorld(Context context) {
         this.context = context;
@@ -167,6 +169,7 @@ public class TetrisWorld {
 
     private void calculateScore() {
         List<Integer> fullLines = getFullLines();
+        int notificationBlocks = getFullNotificationBlocks();
         int oldScore = this.score;
         if (fullLines.size() == 1) {
             this.score += 40;
@@ -177,6 +180,16 @@ public class TetrisWorld {
         } else if (fullLines.size() == 4) {
             this.score += 1200;
         }
+        if (fullLines.size() > 0) {
+            if (clearedLastTime) {
+                this.score += 100;
+                this.lastShowCombo = System.currentTimeMillis();
+            }
+            clearedLastTime = true;
+        } else {
+            clearedLastTime = false;
+        }
+        this.score += 10 * notificationBlocks;
         if (oldScore != this.score) {
             scoreString = String.valueOf(score);
             while (scoreString.length() < 4) {
@@ -219,6 +232,26 @@ public class TetrisWorld {
             }
         }
         return fullLines;
+    }
+
+    private int getFullNotificationBlocks() {
+        int result = 0;
+        for (int j = 0; j < occupancy.length; j++) {
+            boolean isFull = true;
+            int notificationCount = 0;
+            for (int i = 0; i < occupancy[j].length; i++) {
+                if (occupancy[j][i] == 0) {
+                    isFull = false;
+                    break;
+                } else if (bitmaps[j][i] != null) {
+                    notificationCount++;
+                }
+            }
+            if (isFull) {
+                result += notificationCount;
+            }
+        }
+        return result;
     }
 
     private void freezeCurrentBlock() {
@@ -264,6 +297,7 @@ public class TetrisWorld {
         p.setColor(Color.parseColor("#D3D3D3"));
         p.setStyle(Paint.Style.FILL);
         p.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
+        p.setStrokeWidth(2);
 
         boolean notZero = false;
         for (int i = 0; i < 4; i++) {
@@ -271,8 +305,10 @@ public class TetrisWorld {
                 notZero = true;
             }
             if (notZero) {
-                if (score >= 2000) {
+                if (score >= 3000) {
                     p.setColor(context.getResources().getColor(R.color.colorPrimary));
+                } else if (score >= 2000) {
+                    p.setColor(context.getResources().getColor(R.color.colorAccent));
                 } else if (score >= 1000) {
                     p.setColor(context.getResources().getColor(R.color.red));
                 } else if (score >= 300) {
@@ -297,11 +333,6 @@ public class TetrisWorld {
                     TOP_PADDING - 10, p);
         }
         p.setColor(Color.parseColor("black"));
-
-        if (System.currentTimeMillis() - lastScoreChange < 1500 && System.currentTimeMillis() -
-                lastScoreChange > 100) {
-            canvas.drawText("+" + lastScoreDelta + "!", PADDING + (WIDTH * gridSize / 2), 500, p);
-        }
 
         // Draw number of notifications
         p.setTextSize(TEXT_SIZE - 10);
@@ -354,14 +385,16 @@ public class TetrisWorld {
                             (i + 1) * gridSize + PADDING - 1, (j - 1) * gridSize + TOP_PADDING -
                                     1, p);
 
-                    if(highlightings[j][i] == 1){
-                        if(highlighting && System.currentTimeMillis() - lastFreezedTime < 500) {
+                    if (highlightings[j][i] == 1) {
+                        if (highlighting && System.currentTimeMillis() - lastFreezedTime < 500) {
                             setColorForShapeAlpha(p, occupancy[j][i]);
-                            canvas.drawRect(i * gridSize + PADDING + 1, (j - 2) * gridSize + TOP_PADDING
+                            canvas.drawRect(i * gridSize + PADDING + 1, (j - 2) * gridSize +
+                                            TOP_PADDING
                                             + 1,
-                                    (i + 1) * gridSize + PADDING - 1, (j - 1) * gridSize + TOP_PADDING -
+                                    (i + 1) * gridSize + PADDING - 1, (j - 1) * gridSize +
+                                            TOP_PADDING -
                                             1, p);
-                        }else{
+                        } else {
                             highlighting = false;
                             ArrayUtils.resetArray(highlightings);
                         }
@@ -375,6 +408,33 @@ public class TetrisWorld {
                 }
             }
         }
+
+        p.setTextSize(40);
+        p.setTypeface(Typeface.create("sans-serif-medium", Typeface.BOLD));
+        float sw = p.getStrokeWidth();
+        if (System.currentTimeMillis() - lastScoreChange < 1500 && System.currentTimeMillis() -
+                lastScoreChange > 100) {
+            p.setStrokeWidth(5);
+            p.setColor(context.getResources().getColor(R.color.white));
+            p.setStyle(Paint.Style.STROKE);
+            canvas.drawText("+" + lastScoreDelta + "!", PADDING + (WIDTH * gridSize / 2), 500, p);
+            p.setColor(context.getResources().getColor(R.color.red));
+            p.setStyle(Paint.Style.FILL);
+            p.setStrokeWidth(sw);
+            canvas.drawText("+" + lastScoreDelta + "!", PADDING + (WIDTH * gridSize / 2), 500, p);
+
+        }
+        if (System.currentTimeMillis() - lastShowCombo < 1500) {
+            p.setStrokeWidth(5);
+            p.setColor(context.getResources().getColor(R.color.white));
+            p.setStyle(Paint.Style.STROKE);
+            canvas.drawText("Combo!", PADDING + (WIDTH * gridSize / 2), 600, p);
+            p.setStrokeWidth(sw);
+            p.setColor(context.getResources().getColor(R.color.red));
+            p.setStyle(Paint.Style.FILL);
+            canvas.drawText("Combo!", PADDING + (WIDTH * gridSize / 2), 600, p);
+        }
+        p.setStrokeWidth(sw);
     }
 
     public void drawCurrentItem(Canvas canvas, Paint p, Block item) {

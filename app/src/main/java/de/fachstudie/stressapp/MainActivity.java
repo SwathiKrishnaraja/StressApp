@@ -41,7 +41,7 @@ import de.fachstudie.stressapp.tetris.constants.StringConstants;
 import de.fachstudie.stressapp.tetris.utils.DialogUtils;
 
 public class MainActivity extends AppCompatActivity {
-    public static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    public static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private NotificationReceiver notificationReceiver;
     private LockScreenReceiver lockScreenReceiver;
     private IntentFilter filter;
@@ -91,8 +91,9 @@ public class MainActivity extends AppCompatActivity {
             cal.set(Calendar.HOUR_OF_DAY, 14);
             cal.set(Calendar.MINUTE, 0);
         } else if (currentHour < 17) {
-            cal.set(Calendar.HOUR_OF_DAY, 17);
-            cal.set(Calendar.MINUTE, 0);
+            //cal.set(Calendar.HOUR_OF_DAY, 17);
+            //cal.set(Calendar.MINUTE, 0);
+            cal.add(Calendar.SECOND, 15);
         } else if (currentHour < 20) {
             cal.set(Calendar.HOUR_OF_DAY, 20);
             cal.set(Calendar.MINUTE, 0);

@@ -42,7 +42,7 @@ public class AlarmReceiver extends BroadcastReceiver {
             String message = bundle.getString("de.fachstudie.stressapp.notification");
             NotificationCompat.Builder mBuilder =
                     new NotificationCompat.Builder(context)
-                            .setSmallIcon(android.R.drawable.ic_input_add)
+                            .setSmallIcon(android.R.drawable.ic_menu_report_image)
                             .setContentTitle("Are you feeling stressed?")
                             .setContentText("Please take a minute to answer our survey!");
             // Creates an explicit intent for an Activity in your app
@@ -63,6 +63,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                             PendingIntent.FLAG_UPDATE_CURRENT
                     );
             mBuilder.setContentIntent(resultPendingIntent);
+            mBuilder.setAutoCancel(true);
             NotificationManager mNotificationManager =
                     (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             // mId allows you to update the notification later on.

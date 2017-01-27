@@ -24,6 +24,7 @@ import java.security.KeyStore;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.util.Date;
 import java.util.UUID;
 
 import javax.net.ssl.HostnameVerifier;
@@ -33,6 +34,7 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManagerFactory;
 
+import de.fachstudie.stressapp.MainActivity;
 import de.fachstudie.stressapp.R;
 
 public class StressAppClient {
@@ -101,14 +103,22 @@ public class StressAppClient {
         } catch (JSONException e) {
         }
         String data = "data=" + body.toString();
-        new PostTask("data").execute(data);
+        new PostTask("event").execute(data);
         return true;
     }
 
     public boolean sendScore(Context context, int value, String username) {
-        String data = "deviceid=" + Settings.Secure.getString(context.getContentResolver(),
-                Settings.Secure.ANDROID_ID) + "&value=" + value + "&username=" + username;
-        new PostTask("score").execute(data);
+        JSONObject data = new JSONObject();
+        try {
+            data.put("deviceid", Settings.Secure.getString(context.getContentResolver(),
+                    Settings.Secure.ANDROID_ID))
+                    .put("value", value)
+                    .put("username", username)
+                    .put("timestamp", MainActivity.dateFormat.format(new Date()));
+        } catch (JSONException e) {
+        }
+        String result = "data=" + data.toString();
+        new PostTask("score").execute(result);
         return true;
     }
 
