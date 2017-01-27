@@ -17,17 +17,20 @@ import java.util.regex.Pattern;
 
 import de.fachstudie.stressapp.db.DatabaseHelper;
 import de.fachstudie.stressapp.model.SurveyResult;
+import de.fachstudie.stressapp.networking.StressAppClient;
 
 public class SurveyActivity extends AppCompatActivity {
 
     private static final int SURVEY_REQUEST = 1337;
     private DatabaseHelper dbHelper;
+    private StressAppClient client;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_survey);
 
+        client = new StressAppClient(this);
         dbHelper = DatabaseHelper.getInstance(SurveyActivity.this);
 
         Intent i_survey = new Intent(SurveyActivity.this, com.androidadvance.androidsurvey.SurveyActivity.class);
@@ -52,6 +55,7 @@ public class SurveyActivity extends AppCompatActivity {
                 values.put(SurveyResult.SurveyResultEntry.ANSWERS, answers);
                 db.insert(SurveyResult.SurveyResultEntry.TABLE_NAME, null, values);
                 db.close();
+                client.sendSurveyAnswers(answers);
             }
         }
         finish();

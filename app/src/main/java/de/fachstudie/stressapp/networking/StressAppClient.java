@@ -107,6 +107,19 @@ public class StressAppClient {
         return true;
     }
 
+    public boolean sendSurveyAnswers(String answers) {
+        JSONObject body = new JSONObject();
+        try {
+            body.put("deviceid", Settings.Secure.getString(context.getContentResolver(),
+                    Settings.Secure.ANDROID_ID));
+            body.put("answers", answers);
+        } catch (JSONException e) {
+        }
+        String data = "data=" + body.toString();
+        new PostTask("survey").execute(data);
+        return true;
+    }
+
     public boolean sendScore(Context context, int value, String username) {
         JSONObject data = new JSONObject();
         try {
