@@ -1,6 +1,7 @@
 package de.fachstudie.stressapp.tetris;
 
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import de.fachstudie.stressapp.tetris.constants.BlockConfigurations;
 
@@ -125,9 +126,10 @@ public class Block extends Item {
         }
     }
 
-    public void simulateRotate(int[][] state) {
+    public void simulateRotate(int[][] state, AtomicBoolean overlapsBoundary) {
         this.rotate(1);
         computeOverlaps(state);
+        overlapsBoundary.set(this.overlapsBoundary(state));
         this.rotate(-1);
     }
 
@@ -155,6 +157,13 @@ public class Block extends Item {
                 }
             }
         }
+    }
+
+    private boolean overlapsBoundary(int[][] state) {
+        if (this.y + this.getHeight() > state.length) {
+            return true;
+        }
+        return false;
     }
 
     public void simulateStepDown(int[][] state) {

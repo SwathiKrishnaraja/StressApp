@@ -11,6 +11,7 @@ import android.graphics.drawable.Drawable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import de.fachstudie.stressapp.R;
 import de.fachstudie.stressapp.db.DatabaseService;
@@ -57,6 +58,8 @@ public class TetrisWorld {
     private boolean gameOver = false;
     private boolean notificationPosted = false;
     private boolean highlighting = false;
+    private AtomicBoolean overlapsBoundary = new AtomicBoolean(false);
+
 
     private List<StressNotification> notifications = new ArrayList<>();
     private DatabaseService dbService;
@@ -98,6 +101,7 @@ public class TetrisWorld {
         if (!hasOverlap(state) && currentBlock.getY() + currentBlock.getHeight() < FULL_HEIGHT) {
             currentBlock.stepDown();
             return true;
+
         } else {
             freezeCurrentBlock();
             calculateScore();
@@ -574,9 +578,9 @@ public class TetrisWorld {
 
     public void rotateBlock() {
         int[][] state = copy(occupancy);
-        this.currentBlock.simulateRotate(state);
-
-        if (!hasOverlap(state)) {
+        this.currentBlock.simulateRotate(state, overlapsBoundary);
+        
+        if (!hasOverlap(state) && !overlapsBoundary.get()) {
             this.currentBlock.rotate();
         }
 
