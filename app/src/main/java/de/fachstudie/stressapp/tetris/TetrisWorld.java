@@ -1,6 +1,7 @@
 package de.fachstudie.stressapp.tetris;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -39,6 +40,7 @@ public class TetrisWorld {
     private final int NOTIFICATIONS_SIZE_PREVIEW_PADDING = 20;
     private final int TEXT_SIZE = 40;
     private int TOP_PADDING = 0;
+
     // Initialization of the tetris field
     private int[][] occupancy = new int[FULL_HEIGHT][WIDTH];
     private Bitmap[][] bitmaps = new Bitmap[FULL_HEIGHT][WIDTH];
@@ -644,7 +646,7 @@ public class TetrisWorld {
 
     public int getHighScore() {
         int score = dbService.getHighScore();
-        return (score != 0 ? score : 0);
+        return score;
     }
 
     public int getScore() {
@@ -654,9 +656,11 @@ public class TetrisWorld {
     public void saveScore() {
         if (score != 0) {
             dbService.saveScore(score);
-            client.sendScore(this.context, score,
-                    context.getSharedPreferences("de.fachstudie.stressapp.preferences", Context
-                            .MODE_PRIVATE).getString("username", "You"));
+            SharedPreferences prefs = context.getSharedPreferences("de.fachstudie.stressapp.preferences",
+                    Context.MODE_PRIVATE);
+            if (!prefs.getString("username", "").isEmpty()) {
+                client.sendScore(this.context, score, prefs.getString("username", ""));
+            }
         }
     }
 
