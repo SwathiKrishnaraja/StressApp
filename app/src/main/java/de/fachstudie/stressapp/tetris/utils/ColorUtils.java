@@ -1,5 +1,6 @@
 package de.fachstudie.stressapp.tetris.utils;
 
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Paint;
 
@@ -30,6 +31,9 @@ public class ColorUtils {
             case 7:
                 p.setColor(Color.parseColor(BlockColors.ORANGE));
                 break;
+            case 8:
+                p.setColor(Color.parseColor(BlockColors.GOLD));
+                break;
         }
     }
 
@@ -59,9 +63,7 @@ public class ColorUtils {
         }
     }
 
-    public static void setColorForShapeAlpha(Paint p, int i) {
-
-        int color;
+    public static void setLightColorForShape(Paint p, int i) {
         switch (i) {
             case 1:
                 p.setColor(Color.parseColor(BlockColors.LIGHT_RED));
@@ -84,6 +86,12 @@ public class ColorUtils {
             case 7:
                 p.setColor(Color.parseColor(BlockColors.LIGHT_ORANGE));
                 break;
+        }
+    }
+
+    public static void setColorForIconBlock(Paint p, Bitmap bitmap) {
+        if(bitmap != null){
+            p.setColor(Color.parseColor(BlockColors.GOLD));
         }
     }
 }
