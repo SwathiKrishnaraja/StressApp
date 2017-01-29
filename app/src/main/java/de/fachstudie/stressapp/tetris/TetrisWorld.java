@@ -60,7 +60,6 @@ public class TetrisWorld {
     private boolean highlighting = false;
     private AtomicBoolean overlapsBoundary = new AtomicBoolean(false);
 
-
     private List<StressNotification> notifications = new ArrayList<>();
     private DatabaseService dbService;
     private Context context;
@@ -71,6 +70,7 @@ public class TetrisWorld {
     private int lastScoreDelta = 0;
     private boolean clearedLastTime;
     private long lastShowCombo = -1;
+    private int comboCount = 0;
 
     public TetrisWorld(Context context) {
         this.context = context;
@@ -101,7 +101,6 @@ public class TetrisWorld {
         if (!hasOverlap(state) && currentBlock.getY() + currentBlock.getHeight() < FULL_HEIGHT) {
             currentBlock.stepDown();
             return true;
-
         } else {
             freezeCurrentBlock();
             calculateScore();
@@ -186,12 +185,14 @@ public class TetrisWorld {
         }
         if (fullLines.size() > 0) {
             if (clearedLastTime) {
-                this.score += 100;
                 this.lastShowCombo = System.currentTimeMillis();
+                this.comboCount++;
+                this.score += 50 * this.comboCount;
             }
             clearedLastTime = true;
         } else {
             clearedLastTime = false;
+            this.comboCount = 0;
         }
         this.score += 10 * notificationBlocks;
         if (oldScore != this.score) {
@@ -309,7 +310,9 @@ public class TetrisWorld {
                 notZero = true;
             }
             if (notZero) {
-                if (score >= 3000) {
+                if (score >= 4000) {
+                    p.setColor(context.getResources().getColor(R.color.black));
+                } else if (score >= 3000) {
                     p.setColor(context.getResources().getColor(R.color.colorPrimary));
                 } else if (score >= 2000) {
                     p.setColor(context.getResources().getColor(R.color.colorAccent));
@@ -416,29 +419,33 @@ public class TetrisWorld {
         p.setTextSize(40);
         p.setTypeface(Typeface.create("sans-serif-medium", Typeface.BOLD));
         float sw = p.getStrokeWidth();
+        Paint.Align align = p.getTextAlign();
+        p.setTextAlign(Paint.Align.CENTER);
         if (System.currentTimeMillis() - lastScoreChange < 1500 && System.currentTimeMillis() -
                 lastScoreChange > 100) {
             p.setStrokeWidth(5);
             p.setColor(context.getResources().getColor(R.color.white));
             p.setStyle(Paint.Style.STROKE);
-            canvas.drawText("+" + lastScoreDelta + "!", PADDING + (WIDTH * gridSize / 2), 500, p);
+            canvas.drawText("+" + lastScoreDelta, PADDING + (WIDTH * gridSize / 2), 500, p);
             p.setColor(context.getResources().getColor(R.color.red));
             p.setStyle(Paint.Style.FILL);
             p.setStrokeWidth(sw);
-            canvas.drawText("+" + lastScoreDelta + "!", PADDING + (WIDTH * gridSize / 2), 500, p);
-
+            canvas.drawText("+" + lastScoreDelta, PADDING + (WIDTH * gridSize / 2), 500, p);
         }
         if (System.currentTimeMillis() - lastShowCombo < 1500) {
             p.setStrokeWidth(5);
             p.setColor(context.getResources().getColor(R.color.white));
             p.setStyle(Paint.Style.STROKE);
-            canvas.drawText("Combo!", PADDING + (WIDTH * gridSize / 2), 600, p);
+            canvas.drawText("Combo x" + this.comboCount + "!", PADDING + (WIDTH * gridSize / 2),
+                    600, p);
             p.setStrokeWidth(sw);
             p.setColor(context.getResources().getColor(R.color.red));
             p.setStyle(Paint.Style.FILL);
-            canvas.drawText("Combo!", PADDING + (WIDTH * gridSize / 2), 600, p);
+            canvas.drawText("Combo x" + this.comboCount + "!", PADDING + (WIDTH * gridSize / 2),
+                    600, p);
         }
         p.setStrokeWidth(sw);
+        p.setTextAlign(align);
     }
 
     public void drawCurrentItem(Canvas canvas, Paint p, Block item) {
@@ -579,7 +586,7 @@ public class TetrisWorld {
     public void rotateBlock() {
         int[][] state = copy(occupancy);
         this.currentBlock.simulateRotate(state, overlapsBoundary);
-        
+
         if (!hasOverlap(state) && !overlapsBoundary.get()) {
             this.currentBlock.rotate();
         }
