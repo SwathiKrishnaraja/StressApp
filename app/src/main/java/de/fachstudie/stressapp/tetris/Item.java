@@ -5,6 +5,7 @@ public class Item {
     protected int y;
     protected int width;
     protected int height;
+    private int droppedRows = 0;
 
     public Item(int x, int y, int width, int height) {
         this.x = x;
@@ -50,5 +51,13 @@ public class Item {
         if(this.x < 0) {
             this.x = 0;
         }
+    }
+
+    public void increaseDroppedRows() {
+        this.droppedRows++;
+    }
+
+    public int getDroppedRows() {
+        return droppedRows;
     }
 }

@@ -71,6 +71,7 @@ public class TetrisWorld {
     private boolean clearedLastTime;
     private long lastShowCombo = -1;
     private int comboCount = 0;
+    private int lastDroppedRows = 0;
 
     public TetrisWorld(Context context) {
         this.context = context;
@@ -100,6 +101,9 @@ public class TetrisWorld {
 
         if (!hasOverlap(state) && currentBlock.getY() + currentBlock.getHeight() < FULL_HEIGHT) {
             currentBlock.stepDown();
+            if (dropping) {
+                currentBlock.increaseDroppedRows();
+            }
             return true;
         } else {
             freezeCurrentBlock();
@@ -183,6 +187,8 @@ public class TetrisWorld {
         } else if (fullLines.size() == 4) {
             this.score += 1200;
         }
+
+        this.score += this.lastDroppedRows;
         if (fullLines.size() > 0) {
             if (clearedLastTime) {
                 this.lastShowCombo = System.currentTimeMillis();
@@ -276,6 +282,7 @@ public class TetrisWorld {
                 }
             }
         }
+        lastDroppedRows = currentBlock.getDroppedRows();
     }
 
     private boolean hasOverlap(int[][] state) {
@@ -426,23 +433,25 @@ public class TetrisWorld {
             p.setStrokeWidth(5);
             p.setColor(context.getResources().getColor(R.color.white));
             p.setStyle(Paint.Style.STROKE);
-            canvas.drawText("+" + lastScoreDelta, PADDING + (WIDTH * gridSize / 2), 500, p);
+            canvas.drawText("+" + lastScoreDelta, PADDING + (WIDTH * gridSize / 2), canvasHeight
+                    / 2, p);
             p.setColor(context.getResources().getColor(R.color.red));
             p.setStyle(Paint.Style.FILL);
             p.setStrokeWidth(sw);
-            canvas.drawText("+" + lastScoreDelta, PADDING + (WIDTH * gridSize / 2), 500, p);
+            canvas.drawText("+" + lastScoreDelta, PADDING + (WIDTH * gridSize / 2), canvasHeight
+                    / 2, p);
         }
         if (System.currentTimeMillis() - lastShowCombo < 1500) {
             p.setStrokeWidth(5);
             p.setColor(context.getResources().getColor(R.color.white));
             p.setStyle(Paint.Style.STROKE);
-            canvas.drawText("Combo x" + this.comboCount + "!", PADDING + (WIDTH * gridSize / 2),
-                    600, p);
+            canvas.drawText("Combo x" + this.comboCount, PADDING + (WIDTH * gridSize / 2),
+                    canvasHeight / 2 + 100, p);
             p.setStrokeWidth(sw);
             p.setColor(context.getResources().getColor(R.color.red));
             p.setStyle(Paint.Style.FILL);
-            canvas.drawText("Combo x" + this.comboCount + "!", PADDING + (WIDTH * gridSize / 2),
-                    600, p);
+            canvas.drawText("Combo x" + this.comboCount, PADDING + (WIDTH * gridSize / 2),
+                    canvasHeight / 2 + 100, p);
         }
         p.setStrokeWidth(sw);
         p.setTextAlign(align);
@@ -576,6 +585,7 @@ public class TetrisWorld {
             if (!hasOverlap(state) && currentBlock.getY() + currentBlock.getHeight() <
                     FULL_HEIGHT) {
                 currentBlock.stepDown();
+                currentBlock.increaseDroppedRows();
             } else {
                 dropping = false;
                 return;
