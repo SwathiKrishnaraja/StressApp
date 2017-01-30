@@ -26,6 +26,7 @@ import static de.fachstudie.stressapp.tetris.utils.ArrayUtils.copy;
 import static de.fachstudie.stressapp.tetris.utils.ArrayUtils.indexExists;
 import static de.fachstudie.stressapp.tetris.utils.BitmapUtils.drawableToBitmap;
 import static de.fachstudie.stressapp.tetris.utils.BitmapUtils.getResizedBitmap;
+import static de.fachstudie.stressapp.tetris.utils.ColorUtils.setColorForBlockBitmap;
 import static de.fachstudie.stressapp.tetris.utils.ColorUtils.setColorForShape;
 import static de.fachstudie.stressapp.tetris.utils.ColorUtils.setLightColorForShape;
 
@@ -69,13 +70,13 @@ public class TetrisWorld {
     private StressAppClient client;
     private String scoreString = "0000";
     private long lastScoreChange = -1;
-    private long lastFreezedTime = -1;
-    private int lastScoreDelta = 0;
-    private boolean clearedLastTime;
+    private long lastFrozenTime = -1;
     private long lastShowCombo = -1;
+    private int lastScoreDelta = 0;
     private int comboCount = 0;
     private int lastDroppedRows = 0;
     private float stressLevel = 0;
+    private boolean clearedLastTime;
 
     public TetrisWorld(Context context) {
         this.context = context;
@@ -103,12 +104,16 @@ public class TetrisWorld {
             setNextBitmap();
         }
 
-        if (!hasOverlap(state) && currentBlock.getY() + currentBlock.getHeight() < FULL_HEIGHT) {
+        if (currentBitmap == null && !hasOverlap(state) && currentBlock.getY() + currentBlock.getHeight() < FULL_HEIGHT) {
             currentBlock.stepDown();
             if (dropping) {
                 currentBlock.increaseDroppedRows();
             }
             return true;
+        } else if (currentBitmap != null && currentBlock.getY() + currentBlock.getHeight() < FULL_HEIGHT) {
+            currentBlock.stepDown();
+            currentBlock.deleteOverlaps(occupancy, bitmaps);
+            return false;
         } else {
             freezeCurrentBlock();
             calculateScore();
@@ -207,6 +212,7 @@ public class TetrisWorld {
             clearedLastTime = false;
             this.comboCount = 0;
         }
+
         this.score += 10 * notificationBlocks;
         if (oldScore != this.score) {
             scoreString = String.valueOf(score);
@@ -274,7 +280,7 @@ public class TetrisWorld {
 
     private void freezeCurrentBlock() {
         highlighting = true;
-        lastFreezedTime = System.currentTimeMillis();
+        lastFrozenTime = System.currentTimeMillis();
         for (int j = currentBlock.getY(); j < currentBlock.getY() + currentBlock.getHeight(); j++) {
             for (int i = currentBlock.getX(); i < currentBlock.getX() + currentBlock.getWidth();
                  i++) {
@@ -283,7 +289,11 @@ public class TetrisWorld {
                 int xOffset = i - currentBlock.getX();
                 if (indexExists(j, occupancy) && indexExists(i, occupancy[j]) &&
                         currentBlock.getShape()[yOffset][xOffset] == 1) {
-                    occupancy[j][i] = currentBlock.getType().getN();
+                    if (currentBitmap != null) {
+                        occupancy[j][i] = 8;
+                    } else {
+                        occupancy[j][i] = currentBlock.getType().getN();
+                    }
                     bitmaps[j][i] = currentBitmap;
                     highlightings[j][i] = 1;
                 }
@@ -394,6 +404,7 @@ public class TetrisWorld {
 
         // Then the actual block, so it obscures the shadow if necessary
         setColorForShape(p, currentBlock.getType());
+        setColorForBlockBitmap(p, currentBitmap);
 
         drawCurrentItem(canvas, p, currentBlock);
         drawNextItem(canvas, p, previewGridSize);
@@ -408,7 +419,7 @@ public class TetrisWorld {
                                     1, p);
 
                     if (highlightings[j][i] == 1) {
-                        if (highlighting && System.currentTimeMillis() - lastFreezedTime < 500) {
+                        if (highlighting && System.currentTimeMillis() - lastFrozenTime < 500) {
                             setLightColorForShape(p, occupancy[j][i]);
                             canvas.drawRect(i * gridSize + PADDING + 1, (j - 2) * gridSize +
                                             TOP_PADDING
@@ -565,6 +576,7 @@ public class TetrisWorld {
         }
 
         setColorForShape(p, nextBlock.getType());
+        setColorForBlockBitmap(p, nextBitmap);
 
         if (nextBitmap != null) {
             bitmap = getResizedBitmap(this.nextBitmap, previewIconSize, previewIconSize);

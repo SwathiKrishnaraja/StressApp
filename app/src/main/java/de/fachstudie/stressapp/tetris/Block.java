@@ -1,5 +1,7 @@
 package de.fachstudie.stressapp.tetris;
 
+import android.graphics.Bitmap;
+
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -151,6 +153,33 @@ public class Block extends Item {
                             if (indexExists(j, state) && indexExists(i, state[j]) && state[j][i]
                                     > 0) {
                                 state[j][i] = -1;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public void deleteOverlaps(int[][] state, Bitmap[][] bitmaps) {
+        int currentY = getY();
+        int currentX = getX();
+        int currentWidth = getWidth();
+        int currentHeight = getHeight();
+        for (int j = currentY; j < currentY + currentHeight && j < state.length; j++) {
+            for (int i = getX(); i < currentX + currentWidth && j >= 0 && i < state[j].length;
+                 i++) {
+                synchronized (this) {
+                    synchronized (getShape()) {
+                        int yOffset = j - currentY;
+                        int xOffset = i - currentX;
+                        if (indexExists(yOffset, getShape()) && indexExists(xOffset, getShape()
+                                [yOffset])
+                                && getShape()[yOffset][xOffset] == 1) {
+                            if (indexExists(j, state) && indexExists(i, state[j]) && state[j][i]
+                                    > 0) {
+                                state[j][i] = 0;
+                                bitmaps[j][i] = null;
                             }
                         }
                     }
