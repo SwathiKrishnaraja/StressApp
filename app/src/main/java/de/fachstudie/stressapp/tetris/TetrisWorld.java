@@ -1,6 +1,7 @@
 package de.fachstudie.stressapp.tetris;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -17,6 +18,7 @@ import de.fachstudie.stressapp.R;
 import de.fachstudie.stressapp.db.DatabaseService;
 import de.fachstudie.stressapp.model.StressNotification;
 import de.fachstudie.stressapp.networking.StressAppClient;
+import de.fachstudie.stressapp.tetris.constants.BlockColors;
 import de.fachstudie.stressapp.tetris.utils.ArrayUtils;
 
 import static de.fachstudie.stressapp.tetris.Block.randomItem;
@@ -25,7 +27,7 @@ import static de.fachstudie.stressapp.tetris.utils.ArrayUtils.indexExists;
 import static de.fachstudie.stressapp.tetris.utils.BitmapUtils.drawableToBitmap;
 import static de.fachstudie.stressapp.tetris.utils.BitmapUtils.getResizedBitmap;
 import static de.fachstudie.stressapp.tetris.utils.ColorUtils.setColorForShape;
-import static de.fachstudie.stressapp.tetris.utils.ColorUtils.setColorForShapeAlpha;
+import static de.fachstudie.stressapp.tetris.utils.ColorUtils.setLightColorForShape;
 
 public class TetrisWorld {
 
@@ -39,6 +41,7 @@ public class TetrisWorld {
     private final int NOTIFICATIONS_SIZE_PREVIEW_PADDING = 20;
     private final int TEXT_SIZE = 40;
     private int TOP_PADDING = 0;
+
     // Initialization of the tetris field
     private int[][] occupancy = new int[FULL_HEIGHT][WIDTH];
     private Bitmap[][] bitmaps = new Bitmap[FULL_HEIGHT][WIDTH];
@@ -383,7 +386,7 @@ public class TetrisWorld {
         p.setStyle(Paint.Style.FILL);
 
         // First draw the shadow
-        p.setColor(Color.parseColor("#D3D3D3"));
+        p.setColor(Color.parseColor(BlockColors.LIGHT_GRAY));
         drawShadow(canvas, p, currentBlock);
 
         // Then the actual block, so it obscures the shadow if necessary
@@ -403,7 +406,7 @@ public class TetrisWorld {
 
                     if (highlightings[j][i] == 1) {
                         if (highlighting && System.currentTimeMillis() - lastFreezedTime < 500) {
-                            setColorForShapeAlpha(p, occupancy[j][i]);
+                            setLightColorForShape(p, occupancy[j][i]);
                             canvas.drawRect(i * gridSize + PADDING + 1, (j - 2) * gridSize +
                                             TOP_PADDING
                                             + 1,
@@ -558,8 +561,11 @@ public class TetrisWorld {
                 break;
         }
 
-        if (nextBitmap != null)
+        setColorForShape(p, nextBlock.getType());
+
+        if (nextBitmap != null) {
             bitmap = getResizedBitmap(this.nextBitmap, previewIconSize, previewIconSize);
+        }
 
         for (int j = yStart; j < yLimit; j++) {
             for (int i = xStart; i < xLimit; i++) {
@@ -567,7 +573,6 @@ public class TetrisWorld {
                 int xOffset = i - xStart;
 
                 if (nextBlock.getShape()[yOffset][xOffset] == 1) {
-                    setColorForShape(p, nextBlock.getType());
                     canvas.drawRect(i * previewGridSize + PADDING + WIDTH * gridSize +
                                     NEXT_BLOCK_PREVIEW_PADDING + 1,
                             j * previewGridSize + TOP_PADDING + 1,
@@ -589,8 +594,6 @@ public class TetrisWorld {
     public void drawIcon(Canvas canvas, Paint p) {
         if (currentBlock.getY() > 1) {
             int canvasWidth = canvas.getWidth();
-            int canvasHeight = canvas.getHeight();
-
             int gridSize = (canvasWidth - 2 * PADDING) / WIDTH;
             int iconSize = gridSize - 2 * (gridSize / 8);
             Bitmap bitmap = getResizedBitmap(this.currentBitmap, iconSize, iconSize);
@@ -702,7 +705,7 @@ public class TetrisWorld {
 
     public int getHighScore() {
         int score = dbService.getHighScore();
-        return (score != 0 ? score : 0);
+        return score;
     }
 
     public int getScore() {
@@ -712,9 +715,11 @@ public class TetrisWorld {
     public void saveScore() {
         if (score != 0) {
             dbService.saveScore(score);
-            client.sendScore(this.context, score,
-                    context.getSharedPreferences("de.fachstudie.stressapp.preferences", Context
-                            .MODE_PRIVATE).getString("username", "You"));
+            SharedPreferences prefs = context.getSharedPreferences("de.fachstudie.stressapp.preferences",
+                    Context.MODE_PRIVATE);
+            if (!prefs.getString("username", "").isEmpty()) {
+                client.sendScore(this.context, score, prefs.getString("username", ""));
+            }
         }
     }
 

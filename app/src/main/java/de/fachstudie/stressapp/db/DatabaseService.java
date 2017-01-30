@@ -139,12 +139,6 @@ public class DatabaseService {
 
         addNotifications(notifications, c);
         closeDatabaseComponents(c);
-
-        for(StressNotification notification: notifications){
-            Log.d("spec app", notification.getApplication());
-            Log.d("spec loaded", "" + notification.isLoaded());
-            Log.d("spec event", notification.getEvent());
-        }
         return notifications;
     }
 

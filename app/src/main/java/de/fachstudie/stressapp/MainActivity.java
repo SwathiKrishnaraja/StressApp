@@ -50,8 +50,9 @@ public class MainActivity extends AppCompatActivity {
     private AlertDialog userInfoDialog;
     private AlertDialog exitDialog;
     private AlertDialog gameOverDialog;
-    private boolean receiversCreated = false;
     private StressAppClient client;
+    private int highScore;
+    private boolean receiversCreated = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,9 +61,9 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        exitDialog = getCustomDialog(false, false, true, true);
-
         client = new StressAppClient(this);
+
+        exitDialog = getCustomDialog(false, false, true, true);
         gameOverDialog = getCustomDialog(true, true, false, false);
         Handler handler = createGameOverHandler();
 
@@ -128,8 +129,8 @@ public class MainActivity extends AppCompatActivity {
         filterLock.addAction(Intent.ACTION_SCREEN_ON);
         filterLock.addAction(Intent.ACTION_SCREEN_OFF);
         filterLock.addAction(Intent.ACTION_USER_PRESENT);
-        registerReceiver(lockScreenReceiver, filterLock);
 
+        registerReceiver(lockScreenReceiver, filterLock);
         receiversCreated = true;
     }
 
@@ -152,8 +153,9 @@ public class MainActivity extends AppCompatActivity {
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
                 Bundle data = msg.getData();
+                highScore = data.getInt("highscore");
                 gameOverDialog.setTitle("GAME OVER");
-                gameOverDialog.setMessage("HIGHSCORE: " + data.getInt("highscore") + "\n" + "\n" +
+                gameOverDialog.setMessage("HIGHSCORE: " + highScore + "\n" + "\n" +
                         "SCORE: " + data.getInt("score"));
                 if (!isFinishing()) {
                     gameOverDialog.show();
@@ -195,7 +197,6 @@ public class MainActivity extends AppCompatActivity {
                     Intent score_activity = new Intent(MainActivity.this, ScoreActivity.class);
                     startActivity(score_activity);
                     usernameLayout.setVisibility(View.GONE);
-                    gameOverDialog.dismiss();
                 }
             });
         }
@@ -261,6 +262,16 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             });
+            usernameEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View view, boolean hasFocus) {
+                    if (!hasFocus) {
+                        client.sendScore(getApplicationContext(), highScore,
+                                getApplicationContext().getSharedPreferences("de.fachstudie.stressapp.preferences",
+                                        Context.MODE_PRIVATE).getString("username", ""));
+                    }
+                }
+            });
         } else {
             usernameLayout.setVisibility(View.GONE);
             Log.d("Invisible", "true");
@@ -285,7 +296,7 @@ public class MainActivity extends AppCompatActivity {
             tetrisView.pauseGame();
         } else if (!receiversCreated) {
             createReceivers();
-        } else if (!tetrisView.isPause()) {
+        } else if (!gameOverDialog.isShowing() && !tetrisView.isPause()) {
             tetrisView.resumeGame();
         }
     }
