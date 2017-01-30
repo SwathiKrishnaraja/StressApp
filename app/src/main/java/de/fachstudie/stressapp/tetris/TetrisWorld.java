@@ -72,6 +72,7 @@ public class TetrisWorld {
     private long lastShowCombo = -1;
     private int comboCount = 0;
     private int lastDroppedRows = 0;
+    private float stressLevel = 0;
 
     public TetrisWorld(Context context) {
         this.context = context;
@@ -283,6 +284,7 @@ public class TetrisWorld {
             }
         }
         lastDroppedRows = currentBlock.getDroppedRows();
+        this.stressLevel += 0.5;
     }
 
     private boolean hasOverlap(int[][] state) {
@@ -423,38 +425,91 @@ public class TetrisWorld {
             }
         }
 
-        p.setTextSize(40);
-        p.setTypeface(Typeface.create("sans-serif-medium", Typeface.BOLD));
-        float sw = p.getStrokeWidth();
+        // Cache old values
         Paint.Align align = p.getTextAlign();
+        float sw = p.getStrokeWidth();
+        drawStressLevel(canvas, p);
+
+        p.setTextSize(40);
+        p.setAntiAlias(true);
+        p.setTypeface(Typeface.create("sans-serif-medium", Typeface.BOLD));
         p.setTextAlign(Paint.Align.CENTER);
         if (System.currentTimeMillis() - lastScoreChange < 1500 && System.currentTimeMillis() -
                 lastScoreChange > 100) {
             p.setStrokeWidth(5);
             p.setColor(context.getResources().getColor(R.color.white));
             p.setStyle(Paint.Style.STROKE);
-            canvas.drawText("+" + lastScoreDelta, PADDING + (WIDTH * gridSize / 2), canvasHeight
-                    / 2, p);
-            p.setColor(context.getResources().getColor(R.color.red));
+            canvas.drawText("+" + lastScoreDelta, PADDING + (WIDTH * gridSize / 2), 2 * canvasHeight
+                    / 3, p);
+            p.setColor(context.getResources().getColor(R.color.black));
             p.setStyle(Paint.Style.FILL);
             p.setStrokeWidth(sw);
-            canvas.drawText("+" + lastScoreDelta, PADDING + (WIDTH * gridSize / 2), canvasHeight
-                    / 2, p);
+            canvas.drawText("+" + lastScoreDelta, PADDING + (WIDTH * gridSize / 2), 2 * canvasHeight
+                    / 3, p);
         }
-        if (System.currentTimeMillis() - lastShowCombo < 1500) {
+        if (System.currentTimeMillis() - lastShowCombo < 1500 && lastScoreChange > 100) {
             p.setStrokeWidth(5);
             p.setColor(context.getResources().getColor(R.color.white));
             p.setStyle(Paint.Style.STROKE);
             canvas.drawText("Combo x" + this.comboCount, PADDING + (WIDTH * gridSize / 2),
-                    canvasHeight / 2 + 100, p);
+                    2 * canvasHeight / 3 + 100, p);
             p.setStrokeWidth(sw);
-            p.setColor(context.getResources().getColor(R.color.red));
+            p.setColor(context.getResources().getColor(R.color.black));
             p.setStyle(Paint.Style.FILL);
             canvas.drawText("Combo x" + this.comboCount, PADDING + (WIDTH * gridSize / 2),
-                    canvasHeight / 2 + 100, p);
+                    2 * canvasHeight / 3 + 100, p);
         }
         p.setStrokeWidth(sw);
         p.setTextAlign(align);
+    }
+
+    private void drawStressLevel(Canvas canvas, Paint p) {
+        p.setStyle(Paint.Style.FILL);
+        p.setColor(context.getResources().getColor(R.color.black));
+        int stressLevelPadding = 50;
+        p.setTextAlign(Paint.Align.CENTER);
+        canvas.drawText("Stress", PADDING / 2, TOP_PADDING + 10, p);
+
+        float barHeight = 400f;
+        // Map stress level 0 - 100 to height of bar
+        float top = -(barHeight / 100f) * this.stressLevel + barHeight + TOP_PADDING;
+        p.setColor(context.getResources().getColor(android.R.color.holo_red_dark));
+        //canvas.drawRect(stressLevelPadding, top + 10, PADDING - stressLevelPadding,
+        //TOP_PADDING + barHeight + 10, p);
+
+        for (int i = 0; i < 10; i++) {
+            if (this.stressLevel > 0 && i > 8) {
+                p.setColor(context.getResources().getColor(R.color.yellow));
+            } else if (this.stressLevel > 10 && i > 7) {
+                p.setColor(context.getResources().getColor(R.color.amber));
+            } else if (this.stressLevel > 20 && i > 6) {
+                p.setColor(context.getResources().getColor(R.color.orange));
+            } else if (this.stressLevel > 30 && i > 5) {
+                p.setColor(context.getResources().getColor(R.color.darkorange));
+            } else if (this.stressLevel > 40 && i > 4) {
+                p.setColor(context.getResources().getColor(R.color.darkdarkorange));
+            } else if (this.stressLevel > 50 && i > 3) {
+                p.setColor(context.getResources().getColor(R.color.red));
+            } else if (this.stressLevel > 60 && i > 2) {
+                p.setColor(context.getResources().getColor(R.color.darkred));
+            } else if (this.stressLevel > 70 && i > 1) {
+                p.setColor(context.getResources().getColor(R.color.darkdarkred));
+            } else if (this.stressLevel > 80 && i > 0) {
+                p.setColor(context.getResources().getColor(R.color.darkdarkdarkred));
+            } else if (this.stressLevel > 90 && i == 0) {
+                p.setColor(context.getResources().getColor(R.color.veryred));
+            } else {
+                p.setColor(context.getResources().getColor(R.color.white));
+            }
+            float currTop = (barHeight / 10) * i + TOP_PADDING + 20;
+            canvas.drawRect(stressLevelPadding, currTop, PADDING - stressLevelPadding,
+                    currTop + (barHeight / 10), p);
+        }
+
+        p.setStyle(Paint.Style.STROKE);
+        p.setColor(context.getResources().getColor(android.R.color.black));
+        canvas.drawRect(stressLevelPadding, TOP_PADDING + 20, PADDING - stressLevelPadding,
+                TOP_PADDING + 420, p);
     }
 
     public void drawCurrentItem(Canvas canvas, Paint p, Block item) {
@@ -594,15 +649,17 @@ public class TetrisWorld {
     }
 
     public void rotateBlock() {
-        int[][] state = copy(occupancy);
-        this.currentBlock.simulateRotate(state, overlapsBoundary);
+        synchronized (currentBlock) {
+            int[][] state = copy(occupancy);
+            this.currentBlock.simulateRotate(state, overlapsBoundary);
 
-        if (!hasOverlap(state) && !overlapsBoundary.get()) {
-            this.currentBlock.rotate();
-        }
+            if (!hasOverlap(state) && !overlapsBoundary.get()) {
+                this.currentBlock.rotate();
+            }
 
-        if (this.currentBlock.getX() + this.currentBlock.getWidth() >= WIDTH) {
-            this.currentBlock.setX(WIDTH - this.currentBlock.getWidth());
+            if (this.currentBlock.getX() + this.currentBlock.getWidth() >= WIDTH) {
+                this.currentBlock.setX(WIDTH - this.currentBlock.getWidth());
+            }
         }
     }
 
@@ -633,6 +690,7 @@ public class TetrisWorld {
         bitmaps = new Bitmap[FULL_HEIGHT][WIDTH];
         score = 0;
         scoreString = "0000";
+        this.stressLevel = 0;
     }
 
     public boolean isBlockVisible() {
