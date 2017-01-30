@@ -121,6 +121,9 @@ public class TetrisWorld {
                 this.setBitmaps();
                 notificationsCount = (notificationsCount != 0) ? notificationsCount - 1 : 0;
                 this.blockChange = true;
+                if (currentBitmap != null) {
+                    this.stressLevel += 5;
+                }
             }
             return false;
         }
