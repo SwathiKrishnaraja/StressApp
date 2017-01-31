@@ -133,8 +133,8 @@ public class TetrisWorld {
                 currentBlock.increaseDroppedRows();
             }
             return true;
-
-        } else if (currentBlockGolden && currentBlock.getY() + currentBlock.getHeight() < FULL_HEIGHT) {
+        } else if (currentBlockGolden && currentBlock.getY() + currentBlock.getHeight() <
+                FULL_HEIGHT) {
             currentBlock.stepDown();
             currentBlock.deleteOverlaps(occupancy, bitmaps);
             return false;
@@ -156,12 +156,16 @@ public class TetrisWorld {
                     this.nextBlockGolden = false;
                 } else {
                     this.updateNotificationIsLoaded(loadedNotification);
-                    this.notificationsCount = (notificationsCount != 0) ? notificationsCount - 1 : 0;
+                    this.notificationsCount = (notificationsCount != 0) ? notificationsCount - 1
+                            : 0;
                 }
 
                 this.setBitmaps();
                 if (currentBlockIcon != null && !currentBlockGolden) {
                     this.stressLevel += 5;
+                    if (stressLevel > 100) {
+                        this.stressLevel = 100;
+                    }
                 }
             }
             return false;
@@ -335,6 +339,9 @@ public class TetrisWorld {
         }
         lastDroppedRows = currentBlock.getDroppedRows();
         this.stressLevel += 0.5;
+        if(stressLevel > 100) {
+            stressLevel = 100;
+        }
     }
 
     private boolean hasOverlap(int[][] state) {
