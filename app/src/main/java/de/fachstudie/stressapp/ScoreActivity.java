@@ -30,15 +30,12 @@ public class ScoreActivity extends AppCompatActivity {
     private SharedPreferences preferences;
     private DatabaseService dbService;
 
-    public ScoreActivity() {
-        this.preferences = getSharedPreferences("de.fachstudie.stressapp" +
-                ".preferences", Context.MODE_PRIVATE);
-        this.dbService = DatabaseService.getInstance(getApplicationContext());
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        this.preferences = getSharedPreferences("de.fachstudie.stressapp" +
+                ".preferences", Context.MODE_PRIVATE);
+        this.dbService = DatabaseService.getInstance(getApplicationContext());
         setContentView(R.layout.activity_score);
 
         final ListView listView = (ListView) findViewById(android.R.id.list);
