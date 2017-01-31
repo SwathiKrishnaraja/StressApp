@@ -63,6 +63,7 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
             }
             swiping = false;
             dropping = false;
+
         } else if (event.getAction() == MotionEvent.ACTION_DOWN &&
                 !isInRange(event.getX(), event.getY())) {
             lastTouchX = event.getX();

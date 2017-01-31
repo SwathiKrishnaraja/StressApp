@@ -70,6 +70,7 @@ public class TetrisWorld {
     private AtomicBoolean overlapsBoundary = new AtomicBoolean(false);
 
     private List<StressNotification> notifications = new ArrayList<>();
+    private StressNotification loadedNotification;
     private DatabaseService dbService;
     private Context context;
     private StressAppClient client;
@@ -118,7 +119,7 @@ public class TetrisWorld {
         currentBlock.simulateStepDown(state);
         this.blockChange = false;
 
-        if (nextBlockIcon == null || notificationPosted || !nextBlockGolden) {
+        if (nextBlockIcon == null || notificationPosted) {
             notifications = dbService.getSpecificNotifications("false");
             notificationsCount = notifications.size();
             notificationPosted = false;
@@ -154,6 +155,7 @@ public class TetrisWorld {
                     this.currentBlockGolden = true;
                     this.nextBlockGolden = false;
                 } else {
+                    this.updateNotificationIsLoaded(loadedNotification);
                     this.notificationsCount = (notificationsCount != 0) ? notificationsCount - 1 : 0;
                 }
 
@@ -180,7 +182,7 @@ public class TetrisWorld {
             if (applicationIcon != null) {
                 Bitmap bitmap = drawableToBitmap(applicationIcon);
                 this.nextBlockIcon = bitmap;
-                this.updateNotificationIsLoaded(notification);
+                loadedNotification = notification;
             }
             notifications.remove(0);
         }
