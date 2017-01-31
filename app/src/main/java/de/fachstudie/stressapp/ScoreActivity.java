@@ -55,15 +55,15 @@ public class ScoreActivity extends AppCompatActivity {
 
                     Score[] scores = new Score[jsonScores.length()];
                     String username = preferences.getString("username", "");
-                    boolean userAvailable = false;
+                    boolean userAvailable = true;
 
                     for (int i = 0; i < jsonScores.length(); i++) {
                         scores[i] = new Score(0, jsonScores.optInt(i));
                         scores[i].setUsername(jsonUsers.optString(i));
 
                         // TODO check deviceid
-                        if (scores[i].getUsername().equals(username)) {
-                            userAvailable = true;
+                        if (!username.isEmpty() && !username.equals(scores[i].getUsername())) {
+                            userAvailable = false;
                         }
                     }
 
