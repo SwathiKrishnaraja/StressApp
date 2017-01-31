@@ -1,5 +1,7 @@
 package de.fachstudie.stressapp;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -15,6 +17,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Arrays;
+
+import de.fachstudie.stressapp.db.DatabaseService;
 import de.fachstudie.stressapp.model.Score;
 import de.fachstudie.stressapp.networking.StressAppClient;
 import de.fachstudie.stressapp.score.ScoreAdapter;
@@ -22,6 +27,14 @@ import de.fachstudie.stressapp.score.ScoreAdapter;
 public class ScoreActivity extends AppCompatActivity {
 
     private StressAppClient client;
+    private SharedPreferences preferences;
+    private DatabaseService dbService;
+
+    public ScoreActivity() {
+        this.preferences = getSharedPreferences("de.fachstudie.stressapp" +
+                ".preferences", Context.MODE_PRIVATE);
+        this.dbService = DatabaseService.getInstance(getApplicationContext());
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,16 +53,32 @@ public class ScoreActivity extends AppCompatActivity {
                 String response = message.getData().getString("response");
                 try {
                     JSONObject result = new JSONObject(response);
-
                     JSONArray jsonScores = result.getJSONArray("scores");
                     JSONArray jsonUsers = result.getJSONArray("users");
+
                     Score[] scores = new Score[jsonScores.length()];
+                    String username = preferences.getString("username", "");
+                    boolean userAvailable = false;
+
                     for (int i = 0; i < jsonScores.length(); i++) {
                         scores[i] = new Score(0, jsonScores.optInt(i));
                         scores[i].setUsername(jsonUsers.optString(i));
+
+                        // TODO check deviceid
+                        if (scores[i].getUsername().equals(username)) {
+                            userAvailable = true;
+                        }
                     }
-                    ScoreAdapter s = new ScoreAdapter(ScoreActivity.this, scores);
-                    listView.setAdapter(s);
+
+                    if (!userAvailable) {
+                        scores = Arrays.copyOf(scores, scores.length + 1);
+                        scores[scores.length - 1] = new Score(scores.length - 1,
+                                dbService.getHighScore());
+                        scores[scores.length - 1].setUsername(username);
+                    }
+
+                    ScoreAdapter adapter = new ScoreAdapter(ScoreActivity.this, scores);
+                    listView.setAdapter(adapter);
                     Log.d("Response", result.toString());
                 } catch (JSONException e) {
                 }
