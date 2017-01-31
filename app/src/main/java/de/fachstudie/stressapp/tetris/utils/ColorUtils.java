@@ -1,6 +1,5 @@
 package de.fachstudie.stressapp.tetris.utils;
 
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Paint;
 
@@ -92,9 +91,8 @@ public class ColorUtils {
         }
     }
 
-    public static void setColorForBlockBitmap(Paint p, Bitmap bitmap) {
-        if(bitmap != null){
+    public static void setGoldColorForBlockBitmap(Paint p, boolean blockGolden) {
+        if (blockGolden)
             p.setColor(Color.parseColor(BlockColors.GOLD));
-        }
     }
 }

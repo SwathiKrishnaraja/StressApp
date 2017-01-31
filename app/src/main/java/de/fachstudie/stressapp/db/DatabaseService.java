@@ -51,7 +51,6 @@ public class DatabaseService {
     private static DatabaseService dbService;
     private static DatabaseHelper dbHelper;
 
-
     public static synchronized DatabaseService getInstance(Context context) {
         if (dbService == null) {
             dbService = new DatabaseService(context.getApplicationContext());

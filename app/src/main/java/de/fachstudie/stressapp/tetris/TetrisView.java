@@ -1,8 +1,6 @@
 package de.fachstudie.stressapp.tetris;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -13,8 +11,6 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-
-import de.fachstudie.stressapp.R;
 
 public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
     private static int GRAVITY_TIME = 800;
@@ -42,18 +38,20 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
         p = new Paint();
         p.setColor(Color.GREEN);
 
-        Bitmap bitmap = BitmapFactory.decodeResource(getResources(),
-                R.mipmap.ic_event_available);
-
         this.model = new TetrisWorld(context);
         this.model.addItem(new Block(3, 0, 0, 0));
         this.model.createNextItem();
-        this.model.setNotificationBitmap(bitmap);
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (event.getAction() == MotionEvent.ACTION_UP) {
+        if (isInRange(event.getX(), event.getY()) && !this.model.isNextBlockGolden() &&
+                this.model.getGoldenBlockCount() != 0) {
+            this.model.setNextBlockGolden(true);
+            this.model.decreaseGoldenBlocks();
+        }
+
+        if (event.getAction() == MotionEvent.ACTION_UP && !isInRange(event.getX(), event.getY())) {
             if (!swiping && !dropping) {
                 this.model.rotateBlock();
             }
@@ -65,10 +63,14 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
             }
             swiping = false;
             dropping = false;
-        } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
+        } else if (event.getAction() == MotionEvent.ACTION_DOWN &&
+                !isInRange(event.getX(), event.getY())) {
             lastTouchX = event.getX();
             lastTouchY = event.getY();
-        } else if (event.getAction() == MotionEvent.ACTION_MOVE) {
+
+        } else if (event.getAction() == MotionEvent.ACTION_MOVE &&
+                !isInRange(event.getX(), event.getY())) {
+
             if (lastTouchX - event.getX() > 45 && lastTouchX != -1 && !dropping) {
                 this.model.moveLeft();
                 lastTouchX = event.getX();
@@ -110,7 +112,7 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
             canvas.drawColor(Color.WHITE);
             model.drawState(canvas, p);
 
-            if (model.getCurrentBitmap() != null)
+            if (model.getCurrentBlockIcon() != null)
                 model.drawIcon(canvas, p);
         }
 
@@ -133,9 +135,9 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     private void setGravityTime() {
-        if (model.isBlockVisible() && model.getCurrentBitmap() == null) {
+        if (model.isBlockVisible() && !model.isCurrentBlockGolden()) {
             gravityTime = (int) (GRAVITY_TIME - 6 * (this.model.getStressLevel()));
-        } else if (model.getCurrentBitmap() != null) {
+        } else if (model.isCurrentBlockGolden()) {
             gravityTime = 100;
         } else {
             gravityTime = 20;
@@ -206,5 +208,16 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
 
     public void setHeight(int heightPixels) {
         model.setTopPadding(heightPixels);
+    }
+
+    private boolean isInRange(float x, float y) {
+        if ((x > 15 && x < 100) && (y > 650 && y < 780)) {
+            return true;
+        }
+        return false;
+    }
+
+    public void increaseGoldenBlockCount() {
+        this.model.increaseGoldenBlockCount();
     }
 }

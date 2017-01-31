@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -22,12 +23,13 @@ import de.fachstudie.stressapp.tetris.constants.BlockColors;
 import de.fachstudie.stressapp.tetris.utils.ArrayUtils;
 
 import static de.fachstudie.stressapp.tetris.Block.randomItem;
+import static de.fachstudie.stressapp.tetris.constants.StringConstants.GOLDEN_BLOCKS;
 import static de.fachstudie.stressapp.tetris.utils.ArrayUtils.copy;
 import static de.fachstudie.stressapp.tetris.utils.ArrayUtils.indexExists;
 import static de.fachstudie.stressapp.tetris.utils.BitmapUtils.drawableToBitmap;
 import static de.fachstudie.stressapp.tetris.utils.BitmapUtils.getResizedBitmap;
-import static de.fachstudie.stressapp.tetris.utils.ColorUtils.setColorForBlockBitmap;
 import static de.fachstudie.stressapp.tetris.utils.ColorUtils.setColorForShape;
+import static de.fachstudie.stressapp.tetris.utils.ColorUtils.setGoldColorForBlockBitmap;
 import static de.fachstudie.stressapp.tetris.utils.ColorUtils.setLightColorForShape;
 
 public class TetrisWorld {
@@ -38,7 +40,7 @@ public class TetrisWorld {
     private final int FULL_HEIGHT = 22;
     private final int PREVIEW_WIDTH = 4;
     private final int PADDING = 150;
-    private final int NEXT_BLOCK_PREVIEW_PADDING = 10;
+    private final int PREVIEW_PADDING = 10;
     private final int NOTIFICATIONS_SIZE_PREVIEW_PADDING = 20;
     private final int TEXT_SIZE = 40;
     private int TOP_PADDING = 0;
@@ -50,9 +52,10 @@ public class TetrisWorld {
 
     private Block currentBlock;
     private Block nextBlock;
-    private Bitmap currentBitmap;
-    private Bitmap nextBitmap;
-    private Bitmap notificationBitmap;
+    private Bitmap currentBlockIcon;
+    private Bitmap nextBlockIcon;
+    private Bitmap notificationIcon;
+    private Bitmap arrowDownIcon;
 
     private int score;
     private int gridSize;
@@ -62,6 +65,8 @@ public class TetrisWorld {
     private boolean gameOver = false;
     private boolean notificationPosted = false;
     private boolean highlighting = false;
+    private boolean currentBlockGolden = false;
+    private boolean nextBlockGolden = false;
     private AtomicBoolean overlapsBoundary = new AtomicBoolean(false);
 
     private List<StressNotification> notifications = new ArrayList<>();
@@ -75,13 +80,29 @@ public class TetrisWorld {
     private int lastScoreDelta = 0;
     private int comboCount = 0;
     private int lastDroppedRows = 0;
+    private int goldenBlockCount = 0;
     private float stressLevel = 0;
     private boolean clearedLastTime;
+
+    private SharedPreferences prefs;
 
     public TetrisWorld(Context context) {
         this.context = context;
         dbService = DatabaseService.getInstance(this.context);
         client = new StressAppClient(this.context);
+        setEventIcons(context);
+        prefs = context.getSharedPreferences("de.fachstudie.stressapp.preferences",
+                Context.MODE_PRIVATE);
+        goldenBlockCount = prefs.getInt(GOLDEN_BLOCKS, -1);
+    }
+
+    private void setEventIcons(Context context) {
+        notificationIcon = BitmapFactory.decodeResource(context.getResources(),
+                R.mipmap.ic_event_available);
+        notificationIcon = getResizedBitmap(notificationIcon, TEXT_SIZE + 5, TEXT_SIZE + 5);
+
+        arrowDownIcon = BitmapFactory.decodeResource(context.getResources(),
+                R.mipmap.ic_arrow_down);
     }
 
     public void addItem(Block item) {
@@ -97,20 +118,22 @@ public class TetrisWorld {
         currentBlock.simulateStepDown(state);
         this.blockChange = false;
 
-        if (nextBitmap == null || notificationPosted) {
+        if (nextBlockIcon == null || notificationPosted || !nextBlockGolden) {
             notifications = dbService.getSpecificNotifications("false");
             notificationsCount = notifications.size();
             notificationPosted = false;
-            setNextBitmap();
+            setNextNotificationBitmap();
         }
 
-        if (currentBitmap == null && !hasOverlap(state) && currentBlock.getY() + currentBlock.getHeight() < FULL_HEIGHT) {
+        if (!currentBlockGolden && !hasOverlap(state) &&
+                currentBlock.getY() + currentBlock.getHeight() < FULL_HEIGHT) {
             currentBlock.stepDown();
             if (dropping) {
                 currentBlock.increaseDroppedRows();
             }
             return true;
-        } else if (currentBitmap != null && currentBlock.getY() + currentBlock.getHeight() < FULL_HEIGHT) {
+
+        } else if (currentBlockGolden && currentBlock.getY() + currentBlock.getHeight() < FULL_HEIGHT) {
             currentBlock.stepDown();
             currentBlock.deleteOverlaps(occupancy, bitmaps);
             return false;
@@ -119,14 +142,23 @@ public class TetrisWorld {
             calculateScore();
             clearFullLines();
             checkGameOver();
+            this.currentBlockGolden = false;
 
             if (!gameOver) {
                 this.currentBlock = nextBlock;
                 this.nextBlock = randomItem();
-                this.setBitmaps();
-                notificationsCount = (notificationsCount != 0) ? notificationsCount - 1 : 0;
                 this.blockChange = true;
-                if (currentBitmap != null) {
+                this.currentBlockGolden = false;
+
+                if (nextBlockGolden) {
+                    this.currentBlockGolden = true;
+                    this.nextBlockGolden = false;
+                } else {
+                    this.notificationsCount = (notificationsCount != 0) ? notificationsCount - 1 : 0;
+                }
+
+                this.setBitmaps();
+                if (currentBlockIcon != null && !currentBlockGolden) {
                     this.stressLevel += 5;
                 }
             }
@@ -134,8 +166,8 @@ public class TetrisWorld {
         }
     }
 
-    private void setNextBitmap() {
-        if (!notifications.isEmpty()) {
+    private void setNextNotificationBitmap() {
+        if (!notifications.isEmpty() && !nextBlockGolden) {
             StressNotification notification = notifications.get(0);
             Drawable applicationIcon = null;
             try {
@@ -147,7 +179,7 @@ public class TetrisWorld {
 
             if (applicationIcon != null) {
                 Bitmap bitmap = drawableToBitmap(applicationIcon);
-                this.nextBitmap = bitmap;
+                this.nextBlockIcon = bitmap;
                 this.updateNotificationIsLoaded(notification);
             }
             notifications.remove(0);
@@ -170,12 +202,12 @@ public class TetrisWorld {
     }
 
     private void setBitmaps() {
-        if (nextBitmap != null) {
-            this.currentBitmap = nextBitmap;
-            this.nextBitmap = null;
-            setNextBitmap();
+        if (nextBlockIcon != null) {
+            this.currentBlockIcon = nextBlockIcon;
+            this.nextBlockIcon = null;
+            setNextNotificationBitmap();
         } else {
-            this.currentBitmap = null;
+            this.currentBlockIcon = null;
         }
     }
 
@@ -289,12 +321,12 @@ public class TetrisWorld {
                 int xOffset = i - currentBlock.getX();
                 if (indexExists(j, occupancy) && indexExists(i, occupancy[j]) &&
                         currentBlock.getShape()[yOffset][xOffset] == 1) {
-                    if (currentBitmap != null) {
+                    if (currentBlockGolden) {
                         occupancy[j][i] = 8;
                     } else {
                         occupancy[j][i] = currentBlock.getType().getN();
                     }
-                    bitmaps[j][i] = currentBitmap;
+                    bitmaps[j][i] = currentBlockIcon;
                     highlightings[j][i] = 1;
                 }
             }
@@ -320,7 +352,7 @@ public class TetrisWorld {
 
         gridSize = (canvasWidth - 2 * PADDING) / WIDTH;
         int iconSize = gridSize - 2 * (gridSize / 8);
-        int previewGridSize = (PADDING - 2 * NEXT_BLOCK_PREVIEW_PADDING) / PREVIEW_WIDTH;
+        int previewGridSize = (PADDING - 2 * PREVIEW_PADDING) / PREVIEW_WIDTH;
 
         // Font settings
         p.setTextSize(TEXT_SIZE);
@@ -369,8 +401,14 @@ public class TetrisWorld {
         // Draw number of notifications
         p.setTextSize(TEXT_SIZE - 10);
         canvas.drawText("" + notificationsCount,
-                PADDING + WIDTH * gridSize + NEXT_BLOCK_PREVIEW_PADDING + 50,
+                PADDING + WIDTH * gridSize + PREVIEW_PADDING + 50,
                 TOP_PADDING + PADDING - HEIGHT + NOTIFICATIONS_SIZE_PREVIEW_PADDING + (PADDING / 2),
+                p);
+
+        // Draw number of golden blocks
+        canvas.drawText("" + goldenBlockCount,
+                PREVIEW_PADDING + 50,
+                TOP_PADDING + (canvasHeight / 2) - 25,
                 p);
 
         p.setStyle(Paint.Style.STROKE);
@@ -378,23 +416,33 @@ public class TetrisWorld {
         canvas.drawRect(PADDING, TOP_PADDING, PADDING + WIDTH * gridSize, TOP_PADDING + HEIGHT *
                 gridSize, p);
 
+        // Draw boundary of the golden blocks preview
+        canvas.drawRect(PREVIEW_PADDING,
+                TOP_PADDING + (canvasHeight / 2) - 100,
+                PADDING - PREVIEW_PADDING,
+                TOP_PADDING + (canvasHeight / 2) - 100 + PADDING - HEIGHT, p);
+
+        // Draw icon for golden blocks preview
+        Bitmap arrowDownBitmap = getResizedBitmap(arrowDownIcon, TEXT_SIZE + 5, TEXT_SIZE + 5);
+        canvas.drawBitmap(arrowDownBitmap, PREVIEW_PADDING,
+                TOP_PADDING + (canvasHeight / 2) - 60, p);
+
         // Draw boundary of the next block preview
-        canvas.drawRect(PADDING + WIDTH * gridSize + NEXT_BLOCK_PREVIEW_PADDING,
+        canvas.drawRect(PADDING + WIDTH * gridSize + PREVIEW_PADDING,
                 TOP_PADDING,
-                PADDING + WIDTH * gridSize + PADDING - NEXT_BLOCK_PREVIEW_PADDING,
+                PADDING + WIDTH * gridSize + PADDING - PREVIEW_PADDING,
                 TOP_PADDING + PADDING - HEIGHT, p);
 
         // Draw boundary of the notifications number preview
-        canvas.drawRect(PADDING + WIDTH * gridSize + NEXT_BLOCK_PREVIEW_PADDING,
+        canvas.drawRect(PADDING + WIDTH * gridSize + PREVIEW_PADDING,
                 TOP_PADDING + PADDING - HEIGHT + 20,
-                PADDING + WIDTH * gridSize + PADDING - NEXT_BLOCK_PREVIEW_PADDING,
+                PADDING + WIDTH * gridSize + PADDING - PREVIEW_PADDING,
                 TOP_PADDING + 2 * PADDING - HEIGHT, p);
 
         // Draw icon for number of notifications preview
-        notificationBitmap = getResizedBitmap(notificationBitmap, TEXT_SIZE + 5, TEXT_SIZE + 5);
-        canvas.drawBitmap(notificationBitmap, PADDING + WIDTH * gridSize +
-                        NEXT_BLOCK_PREVIEW_PADDING,
-                TOP_PADDING + PADDING - HEIGHT + 20 + 40, p);
+        canvas.drawBitmap(notificationIcon, PADDING + WIDTH * gridSize +
+                        PREVIEW_PADDING,
+                TOP_PADDING + PADDING - HEIGHT + 60, p);
 
         p.setStyle(Paint.Style.FILL);
 
@@ -404,7 +452,7 @@ public class TetrisWorld {
 
         // Then the actual block, so it obscures the shadow if necessary
         setColorForShape(p, currentBlock.getType());
-        setColorForBlockBitmap(p, currentBitmap);
+        setGoldColorForBlockBitmap(p, currentBlockGolden);
 
         drawCurrentItem(canvas, p, currentBlock);
         drawNextItem(canvas, p, previewGridSize);
@@ -576,10 +624,13 @@ public class TetrisWorld {
         }
 
         setColorForShape(p, nextBlock.getType());
-        setColorForBlockBitmap(p, nextBitmap);
+        setGoldColorForBlockBitmap(p, nextBlockGolden);
 
-        if (nextBitmap != null) {
-            bitmap = getResizedBitmap(this.nextBitmap, previewIconSize, previewIconSize);
+        if (nextBlockIcon != null && !nextBlockGolden) {
+            bitmap = getResizedBitmap(this.nextBlockIcon, previewIconSize, previewIconSize);
+        } else if (nextBlockGolden) {
+            this.nextBlockIcon = arrowDownIcon;
+            bitmap = getResizedBitmap(this.nextBlockIcon, previewIconSize, previewIconSize);
         }
 
         for (int j = yStart; j < yLimit; j++) {
@@ -589,16 +640,16 @@ public class TetrisWorld {
 
                 if (nextBlock.getShape()[yOffset][xOffset] == 1) {
                     canvas.drawRect(i * previewGridSize + PADDING + WIDTH * gridSize +
-                                    NEXT_BLOCK_PREVIEW_PADDING + 1,
+                                    PREVIEW_PADDING + 1,
                             j * previewGridSize + TOP_PADDING + 1,
                             (i + 1) * previewGridSize + PADDING + WIDTH * gridSize +
-                                    NEXT_BLOCK_PREVIEW_PADDING - 1,
+                                    PREVIEW_PADDING - 1,
                             (j + 1) * previewGridSize + TOP_PADDING - 1, p);
 
                     if (bitmap != null)
                         canvas.drawBitmap(bitmap,
                                 i * previewGridSize + PADDING + WIDTH * gridSize +
-                                        NEXT_BLOCK_PREVIEW_PADDING + 1
+                                        PREVIEW_PADDING + 1
                                         + (previewGridSize / 8),
                                 j * previewGridSize + TOP_PADDING + 1 + (previewGridSize / 8), p);
                 }
@@ -611,7 +662,7 @@ public class TetrisWorld {
             int canvasWidth = canvas.getWidth();
             int gridSize = (canvasWidth - 2 * PADDING) / WIDTH;
             int iconSize = gridSize - 2 * (gridSize / 8);
-            Bitmap bitmap = getResizedBitmap(this.currentBitmap, iconSize, iconSize);
+            Bitmap bitmap = getResizedBitmap(this.currentBlockIcon, iconSize, iconSize);
 
             for (int j = currentBlock.getY(); j < currentBlock.getY() + currentBlock.getHeight();
                  j++) {
@@ -730,8 +781,6 @@ public class TetrisWorld {
     public void saveScore() {
         if (score != 0) {
             dbService.saveScore(score);
-            SharedPreferences prefs = context.getSharedPreferences("de.fachstudie.stressapp.preferences",
-                    Context.MODE_PRIVATE);
             if (!prefs.getString("username", "").isEmpty()) {
                 client.sendScore(this.context, score, prefs.getString("username", ""));
             }
@@ -766,16 +815,12 @@ public class TetrisWorld {
         this.gameOver = gameOver;
     }
 
-    public Bitmap getCurrentBitmap() {
-        return currentBitmap;
+    public Bitmap getCurrentBlockIcon() {
+        return currentBlockIcon;
     }
 
     public void notificationPosted() {
         notificationPosted = true;
-    }
-
-    public void setNotificationBitmap(Bitmap notificationBitmap) {
-        this.notificationBitmap = notificationBitmap;
     }
 
     public void setTopPadding(int heightPixels) {
@@ -784,5 +829,38 @@ public class TetrisWorld {
 
     public float getStressLevel() {
         return stressLevel;
+    }
+
+    public boolean isCurrentBlockGolden() {
+        return currentBlockGolden;
+    }
+
+    public boolean isNextBlockGolden() {
+        return nextBlockGolden;
+    }
+
+    public void setNextBlockGolden(boolean nextBlockGolden) {
+        this.nextBlockGolden = nextBlockGolden;
+    }
+
+    public int getGoldenBlockCount() {
+        return goldenBlockCount;
+    }
+
+    public void decreaseGoldenBlocks() {
+        if (goldenBlockCount != 0) {
+            this.goldenBlockCount--;
+            prefs.edit().putInt(GOLDEN_BLOCKS, goldenBlockCount).commit();
+        }
+    }
+
+    public void increaseGoldenBlockCount() {
+        int golden_blocks = prefs.getInt(GOLDEN_BLOCKS, -1);
+
+        if (golden_blocks != -1) {
+            this.goldenBlockCount = golden_blocks;
+            this.goldenBlockCount++;
+            prefs.edit().putInt(GOLDEN_BLOCKS, goldenBlockCount).commit();
+        }
     }
 }

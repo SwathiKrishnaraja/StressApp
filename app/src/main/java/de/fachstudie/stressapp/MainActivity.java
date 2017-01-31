@@ -40,6 +40,8 @@ import de.fachstudie.stressapp.tetris.TetrisView;
 import de.fachstudie.stressapp.tetris.constants.StringConstants;
 import de.fachstudie.stressapp.tetris.utils.DialogUtils;
 
+import static de.fachstudie.stressapp.tetris.constants.StringConstants.GOLDEN_BLOCKS;
+
 public class MainActivity extends AppCompatActivity {
     public static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private NotificationReceiver notificationReceiver;
@@ -75,6 +77,20 @@ public class MainActivity extends AppCompatActivity {
         tetrisView.setHandler(handler);
         tetrisView.setHeight(metrics.heightPixels);
 
+        SharedPreferences prefs = getSharedPreferences("de.fachstudie.stressapp.preferences",
+                Context.MODE_PRIVATE);
+        if(prefs.getInt(GOLDEN_BLOCKS, -1) == -1)
+            prefs.edit().putInt(GOLDEN_BLOCKS, 0).commit();
+
+
+        Bundle bundle = getIntent().getExtras();
+        if (bundle != null && bundle.getString("message") != null) {
+            String message = bundle.getString("message");
+            if(message.equals("survey answered")){
+                tetrisView.increaseGoldenBlockCount();
+            }
+        }
+
         if (!isNLServiceRunning()) {
             if (userInfoDialog == null)
                 userInfoDialog = DialogUtils.getUserInfoDialog(this);
@@ -103,6 +119,8 @@ public class MainActivity extends AppCompatActivity {
             cal.set(Calendar.MINUTE, 0);
             cal.add(Calendar.DAY_OF_YEAR, 1);
         }
+
+        cal.set(Calendar.HOUR_OF_DAY, 16);
 
         Intent intent = new Intent(this, AlarmReceiver.class);
         intent.putExtra("de.fachstudie.stressapp.notification", "Test");

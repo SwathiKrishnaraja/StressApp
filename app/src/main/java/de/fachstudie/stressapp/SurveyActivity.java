@@ -45,17 +45,18 @@ public class SurveyActivity extends AppCompatActivity {
             if (resultCode == RESULT_OK) {
 
                 String json_result = data.getExtras().getString("answers");
-                Log.v("JSON RESULT", json_result);
-
                 String answers = TextUtils.join(",", getSurveyAnswers(json_result));
-
                 Log.d("answers", answers);
+
                 SQLiteDatabase db = dbHelper.getWritableDatabase();
                 ContentValues values = new ContentValues();
                 values.put(SurveyResult.SurveyResultEntry.ANSWERS, answers);
                 db.insert(SurveyResult.SurveyResultEntry.TABLE_NAME, null, values);
-                db.close();
                 client.sendSurveyAnswers(answers);
+
+                Intent intent = new Intent(SurveyActivity.this, MainActivity.class);
+                intent.putExtra("message", "survey answered");
+                startActivity(intent);
             }
         }
         finish();

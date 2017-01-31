@@ -6,7 +6,6 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 
@@ -38,8 +37,6 @@ public class AlarmReceiver extends BroadcastReceiver {
                 cal.add(Calendar.DAY_OF_YEAR, 1);
             }
 
-            Bundle bundle = intent.getExtras();
-            String message = bundle.getString("de.fachstudie.stressapp.notification");
             NotificationCompat.Builder mBuilder =
                     new NotificationCompat.Builder(context)
                             .setSmallIcon(android.R.drawable.ic_menu_report_image)
