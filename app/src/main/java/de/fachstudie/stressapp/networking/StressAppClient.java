@@ -103,11 +103,11 @@ public class StressAppClient {
         } catch (JSONException e) {
         }
         String data = "data=" + body.toString();
-        new PostTask("event").execute(data);
+        new PostTask("event", null).execute(data);
         return true;
     }
 
-    public boolean sendSurveyAnswers(String answers) {
+    public boolean sendSurveyAnswers(String answers, Handler.Callback callback) {
         JSONObject body = new JSONObject();
         try {
             body.put("deviceid", Settings.Secure.getString(context.getContentResolver(),
@@ -116,7 +116,7 @@ public class StressAppClient {
         } catch (JSONException e) {
         }
         String data = "data=" + body.toString();
-        new PostTask("survey").execute(data);
+        new PostTask("survey", callback).execute(data);
         return true;
     }
 
@@ -131,15 +131,18 @@ public class StressAppClient {
         } catch (JSONException e) {
         }
         String result = "data=" + data.toString();
-        new PostTask("score").execute(result);
+        new PostTask("score", null).execute(result);
         return true;
     }
 
     public class PostTask extends AsyncTask<String, Void, Boolean> {
         private String endpoint;
+        private Handler.Callback callback;
 
-        public PostTask(String endpoint) {
+
+        public PostTask(String endpoint, Handler.Callback callback) {
             this.endpoint = endpoint;
+            this.callback = callback;
         }
 
         @Override
@@ -184,6 +187,18 @@ public class StressAppClient {
                 }
             }
             return true;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean aBoolean) {
+            if (callback != null) {
+                Message message = Message.obtain();
+                Bundle bundle = new Bundle();
+                Log.d("successful", aBoolean.booleanValue() + "");
+                bundle.putBoolean("successful", aBoolean.booleanValue());
+                message.setData(bundle);
+                callback.handleMessage(message);
+            }
         }
     }
 

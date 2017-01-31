@@ -33,8 +33,10 @@ import org.json.JSONObject;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import de.fachstudie.stressapp.db.DatabaseService;
+import de.fachstudie.stressapp.model.SurveyResult;
 import de.fachstudie.stressapp.networking.StressAppClient;
 import de.fachstudie.stressapp.tetris.TetrisView;
 import de.fachstudie.stressapp.tetris.constants.StringConstants;
@@ -55,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
     private StressAppClient client;
     private int highScore;
     private boolean receiversCreated = false;
+    private DatabaseService dbService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         client = new StressAppClient(this);
+        dbService = DatabaseService.getInstance(this);
 
         exitDialog = getCustomDialog(false, false, true, true);
         gameOverDialog = getCustomDialog(true, true, false, false);
@@ -79,14 +83,13 @@ public class MainActivity extends AppCompatActivity {
 
         SharedPreferences prefs = getSharedPreferences("de.fachstudie.stressapp.preferences",
                 Context.MODE_PRIVATE);
-        if(prefs.getInt(GOLDEN_BLOCKS, -1) == -1)
+        if (prefs.getInt(GOLDEN_BLOCKS, -1) == -1)
             prefs.edit().putInt(GOLDEN_BLOCKS, 0).commit();
-
 
         Bundle bundle = getIntent().getExtras();
         if (bundle != null && bundle.getString("message") != null) {
             String message = bundle.getString("message");
-            if(message.equals("survey answered")){
+            if (message.equals("survey answered")) {
                 tetrisView.increaseGoldenBlockCount();
             }
         }
@@ -309,6 +312,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         Log.d("onResume", " ");
+        sendSurveyResults();
         if (!isNLServiceRunning()) {
             userInfoDialog.show();
             tetrisView.pauseGame();
@@ -353,6 +357,25 @@ public class MainActivity extends AppCompatActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void sendSurveyResults() {
+        if (dbService != null && client != null) {
+            List<SurveyResult> results = dbService.getNotSentResults();
+            if (!results.isEmpty()) {
+                for (final SurveyResult result : results) {
+                    client.sendSurveyAnswers(result.getEntireAnswer(), new Handler.Callback() {
+                        @Override
+                        public boolean handleMessage(Message message) {
+                            boolean successful = message.getData().getBoolean("successful");
+                            if (successful)
+                                dbService.updateAnswersSent(result.getId());
+                            return false;
+                        }
+                    });
+                }
+            }
+        }
     }
 
     private class NotificationReceiver extends BroadcastReceiver {

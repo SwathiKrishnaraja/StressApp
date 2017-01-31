@@ -16,7 +16,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             " loaded text, timestamp datetime default current_timestamp, event text)";
 
     private static final String SURVEY_RESULT_DATABASE_CREATE = "CREATE TABLE survey_result " +
-            "( _id integer primary key autoincrement, answers text)";
+            "( _id integer primary key autoincrement, answers text, sent text)";
 
     private static final String SCORE_DATABASE_CREATE = "CREATE TABLE score " +
             "( _id integer primary key autoincrement, value integer)";

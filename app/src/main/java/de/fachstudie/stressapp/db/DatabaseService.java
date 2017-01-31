@@ -35,13 +35,16 @@ public class DatabaseService {
             StressNotification.NotificationEntry.EVENT};
 
     private final String[] surveyResultColumns = {SurveyResult.SurveyResultEntry._ID,
-            SurveyResult.SurveyResultEntry.ANSWERS};
+            SurveyResult.SurveyResultEntry.ANSWERS, SurveyResult.SurveyResultEntry.SENT};
 
     private final String NOTIFICATION_SELECT_QUERY = "SELECT * FROM " + StressNotification.NotificationEntry
             .TABLE_NAME + " WHERE " + StressNotification.NotificationEntry.APPLICATION + " != ''" +
             " AND " + StressNotification.NotificationEntry.LOADED + " = ?" +
             " AND " + StressNotification.NotificationEntry.EVENT + " = ?" +
             " ORDER BY " + StressNotification.NotificationEntry.TIMESTAMP + " DESC";
+
+    private final String ANSWERS_SELECT_QUERY = "SELECT * FROM " + SurveyResult.SurveyResultEntry
+            .TABLE_NAME + " WHERE " + SurveyResult.SurveyResultEntry.SENT + " = ?";
 
     private final String SCORE_SELECT_QUERY = "SELECT MAX(" + Score.ScoreEntry.VALUE + ") AS " +
             Score.ScoreEntry.VALUE + " FROM " + Score.ScoreEntry.TABLE_NAME;
@@ -82,6 +85,14 @@ public class DatabaseService {
         db.insert(Score.ScoreEntry.TABLE_NAME, null, value);
     }
 
+    public void saveSurveyAnswers(String answers, boolean sent) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(SurveyResult.SurveyResultEntry.ANSWERS, answers);
+        values.put(SurveyResult.SurveyResultEntry.SENT, sent + "");
+        db.insert(SurveyResult.SurveyResultEntry.TABLE_NAME, null, values);
+    }
+
     public List<SurveyResult> getSurveyResults() {
         List<SurveyResult> results = new ArrayList<>();
         SQLiteDatabase db = dbHelper.getReadableDatabase();
@@ -93,7 +104,7 @@ public class DatabaseService {
         return results;
     }
 
-    public void saveNotification(Intent intent){
+    public void saveNotification(Intent intent) {
         String title = intent.getStringExtra("title");
         String content = intent.getStringExtra("content");
         String application = intent.getStringExtra("application");
@@ -141,6 +152,18 @@ public class DatabaseService {
         return notifications;
     }
 
+    public List<SurveyResult> getNotSentResults() {
+        List<SurveyResult> results;
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+        String[] selectionArgs = {"false"};
+        Cursor c = db.rawQuery(ANSWERS_SELECT_QUERY, selectionArgs);
+
+        results = loadResults(c);
+        closeDatabaseComponents(c);
+        return results;
+    }
+
     public void updateNotificationIsLoaded(StressNotification notification) {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
@@ -151,6 +174,18 @@ public class DatabaseService {
         String[] selectionArgs = {"" + notification.getId()};
 
         db.update(StressNotification.NotificationEntry.TABLE_NAME, values, selection, selectionArgs);
+    }
+
+    public void updateAnswersSent(int id) {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(SurveyResult.SurveyResultEntry.SENT, "true");
+
+        String selection = SurveyResult.SurveyResultEntry._ID + " LIKE ?";
+        String[] selectionArgs = {"" + id};
+
+        db.update(SurveyResult.SurveyResultEntry.TABLE_NAME, values, selection, selectionArgs);
     }
 
     private void addNotifications(List<StressNotification> notifications, Cursor c) {
@@ -186,6 +221,23 @@ public class DatabaseService {
         }
     }
 
+    private List<SurveyResult> loadResults(Cursor c) {
+        List<SurveyResult> results = new ArrayList<>();
+        if (c != null) {
+            while (!c.isClosed() && c.moveToNext()) {
+                int id = c.getInt(c.getColumnIndex(SurveyResult.SurveyResultEntry._ID));
+
+                String answer = c.getString(c.getColumnIndex(SurveyResult.SurveyResultEntry
+                        .ANSWERS));
+
+                SurveyResult result = new SurveyResult(id);
+                result.setEntireAnswer(answer);
+                results.add(result);
+            }
+        }
+        return results;
+    }
+
     private void addAnswers(List<SurveyResult> results, Cursor c) {
         if (c != null) {
             while (c.moveToNext()) {
@@ -196,7 +248,8 @@ public class DatabaseService {
 
                 List<String> items = Arrays.asList(answers.split(","));
 
-                SurveyResult result = new SurveyResult(id, items);
+                SurveyResult result = new SurveyResult(id);
+                result.setAnswers(items);
                 results.add(result);
             }
         }

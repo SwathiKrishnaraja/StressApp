@@ -95,6 +95,7 @@ public class TetrisWorld {
         prefs = context.getSharedPreferences("de.fachstudie.stressapp.preferences",
                 Context.MODE_PRIVATE);
         goldenBlockCount = prefs.getInt(GOLDEN_BLOCKS, -1);
+        goldenBlockCount = (goldenBlockCount != -1) ? goldenBlockCount : 0;
     }
 
     private void setEventIcons(Context context) {
