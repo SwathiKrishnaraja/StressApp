@@ -17,6 +17,7 @@ import android.view.SurfaceView;
 import de.fachstudie.stressapp.R;
 
 public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
+    private static int GRAVITY_TIME = 800;
     private final TetrisWorld model;
     private TetrisViewThread thread = null;
     private float x, y = 0;
@@ -56,19 +57,17 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
             if (!swiping && !dropping) {
                 this.model.rotateBlock();
             }
-            if (dropping && System.currentTimeMillis() - lastTouchDown < 150 && !this.model.isBlockChange()) {
+            if (dropping && System.currentTimeMillis() - lastTouchDown < 150 && !this.model
+                    .isBlockChange()) {
                 this.model.hardDrop();
-
             } else if (dropping) {
                 this.model.stopDropping();
             }
             swiping = false;
             dropping = false;
-
         } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
             lastTouchX = event.getX();
             lastTouchY = event.getY();
-
         } else if (event.getAction() == MotionEvent.ACTION_MOVE) {
             if (lastTouchX - event.getX() > 45 && lastTouchX != -1 && !dropping) {
                 this.model.moveLeft();
@@ -102,7 +101,8 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
 
         setGravityTime();
 
-        if (!model.isDropping() && (System.currentTimeMillis() - lastUpdateTime > gravityTime || lastUpdateTime == -1)) {
+        if (!model.isDropping() && (System.currentTimeMillis() - lastUpdateTime > gravityTime ||
+                lastUpdateTime == -1)) {
             model.gravityStep();
             lastUpdateTime = System.currentTimeMillis();
         }
@@ -134,7 +134,7 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
 
     private void setGravityTime() {
         if (model.isBlockVisible() && model.getCurrentBitmap() == null) {
-            gravityTime = 800;
+            gravityTime = (int) (GRAVITY_TIME - 6 * (this.model.getStressLevel()));
         } else if (model.getCurrentBitmap() != null) {
             gravityTime = 100;
         } else {

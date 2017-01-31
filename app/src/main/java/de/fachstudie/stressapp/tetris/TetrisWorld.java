@@ -781,4 +781,8 @@ public class TetrisWorld {
     public void setTopPadding(int heightPixels) {
         TOP_PADDING = (int) (heightPixels * 0.15);
     }
+
+    public float getStressLevel() {
+        return stressLevel;
+    }
 }
