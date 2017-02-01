@@ -113,6 +113,7 @@ public class StressAppClient {
             body.put("deviceid", Settings.Secure.getString(context.getContentResolver(),
                     Settings.Secure.ANDROID_ID));
             body.put("answers", answers);
+            body.put("timestamp", MainActivity.dateFormat.format(new Date()));
         } catch (JSONException e) {
         }
         String data = "data=" + body.toString();
