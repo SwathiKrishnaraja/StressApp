@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -19,7 +20,6 @@ import org.json.JSONObject;
 
 import java.util.Arrays;
 
-import de.fachstudie.stressapp.db.DatabaseService;
 import de.fachstudie.stressapp.model.Score;
 import de.fachstudie.stressapp.networking.StressAppClient;
 import de.fachstudie.stressapp.score.ScoreAdapter;
@@ -28,14 +28,12 @@ public class ScoreActivity extends AppCompatActivity {
 
     private StressAppClient client;
     private SharedPreferences preferences;
-    private DatabaseService dbService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.preferences = getSharedPreferences("de.fachstudie.stressapp" +
                 ".preferences", Context.MODE_PRIVATE);
-        this.dbService = DatabaseService.getInstance(getApplicationContext());
         setContentView(R.layout.activity_score);
 
         final ListView listView = (ListView) findViewById(android.R.id.list);
@@ -52,20 +50,26 @@ public class ScoreActivity extends AppCompatActivity {
                     JSONObject result = new JSONObject(response);
                     JSONArray jsonScores = result.getJSONArray("scores");
                     JSONArray jsonUsers = result.getJSONArray("users");
+                    JSONArray jsonUsersIDs = result.getJSONArray("userids");
+
+                    String localUserID = Settings.Secure.getString(getApplicationContext()
+                                    .getContentResolver(),
+                            Settings.Secure.ANDROID_ID);
+                    String localUsername = preferences.getString("username", "");
+                    int localUserScore = result.getInt("userscore");
 
                     Score[] scores = new Score[jsonScores.length()];
-                    String username = preferences.getString("username", "");
                     boolean userAvailable = false;
 
                     for (int i = 0; i < jsonScores.length(); i++) {
-                        scores[i] = new Score(0, jsonScores.optInt(i));
+                        scores[i] = new Score(jsonUsersIDs.optString(i), jsonScores.optInt(i));
                         scores[i].setUsername(jsonUsers.optString(i));
                     }
 
-                    if (!username.isEmpty()) {
+                    if (!localUserID.isEmpty() && !localUsername.isEmpty()) {
                         for (Score score : scores) {
-                            // TODO check deviceid
-                            if (username.equals(score.getUsername())) {
+                            if (localUserID.equals(score.getUserID()) &&
+                                    localUsername.equals(score.getUsername())) {
                                 userAvailable = true;
                                 break;
                             }
@@ -74,9 +78,9 @@ public class ScoreActivity extends AppCompatActivity {
 
                     if (!userAvailable) {
                         scores = Arrays.copyOf(scores, scores.length + 1);
-                        scores[scores.length - 1] = new Score(scores.length - 1,
-                                dbService.getHighScore());
-                        scores[scores.length - 1].setUsername(username);
+                        scores[scores.length - 1] = new Score(localUserID,
+                                localUserScore);
+                        scores[scores.length - 1].setUsername(localUsername);
                     }
 
                     ScoreAdapter adapter = new ScoreAdapter(ScoreActivity.this, scores);

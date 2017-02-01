@@ -2,6 +2,7 @@ package de.fachstudie.stressapp.score;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +12,8 @@ import android.widget.TextView;
 
 import de.fachstudie.stressapp.R;
 import de.fachstudie.stressapp.model.Score;
+
+import static de.fachstudie.stressapp.R.id.username;
 
 /**
  * Created by Paul Kuznecov on 24.01.2017.
@@ -35,7 +38,7 @@ public class ScoreAdapter extends ArrayAdapter<Score> {
         LayoutInflater inflater = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View rowView = inflater.inflate(R.layout.score_item, parent, false);
-        TextView usernameView = (TextView) rowView.findViewById(R.id.username);
+        TextView usernameView = (TextView) rowView.findViewById(username);
         TextView scoreView = (TextView) rowView.findViewById(R.id.score);
         TextView rankView = (TextView) rowView.findViewById(R.id.rank);
 
@@ -43,14 +46,19 @@ public class ScoreAdapter extends ArrayAdapter<Score> {
         scoreView.setText(String.valueOf(scores[position].getValue()));
         rankView.setText(String.valueOf(position + 1));
 
-        highlightUser(usernameView, scoreView, rankView, scores[position].getUsername());
+        highlightUser(usernameView, scoreView, rankView, getContext(), scores[position]);
         return rowView;
     }
 
     private void highlightUser(TextView usernameView, TextView scoreView, TextView rankView,
-                               String username) {
-        // TODO check deviceid
-        if (username.equals(preferences.getString("username", ""))) {
+                               Context context, Score score) {
+        String localUserID = Settings.Secure.getString(context
+                        .getContentResolver(),
+                Settings.Secure.ANDROID_ID);
+        String localUsername = preferences.getString("username", "");
+
+        if (localUserID.equals(score.getUserID()) &&
+                localUsername.equals(score.getUsername())) {
             usernameView.setTextColor(context.getResources().getColor(R.color.lightblue));
             scoreView.setTextColor(context.getResources().getColor(R.color.lightblue));
             rankView.setTextColor(context.getResources().getColor(R.color.lightblue));

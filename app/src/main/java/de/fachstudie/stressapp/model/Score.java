@@ -8,17 +8,17 @@ import android.provider.BaseColumns;
 
 public class Score {
 
-    private int id;
+    private String userID;
     private int value;
     private String username;
 
-    public Score(int id, int value) {
-        this.id = id;
+    public Score(String userID, int value) {
+        this.userID = userID;
         this.value = value;
     }
 
-    public int getId() {
-        return id;
+    public String getUserID() {
+        return userID;
     }
 
     public int getValue() {
