@@ -136,10 +136,8 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     private void setGravityTime() {
-        if (model.isBlockVisible() && !model.isCurrentBlockGolden()) {
+        if (model.isBlockVisible()) {
             gravityTime = (int) (GRAVITY_TIME - 6 * (this.model.getStressLevel()));
-        } else if (model.isCurrentBlockGolden()) {
-            gravityTime = 100;
         } else {
             gravityTime = 20;
         }

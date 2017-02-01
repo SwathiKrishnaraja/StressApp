@@ -136,7 +136,7 @@ public class TetrisWorld {
                 FULL_HEIGHT) {
             currentBlock.stepDown();
             currentBlock.deleteOverlaps(occupancy, bitmaps);
-            return false;
+            return true;
         } else {
             freezeCurrentBlock();
             calculateScore();
@@ -767,10 +767,14 @@ public class TetrisWorld {
 
         while (true) {
             currentBlock.simulateStepDown(state);
-            if (!hasOverlap(state) && currentBlock.getY() + currentBlock.getHeight() <
+            if (!currentBlockGolden && !hasOverlap(state) && currentBlock.getY() + currentBlock.getHeight() <
                     FULL_HEIGHT) {
                 currentBlock.stepDown();
                 currentBlock.increaseDroppedRows();
+            } else if (currentBlockGolden && currentBlock.getY() + currentBlock.getHeight() <
+                    FULL_HEIGHT) {
+                currentBlock.stepDown();
+                currentBlock.deleteOverlaps(occupancy, bitmaps);
             } else {
                 dropping = false;
                 return;
