@@ -95,4 +95,12 @@ public class ColorUtils {
         if (blockGolden)
             p.setColor(Color.parseColor(BlockColors.GOLD));
     }
+
+    public static void setGoldColorForBlockBitmap(Paint p, int goldenBlockCount) {
+        if (goldenBlockCount > 0) {
+            p.setColor(Color.parseColor(BlockColors.GOLD));
+        } else {
+            p.setColor(Color.parseColor(BlockColors.LIGHT_GRAY));
+        }
+    }
 }

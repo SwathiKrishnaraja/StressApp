@@ -94,8 +94,7 @@ public class TetrisWorld {
         setEventIcons(context);
         prefs = context.getSharedPreferences("de.fachstudie.stressapp.preferences",
                 Context.MODE_PRIVATE);
-        goldenBlockCount = prefs.getInt(GOLDEN_BLOCKS, -1);
-        goldenBlockCount = (goldenBlockCount != -1) ? goldenBlockCount : 0;
+        goldenBlockCount = prefs.getInt(GOLDEN_BLOCKS, 0);
     }
 
     private void setEventIcons(Context context) {
@@ -340,7 +339,7 @@ public class TetrisWorld {
         }
         lastDroppedRows = currentBlock.getDroppedRows();
         this.stressLevel += 0.5;
-        if(stressLevel > 100) {
+        if (stressLevel > 100) {
             stressLevel = 100;
         }
     }
@@ -415,11 +414,6 @@ public class TetrisWorld {
                 TOP_PADDING + PADDING - HEIGHT + NOTIFICATIONS_SIZE_PREVIEW_PADDING + (PADDING / 2),
                 p);
 
-        // Draw number of golden blocks
-        canvas.drawText("" + goldenBlockCount,
-                PREVIEW_PADDING + 50,
-                TOP_PADDING + (canvasHeight / 2) - 25,
-                p);
 
         p.setStyle(Paint.Style.STROKE);
         p.setColor(Color.DKGRAY);
@@ -432,10 +426,6 @@ public class TetrisWorld {
                 PADDING - PREVIEW_PADDING,
                 TOP_PADDING + (canvasHeight / 2) - 100 + PADDING - HEIGHT, p);
 
-        // Draw icon for golden blocks preview
-        Bitmap arrowDownBitmap = getResizedBitmap(arrowDownIcon, TEXT_SIZE + 5, TEXT_SIZE + 5);
-        canvas.drawBitmap(arrowDownBitmap, PREVIEW_PADDING,
-                TOP_PADDING + (canvasHeight / 2) - 60, p);
 
         // Draw boundary of the next block preview
         canvas.drawRect(PADDING + WIDTH * gridSize + PREVIEW_PADDING,
@@ -465,6 +455,7 @@ public class TetrisWorld {
         setGoldColorForBlockBitmap(p, currentBlockGolden);
 
         drawCurrentItem(canvas, p, currentBlock);
+        drawGoldenBlock(canvas, p, previewGridSize);
         drawNextItem(canvas, p, previewGridSize);
 
         for (int j = 2; j < occupancy.length; j++) {
@@ -613,6 +604,43 @@ public class TetrisWorld {
                 }
             }
         }
+    }
+
+    private void drawGoldenBlock(Canvas canvas, Paint p, int previewGridSize) {
+        int canvasHeight = canvas.getHeight();
+        int previewIconSize = previewGridSize - 2 * (previewGridSize / 8);
+
+        setGoldColorForBlockBitmap(p, goldenBlockCount);
+
+        Bitmap bitmap = getResizedBitmap(this.arrowDownIcon, previewIconSize, previewIconSize);
+
+        for (int j = 1; j < 3; j++) {
+            for (int i = 1; i < 3; i++) {
+                canvas.drawRect(i * previewGridSize + PREVIEW_PADDING + 1,
+                        j * previewGridSize + TOP_PADDING + (canvasHeight / 2) - 100 + 1,
+                        (i + 1) * previewGridSize + PREVIEW_PADDING - 1,
+                        (j + 1) * previewGridSize + TOP_PADDING + (canvasHeight / 2) - 100 - 1, p);
+
+                if (bitmap != null)
+                    canvas.drawBitmap(bitmap,
+                            i * previewGridSize + PREVIEW_PADDING + 1
+                                    + (previewGridSize / 8),
+                            j * previewGridSize + TOP_PADDING + (canvasHeight / 2) - 100 +
+                                    1 + (previewGridSize / 8), p);
+            }
+        }
+
+        p.setColor(Color.parseColor("black"));
+        p.setTextAlign(Paint.Align.CENTER);
+
+        // Draw number of golden blocks
+        canvas.drawText("" + goldenBlockCount,
+                PREVIEW_PADDING + 64,
+                TOP_PADDING + (canvasHeight / 2) - 25,
+                p);
+
+        p.setTextAlign(Paint.Align.LEFT);
+
     }
 
     private void drawNextItem(Canvas canvas, Paint p, int previewGridSize) {
@@ -865,12 +893,9 @@ public class TetrisWorld {
     }
 
     public void increaseGoldenBlockCount() {
-        int golden_blocks = prefs.getInt(GOLDEN_BLOCKS, -1);
-
-        if (golden_blocks != -1) {
-            this.goldenBlockCount = golden_blocks;
-            this.goldenBlockCount++;
-            prefs.edit().putInt(GOLDEN_BLOCKS, goldenBlockCount).commit();
-        }
+        int golden_blocks = prefs.getInt(GOLDEN_BLOCKS, 0);
+        this.goldenBlockCount = golden_blocks;
+        this.goldenBlockCount++;
+        prefs.edit().putInt(GOLDEN_BLOCKS, goldenBlockCount).commit();
     }
 }
