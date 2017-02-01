@@ -46,9 +46,9 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (isInRange(event.getX(), event.getY()) && !this.model.isNextBlockGolden() &&
-                this.model.getGoldenBlockCount() != 0) {
+                this.model.getGoldBlockCount() != 0) {
             this.model.setNextBlockGolden(true);
-            this.model.decreaseGoldenBlocks();
+            this.model.decreaseGoldBlockCount();
         }
 
         if (event.getAction() == MotionEvent.ACTION_UP && !isInRange(event.getX(), event.getY())) {
@@ -219,6 +219,6 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     public void increaseGoldenBlockCount() {
-        this.model.increaseGoldenBlockCount();
+        this.model.increaseGoldBlockCount();
     }
 }

@@ -42,7 +42,7 @@ import de.fachstudie.stressapp.tetris.TetrisView;
 import de.fachstudie.stressapp.tetris.constants.StringConstants;
 import de.fachstudie.stressapp.tetris.utils.DialogUtils;
 
-import static de.fachstudie.stressapp.tetris.constants.StringConstants.GOLDEN_BLOCKS;
+import static de.fachstudie.stressapp.tetris.constants.StringConstants.GOLD_BLOCKS;
 
 public class MainActivity extends AppCompatActivity {
     public static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -83,8 +83,8 @@ public class MainActivity extends AppCompatActivity {
 
         SharedPreferences prefs = getSharedPreferences("de.fachstudie.stressapp.preferences",
                 Context.MODE_PRIVATE);
-        if (prefs.getInt(GOLDEN_BLOCKS, -1) == -1)
-            prefs.edit().putInt(GOLDEN_BLOCKS, 0).commit();
+        if (prefs.getInt(GOLD_BLOCKS, -1) == -1)
+            prefs.edit().putInt(GOLD_BLOCKS, 0).commit();
 
         Bundle bundle = getIntent().getExtras();
         if (bundle != null && bundle.getString("message") != null) {

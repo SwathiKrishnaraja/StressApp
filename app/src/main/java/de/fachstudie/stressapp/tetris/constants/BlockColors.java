@@ -22,12 +22,7 @@ public class BlockColors {
     public static final String LIGHT_CYAN = "#4DD0E1";
     public static final String LIGHT_INDIGO = "#7986CB";
     public static final String LIGHT_BLUE = "#64B5F6";
-    public static final String LIGHT_ORANGE= "#FFB74D";
+    public static final String LIGHT_ORANGE = "#FFB74D";
     public static final String LIGHT_GOLD = "#FFEB3B";
-
-
-
-
-
-
+    public static final String LIGHT_GREEN = "#64DD17";
 }

@@ -31,5 +31,5 @@ public class StringConstants {
     public static final String EXIT_MESSAGE = "If you exit StressApp, the current game state will be deleted!"
             + "\n" + "\n" + "Do you want to exit StressApp?";
 
-    public static final String GOLDEN_BLOCKS = "golden_blocks";
+    public static final String GOLD_BLOCKS = "gold_blocks";
 }

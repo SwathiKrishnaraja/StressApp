@@ -91,14 +91,22 @@ public class ColorUtils {
         }
     }
 
-    public static void setGoldColorForBlockBitmap(Paint p, boolean blockGolden) {
+    public static void setColorForBlockBitmap(Paint p, boolean blockGolden) {
         if (blockGolden)
             p.setColor(Color.parseColor(BlockColors.GOLD));
     }
 
-    public static void setGoldColorForBlockBitmap(Paint p, int goldenBlockCount) {
-        if (goldenBlockCount > 0) {
+    public static void setColorForBlock(Paint p, int goldBlockCount) {
+        if (goldBlockCount > 0) {
             p.setColor(Color.parseColor(BlockColors.GOLD));
+        } else {
+            p.setColor(Color.parseColor(BlockColors.LIGHT_GRAY));
+        }
+    }
+
+    public static void setColorForNotificationBlock(Paint p, int notificationCount) {
+        if (notificationCount > 0) {
+            p.setColor(Color.parseColor(BlockColors.LIGHT_GREEN));
         } else {
             p.setColor(Color.parseColor(BlockColors.LIGHT_GRAY));
         }
