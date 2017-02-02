@@ -76,7 +76,7 @@ public class ScoreActivity extends AppCompatActivity {
                         }
                     }
 
-                    if (!userAvailable) {
+                    if (!userAvailable && !localUsername.isEmpty()) {
                         scores = Arrays.copyOf(scores, scores.length + 1);
                         scores[scores.length - 1] = new Score(localUserID,
                                 localUserScore);

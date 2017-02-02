@@ -57,8 +57,7 @@ public class ScoreAdapter extends ArrayAdapter<Score> {
                 Settings.Secure.ANDROID_ID);
         String localUsername = preferences.getString("username", "");
 
-        if (localUserID.equals(score.getUserID()) &&
-                localUsername.equals(score.getUsername())) {
+        if (localUserID.equals(score.getUserID()) && localUsername.equals(score.getUsername())) {
             usernameView.setTextColor(context.getResources().getColor(R.color.lightblue));
             scoreView.setTextColor(context.getResources().getColor(R.color.lightblue));
             rankView.setTextColor(context.getResources().getColor(R.color.lightblue));
