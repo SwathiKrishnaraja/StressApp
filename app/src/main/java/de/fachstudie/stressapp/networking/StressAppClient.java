@@ -121,6 +121,20 @@ public class StressAppClient {
         return true;
     }
 
+    public boolean sendStressLevel(Context context, int value) {
+        JSONObject data = new JSONObject();
+        try {
+            data.put("deviceid", Settings.Secure.getString(context.getContentResolver(),
+                    Settings.Secure.ANDROID_ID))
+                    .put("value", value)
+                    .put("timestamp", MainActivity.dateFormat.format(new Date()));
+        } catch (JSONException e) {
+        }
+        String result = "data=" + data.toString();
+        new PostTask("stresslevel", null).execute(result);
+        return true;
+    }
+
     public boolean sendScore(Context context, int value, String username) {
         JSONObject data = new JSONObject();
         try {
