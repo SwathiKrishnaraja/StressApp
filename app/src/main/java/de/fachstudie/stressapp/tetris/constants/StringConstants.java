@@ -32,4 +32,6 @@ public class StringConstants {
             + "\n" + "\n" + "Do you want to exit StressApp?";
 
     public static final String GOLD_BLOCKS = "gold_blocks";
+
+    public static final String NO_INTERNET_MESSAGE = "No Internet." + "\n" + "Please try it again.";
 }

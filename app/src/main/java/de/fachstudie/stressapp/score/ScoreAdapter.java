@@ -37,17 +37,22 @@ public class ScoreAdapter extends ArrayAdapter<Score> {
     public View getView(int position, View convertView, ViewGroup parent) {
         LayoutInflater inflater = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View rowView = inflater.inflate(R.layout.score_item, parent, false);
-        TextView usernameView = (TextView) rowView.findViewById(username);
-        TextView scoreView = (TextView) rowView.findViewById(R.id.score);
-        TextView rankView = (TextView) rowView.findViewById(R.id.rank);
 
-        usernameView.setText(scores[position].getUsername());
-        scoreView.setText(String.valueOf(scores[position].getValue()));
-        rankView.setText(String.valueOf(position + 1));
+        if (scores.length > 0) {
+            View rowView = inflater.inflate(R.layout.score_item, parent, false);
+            TextView usernameView = (TextView) rowView.findViewById(username);
+            TextView scoreView = (TextView) rowView.findViewById(R.id.score);
+            TextView rankView = (TextView) rowView.findViewById(R.id.rank);
 
-        highlightUser(usernameView, scoreView, rankView, getContext(), scores[position]);
-        return rowView;
+            usernameView.setText(scores[position].getUsername());
+            scoreView.setText(String.valueOf(scores[position].getValue()));
+            rankView.setText(String.valueOf(position + 1));
+
+            highlightUser(usernameView, scoreView, rankView, getContext(), scores[position]);
+            return rowView;
+        }
+
+        return null;
     }
 
     private void highlightUser(TextView usernameView, TextView scoreView, TextView rankView,

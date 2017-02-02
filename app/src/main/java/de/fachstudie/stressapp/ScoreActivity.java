@@ -24,6 +24,8 @@ import de.fachstudie.stressapp.model.Score;
 import de.fachstudie.stressapp.networking.StressAppClient;
 import de.fachstudie.stressapp.score.ScoreAdapter;
 
+import static de.fachstudie.stressapp.tetris.constants.StringConstants.NO_INTERNET_MESSAGE;
+
 public class ScoreActivity extends AppCompatActivity {
 
     private StressAppClient client;
@@ -87,11 +89,28 @@ public class ScoreActivity extends AppCompatActivity {
                     listView.setAdapter(adapter);
                     Log.d("Response", result.toString());
                 } catch (JSONException e) {
+                    Log.e("JSON exception", e.getClass().toString() + " " + e.getMessage());
+
+                    TextView textView = getInfoTextView();
+                    ScoreAdapter adapter = new ScoreAdapter(ScoreActivity.this, new Score[0]);
+                    listView.setAdapter(adapter);
+                    listView.addHeaderView(textView);
                 }
 
                 return false;
             }
         });
+    }
+
+    @NonNull
+    private TextView getInfoTextView() {
+        TextView textView = new TextView(getApplicationContext());
+        textView.setText(NO_INTERNET_MESSAGE);
+        textView.setPadding(0, 100, 0, 300);
+        textView.setTextColor(Color.RED);
+        textView.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
+        textView.setTextSize(20);
+        return textView;
     }
 
     @NonNull
