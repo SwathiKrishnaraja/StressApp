@@ -106,7 +106,7 @@ public class ColorUtils {
 
     public static void setColorForNotificationBlock(Paint p, int notificationCount) {
         if (notificationCount > 0) {
-            p.setColor(Color.parseColor(BlockColors.LIGHT_GREEN));
+            p.setColor(Color.parseColor(BlockColors.ORANGE));
         } else {
             p.setColor(Color.parseColor(BlockColors.LIGHT_GRAY));
         }

@@ -617,8 +617,19 @@ public class TetrisWorld {
             }
         }
 
-        p.setColor(Color.parseColor("black"));
         p.setTextAlign(Paint.Align.CENTER);
+
+        p.setStyle(Paint.Style.STROKE);
+        float sw = p.getStrokeWidth();
+        p.setStrokeWidth(5);
+        p.setColor(Color.parseColor("white"));
+        canvas.drawText("" + goldBlockCount,
+                PREVIEW_PADDING + 64,
+                TOP_PADDING + (canvasHeight / 2) - 25,
+                p);
+
+        p.setColor(Color.parseColor("black"));
+        p.setStyle(Paint.Style.FILL);
 
         // Draw number of golden blocks
         canvas.drawText("" + goldBlockCount,
@@ -627,6 +638,7 @@ public class TetrisWorld {
                 p);
 
         p.setTextAlign(Paint.Align.LEFT);
+        p.setStrokeWidth(sw);
     }
 
     private void drawNotificationBlockInPreview(Canvas canvas, Paint p, int previewGridSize) {
@@ -654,8 +666,20 @@ public class TetrisWorld {
             }
         }
 
-        p.setColor(Color.parseColor("black"));
         p.setTextAlign(Paint.Align.CENTER);
+
+        p.setStyle(Paint.Style.STROKE);
+        float sw = p.getStrokeWidth();
+        p.setStrokeWidth(5);
+        p.setColor(Color.parseColor("white"));
+        // Draw number of notifications
+        canvas.drawText("" + notificationCount,
+                PADDING + WIDTH * gridSize + PREVIEW_PADDING + 64,
+                TOP_PADDING + PADDING - HEIGHT + NOTIFICATIONS_SIZE_PREVIEW_PADDING + (PADDING / 2),
+                p);
+
+        p.setColor(Color.parseColor("black"));
+        p.setStyle(Paint.Style.FILL);
 
         // Draw number of notifications
         canvas.drawText("" + notificationCount,
@@ -664,6 +688,7 @@ public class TetrisWorld {
                 p);
 
         p.setTextAlign(Paint.Align.LEFT);
+        p.setStrokeWidth(sw);
     }
 
     private void drawNextItem(Canvas canvas, Paint p, int previewGridSize) {
@@ -767,7 +792,8 @@ public class TetrisWorld {
 
         while (true) {
             currentBlock.simulateStepDown(state);
-            if (!currentBlockGolden && !hasOverlap(state) && currentBlock.getY() + currentBlock.getHeight() <
+            if (!currentBlockGolden && !hasOverlap(state) && currentBlock.getY() + currentBlock
+                    .getHeight() <
                     FULL_HEIGHT) {
                 currentBlock.stepDown();
                 currentBlock.increaseDroppedRows();

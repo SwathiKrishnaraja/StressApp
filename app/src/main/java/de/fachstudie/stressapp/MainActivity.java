@@ -111,9 +111,8 @@ public class MainActivity extends AppCompatActivity {
             cal.set(Calendar.HOUR_OF_DAY, 14);
             cal.set(Calendar.MINUTE, 0);
         } else if (currentHour < 17) {
-            //cal.set(Calendar.HOUR_OF_DAY, 17);
-            //cal.set(Calendar.MINUTE, 0);
-            cal.add(Calendar.SECOND, 15);
+            cal.set(Calendar.HOUR_OF_DAY, 17);
+            cal.set(Calendar.MINUTE, 0);
         } else if (currentHour < 20) {
             cal.set(Calendar.HOUR_OF_DAY, 20);
             cal.set(Calendar.MINUTE, 0);
