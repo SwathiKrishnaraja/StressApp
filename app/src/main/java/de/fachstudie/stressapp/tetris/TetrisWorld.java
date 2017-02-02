@@ -35,6 +35,7 @@ import static de.fachstudie.stressapp.tetris.utils.ColorUtils.setLightColorForSh
 
 public class TetrisWorld {
 
+    public static final float CLEAR_TIME = 250f;
     // Various specification
     private final int WIDTH = 10;
     private final int HEIGHT = 20;
@@ -87,6 +88,9 @@ public class TetrisWorld {
     private boolean clearedLastTime;
 
     private SharedPreferences prefs;
+    private boolean clearFullLinesNext = false;
+    private List<Integer> currentFullLines;
+    private long lastClearLinesTime = -1;
 
     public TetrisWorld(Context context) {
         this.context = context;
@@ -140,7 +144,13 @@ public class TetrisWorld {
         } else {
             freezeCurrentBlock();
             calculateScore();
-            clearFullLines();
+
+            this.currentFullLines = getFullLines();
+            if (currentFullLines.size() > 0) {
+                lastClearLinesTime = System.currentTimeMillis();
+                clearFullLinesNext = true;
+            }
+
             checkGameOver();
             this.currentBlockGolden = false;
 
@@ -447,20 +457,39 @@ public class TetrisWorld {
             for (int i = 0; i < occupancy[j].length; i++) {
                 if (occupancy[j][i] != 0) {
                     setColorForShape(p, occupancy[j][i]);
-                    canvas.drawRect(i * gridSize + PADDING + 1, (j - 2) * gridSize + TOP_PADDING
-                                    + 1,
-                            (i + 1) * gridSize + PADDING - 1, (j - 1) * gridSize + TOP_PADDING -
-                                    1, p);
+
+                    float left = i * gridSize + PADDING + 1;
+                    float top = (j - 2) * gridSize + TOP_PADDING + 1;
+                    float right = (i + 1) * gridSize + PADDING - 1;
+                    float bottom = (j - 1) * gridSize + TOP_PADDING - 1;
+
+                    if (currentFullLines != null) {
+                        if (currentFullLines.contains(j)) {
+                            float dx = (right - left) / 2;
+                            float dy = (bottom - top) / 2;
+                            float dt = System.currentTimeMillis() - lastClearLinesTime;
+                            float change = dt / CLEAR_TIME * dx;
+                            if (change > dx) {
+                                change = dx;
+                            }
+                            if (clearFullLinesNext && dt > CLEAR_TIME) {
+                                clearFullLines();
+                                currentFullLines = null;
+                                lastClearLinesTime = -1;
+                                clearFullLinesNext = false;
+                            }
+                            left += change;
+                            top += change;
+                            right -= change;
+                            bottom -= change;
+                        }
+                    }
+                    canvas.drawRect(left, top, right, bottom, p);
 
                     if (highlightings[j][i] == 1) {
                         if (highlighting && System.currentTimeMillis() - lastFrozenTime < 500) {
                             setLightColorForShape(p, occupancy[j][i]);
-                            canvas.drawRect(i * gridSize + PADDING + 1, (j - 2) * gridSize +
-                                            TOP_PADDING
-                                            + 1,
-                                    (i + 1) * gridSize + PADDING - 1, (j - 1) * gridSize +
-                                            TOP_PADDING -
-                                            1, p);
+                            canvas.drawRect(left, top, right, bottom, p);
                         } else {
                             highlighting = false;
                             ArrayUtils.resetArray(highlightings);
