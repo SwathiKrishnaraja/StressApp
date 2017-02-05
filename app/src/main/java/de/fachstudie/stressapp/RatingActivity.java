@@ -1,6 +1,8 @@
 package de.fachstudie.stressapp;
 
 import android.content.Intent;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -8,12 +10,14 @@ import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import de.fachstudie.stressapp.db.DatabaseService;
 import de.fachstudie.stressapp.networking.StressAppClient;
 
 
 public class RatingActivity extends AppCompatActivity {
 
     private StressAppClient client;
+    private DatabaseService dbService;
 
     @Override
     public void onBackPressed() {
@@ -27,12 +31,20 @@ public class RatingActivity extends AppCompatActivity {
         final SeekBar seekBar = (SeekBar) findViewById(R.id.seekBar);
 
         client = new StressAppClient(this);
+        dbService = DatabaseService.getInstance(this);
 
         final Button btnSurvey = (Button) findViewById(R.id.buttonStartSurvey);
         btnSurvey.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                client.sendStressLevel(getApplicationContext(), seekBar.getProgress());
+                client.sendStressLevel(seekBar.getProgress(), new Handler.Callback() {
+                    @Override
+                    public boolean handleMessage(Message message) {
+                        boolean sent = message.getData().getBoolean("sent");
+                        dbService.saveStressLevel(seekBar.getProgress(), sent);
+                        return false;
+                    }
+                });
                 Intent i = new Intent(getApplicationContext(), SurveyActivity.class);
                 startActivity(i);
             }
@@ -42,7 +54,14 @@ public class RatingActivity extends AppCompatActivity {
         btnBackToGame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                client.sendStressLevel(getApplicationContext(), seekBar.getProgress());
+                client.sendStressLevel(seekBar.getProgress(), new Handler.Callback() {
+                    @Override
+                    public boolean handleMessage(Message message) {
+                        boolean sent = message.getData().getBoolean("sent");
+                        dbService.saveStressLevel(seekBar.getProgress(), sent);
+                        return false;
+                    }
+                });
                 Intent i = new Intent(getApplicationContext(), MainActivity.class);
                 startActivity(i);
             }
@@ -62,7 +81,7 @@ public class RatingActivity extends AppCompatActivity {
                 if (!btnBackToGame.isEnabled()) {
                     btnBackToGame.setEnabled(true);
                 }
-                seekBarValue.setText("Stresslevel: " + String.valueOf(progress));
+                seekBarValue.setText("StressLevel: " + String.valueOf(progress));
             }
 
             @Override

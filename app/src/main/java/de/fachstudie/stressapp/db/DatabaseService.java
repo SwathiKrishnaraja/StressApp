@@ -16,6 +16,7 @@ import java.util.List;
 
 import de.fachstudie.stressapp.EmojiFrequency;
 import de.fachstudie.stressapp.model.Score;
+import de.fachstudie.stressapp.model.StressLevel;
 import de.fachstudie.stressapp.model.StressNotification;
 import de.fachstudie.stressapp.model.SurveyResult;
 
@@ -54,6 +55,9 @@ public class DatabaseService {
     private final String SCORE_SELECT_QUERY = "SELECT MAX(" + Score.ScoreEntry.VALUE + ") AS " +
             Score.ScoreEntry.VALUE + " FROM " + Score.ScoreEntry.TABLE_NAME;
 
+    private final String STRESSLEVEL_SELECT_QUERY = "SELECT * FROM " + StressLevel.StressLevelEntry
+            .TABLE_NAME + " WHERE " + StressLevel.StressLevelEntry.SENT + " = ?";
+
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     private static DatabaseService dbService;
@@ -88,6 +92,14 @@ public class DatabaseService {
         ContentValues value = new ContentValues();
         value.put(Score.ScoreEntry.VALUE, score);
         db.insert(Score.ScoreEntry.TABLE_NAME, null, value);
+    }
+
+    public void saveStressLevel(int level, boolean sent) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        ContentValues value = new ContentValues();
+        value.put(StressLevel.StressLevelEntry.VALUE, level);
+        value.put(StressLevel.StressLevelEntry.SENT, "" + sent);
+        db.insert(StressLevel.StressLevelEntry.TABLE_NAME, null, value);
     }
 
     public void saveSurveyAnswers(String answers, boolean sent) {
@@ -167,13 +179,24 @@ public class DatabaseService {
         return results;
     }
 
-    public List<SurveyResult> getNotSentResults() {
+    public List<SurveyResult> getNotSentSurveyResults() {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
         String[] selectionArgs = {"false"};
         Cursor c = db.rawQuery(ANSWERS_SELECT_QUERY, selectionArgs);
 
-        List<SurveyResult> results = loadResults(c);
+        List<SurveyResult> results = loadSurveyResults(c);
+        closeDatabaseComponents(c);
+        return results;
+    }
+
+    public List<StressLevel> getNotSentStressLevels() {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+        String[] selectionArgs = {"false"};
+        Cursor c = db.rawQuery(STRESSLEVEL_SELECT_QUERY, selectionArgs);
+
+        List<StressLevel> results = loadStressLevels(c);
         closeDatabaseComponents(c);
         return results;
     }
@@ -214,6 +237,18 @@ public class DatabaseService {
         db.update(SurveyResult.SurveyResultEntry.TABLE_NAME, values, selection, selectionArgs);
     }
 
+    public void updateStressLevelIsSent(int id) {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(StressLevel.StressLevelEntry.SENT, "true");
+
+        String selection = StressLevel.StressLevelEntry._ID + " LIKE ?";
+        String[] selectionArgs = {"" + id};
+
+        db.update(StressLevel.StressLevelEntry.TABLE_NAME, values, selection, selectionArgs);
+    }
+
     private List<StressNotification> loadNotifications(Cursor c) {
         List<StressNotification> notifications = new ArrayList<>();
         if (c != null) {
@@ -247,7 +282,7 @@ public class DatabaseService {
         return notifications;
     }
 
-    private List<SurveyResult> loadResults(Cursor c) {
+    private List<SurveyResult> loadSurveyResults(Cursor c) {
         List<SurveyResult> results = new ArrayList<>();
         if (c != null) {
             while (!c.isClosed() && c.moveToNext()) {
@@ -264,10 +299,26 @@ public class DatabaseService {
         return results;
     }
 
+    private List<StressLevel> loadStressLevels(Cursor c) {
+        List<StressLevel> results = new ArrayList<>();
+        if (c != null) {
+            while (!c.isClosed() && c.moveToNext()) {
+                int id = c.getInt(c.getColumnIndex(StressLevel.StressLevelEntry._ID));
+
+                int value = c.getInt(c.getColumnIndex(StressLevel.StressLevelEntry.VALUE));
+
+                StressLevel result = new StressLevel(id, value);
+                results.add(result);
+            }
+        }
+        return results;
+    }
+
+
     private void addAnswers(List<SurveyResult> results, Cursor c) {
         if (c != null) {
             while (c.moveToNext()) {
-                int id = c.getInt(c.getColumnIndex(StressNotification.NotificationEntry._ID));
+                int id = c.getInt(c.getColumnIndex(SurveyResult.SurveyResultEntry._ID));
 
                 String answers = c.getString(c.getColumnIndex(SurveyResult.SurveyResultEntry
                         .ANSWERS));

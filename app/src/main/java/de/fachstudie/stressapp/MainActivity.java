@@ -36,6 +36,7 @@ import java.util.Date;
 import java.util.List;
 
 import de.fachstudie.stressapp.db.DatabaseService;
+import de.fachstudie.stressapp.model.StressLevel;
 import de.fachstudie.stressapp.model.StressNotification;
 import de.fachstudie.stressapp.model.SurveyResult;
 import de.fachstudie.stressapp.networking.StressAppClient;
@@ -312,6 +313,7 @@ public class MainActivity extends AppCompatActivity {
         Log.d("onResume", " ");
         sendNotifications();
         sendSurveyResults();
+        sendStressLevels();
         if (!isNLServiceRunning()) {
             userInfoDialog.show();
             tetrisView.pauseGame();
@@ -366,8 +368,8 @@ public class MainActivity extends AppCompatActivity {
                     client.sendNotificationEvent(loadJSONObject(result), new Handler.Callback() {
                         @Override
                         public boolean handleMessage(Message message) {
-                            boolean successful = message.getData().getBoolean("successful");
-                            if (successful)
+                            boolean sent = message.getData().getBoolean("sent");
+                            if (sent)
                                 dbService.updateNotificationIsSent(result.getId());
                             return false;
                         }
@@ -395,15 +397,34 @@ public class MainActivity extends AppCompatActivity {
 
     private void sendSurveyResults() {
         if (dbService != null && client != null) {
-            List<SurveyResult> results = dbService.getNotSentResults();
+            List<SurveyResult> results = dbService.getNotSentSurveyResults();
             if (!results.isEmpty()) {
                 for (final SurveyResult result : results) {
                     client.sendSurveyAnswers(result.getEntireAnswer(), new Handler.Callback() {
                         @Override
                         public boolean handleMessage(Message message) {
-                            boolean successful = message.getData().getBoolean("successful");
-                            if (successful)
+                            boolean sent = message.getData().getBoolean("sent");
+                            if (sent)
                                 dbService.updateAnswersSent(result.getId());
+                            return false;
+                        }
+                    });
+                }
+            }
+        }
+    }
+
+    private void sendStressLevels() {
+        if (dbService != null && client != null) {
+            List<StressLevel> results = dbService.getNotSentStressLevels();
+            if (!results.isEmpty()) {
+                for (final StressLevel result : results) {
+                    client.sendStressLevel(result.getValue(), new Handler.Callback() {
+                        @Override
+                        public boolean handleMessage(Message message) {
+                            boolean sent = message.getData().getBoolean("sent");
+                            if (sent)
+                                dbService.updateStressLevelIsSent(result.getId());
                             return false;
                         }
                     });
@@ -437,8 +458,8 @@ public class MainActivity extends AppCompatActivity {
             client.sendNotificationEvent(event, new Handler.Callback() {
                 @Override
                 public boolean handleMessage(Message message) {
-                    boolean successful = message.getData().getBoolean("successful");
-                    dbService.saveNotification(intent, successful);
+                    boolean sent = message.getData().getBoolean("sent");
+                    dbService.saveNotification(intent, sent);
                     return false;
                 }
             });
@@ -510,8 +531,8 @@ public class MainActivity extends AppCompatActivity {
             client.sendNotificationEvent(event, new Handler.Callback() {
                 @Override
                 public boolean handleMessage(Message message) {
-                    boolean successful = message.getData().getBoolean("successful");
-                    dbService.saveScreenEvent(screenEvent, successful);
+                    boolean sent = message.getData().getBoolean("sent");
+                    dbService.saveScreenEvent(screenEvent, sent);
                     return false;
                 }
             });

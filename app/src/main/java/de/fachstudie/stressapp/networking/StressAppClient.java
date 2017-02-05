@@ -121,7 +121,7 @@ public class StressAppClient {
         return true;
     }
 
-    public boolean sendStressLevel(Context context, int value) {
+    public boolean sendStressLevel(int value, Handler.Callback callback) {
         JSONObject data = new JSONObject();
         try {
             data.put("deviceid", Settings.Secure.getString(context.getContentResolver(),
@@ -131,7 +131,7 @@ public class StressAppClient {
         } catch (JSONException e) {
         }
         String result = "data=" + data.toString();
-        new PostTask("stresslevel", null).execute(result);
+        new PostTask("stresslevel", callback).execute(result);
         return true;
     }
 
@@ -209,8 +209,8 @@ public class StressAppClient {
             if (callback != null) {
                 Message message = Message.obtain();
                 Bundle bundle = new Bundle();
-                Log.d("successful", aBoolean.booleanValue() + "");
-                bundle.putBoolean("successful", aBoolean.booleanValue());
+                Log.d("sent", aBoolean.booleanValue() + "");
+                bundle.putBoolean("sent", aBoolean.booleanValue());
                 message.setData(bundle);
                 callback.handleMessage(message);
             }
