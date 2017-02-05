@@ -974,10 +974,9 @@ public class TetrisWorld {
         }
     }
 
-    public void increaseGoldBlockCount() {
+    public void increaseGoldBlockCount(int count) {
         int golden_blocks = prefs.getInt(GOLD_BLOCKS, 0);
-        this.goldBlockCount = golden_blocks;
-        this.goldBlockCount++;
+        this.goldBlockCount = golden_blocks + count;
         prefs.edit().putInt(GOLD_BLOCKS, goldBlockCount).commit();
     }
 }

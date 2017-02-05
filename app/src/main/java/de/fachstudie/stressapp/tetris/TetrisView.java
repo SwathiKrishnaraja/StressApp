@@ -216,7 +216,7 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
         return false;
     }
 
-    public void increaseGoldenBlockCount() {
-        this.model.increaseGoldBlockCount();
+    public void increaseGoldenBlockCount(int count) {
+        this.model.increaseGoldBlockCount(count);
     }
 }

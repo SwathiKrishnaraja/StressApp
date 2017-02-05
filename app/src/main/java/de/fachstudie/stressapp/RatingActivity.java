@@ -46,6 +46,7 @@ public class RatingActivity extends AppCompatActivity {
                     }
                 });
                 Intent i = new Intent(getApplicationContext(), SurveyActivity.class);
+                i.putExtra("message", "stresslevel defined");
                 startActivity(i);
             }
         });
@@ -63,6 +64,7 @@ public class RatingActivity extends AppCompatActivity {
                     }
                 });
                 Intent i = new Intent(getApplicationContext(), MainActivity.class);
+                i.putExtra("message", "stresslevel defined");
                 startActivity(i);
             }
         });
