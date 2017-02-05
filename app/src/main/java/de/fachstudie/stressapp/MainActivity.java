@@ -89,13 +89,12 @@ public class MainActivity extends AppCompatActivity {
             prefs.edit().putInt(GOLD_BLOCKS, 0).commit();
 
         Bundle bundle = getIntent().getExtras();
-        Log.d("bundle", (bundle== null) + "");
         if (bundle != null && bundle.getString("message") != null) {
             String message = bundle.getString("message");
             if (message.equals("survey answered")) {
-                tetrisView.increaseGoldenBlockCount(3);
+                tetrisView.increaseGoldBlockCount(3);
             }else if(message.equals("stresslevel defined")){
-                tetrisView.increaseGoldenBlockCount(1);
+                tetrisView.increaseGoldBlockCount(1);
             }
         }
 
