@@ -136,6 +136,7 @@ public class TetrisWorld {
                 currentBlock.increaseDroppedRows();
             }
             return true;
+
         } else if (currentBlockGolden && currentBlock.getY() + currentBlock.getHeight() <
                 FULL_HEIGHT) {
             currentBlock.stepDown();
@@ -228,8 +229,7 @@ public class TetrisWorld {
 
     private void updateNotificationIsLoaded(StressNotification notification) {
         if (notification != null) {
-            notification.setLoaded(true);
-            dbService.updateNotificationIsLoaded(notification);
+            dbService.updateNotificationIsLoaded(notification.getId());
         }
     }
 

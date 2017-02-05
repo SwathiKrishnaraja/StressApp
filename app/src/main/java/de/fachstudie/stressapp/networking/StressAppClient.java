@@ -95,7 +95,7 @@ public class StressAppClient {
         new GetTask(callback).execute(url);
     }
 
-    public boolean sendNotificationEvent(JSONObject body) {
+    public boolean sendNotificationEvent(JSONObject body, Handler.Callback callback) {
         try {
             body.put("deviceid", Settings.Secure.getString(context.getContentResolver(),
                     Settings.Secure.ANDROID_ID));
@@ -103,7 +103,7 @@ public class StressAppClient {
         } catch (JSONException e) {
         }
         String data = "data=" + body.toString();
-        new PostTask("event", null).execute(data);
+        new PostTask("event", callback).execute(data);
         return true;
     }
 

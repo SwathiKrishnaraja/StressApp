@@ -17,18 +17,19 @@ public class StressNotification {
     private String title;
     private String application;
     private int contentLength;
-    private Map<Emoji, Integer> emoticons;
-    private boolean loaded;
+    private String emoticons;
+    private Map<Emoji, Integer> emoticonFrequencies;
     private Date timestamp;
 
     public StressNotification(int id, String title, String application, int contentLength,
-                              Map<Emoji, Integer> emoticons, boolean loaded, Date timestamp) {
+                              String emoticons, Map<Emoji, Integer> emoticonFrequencies,
+                              Date timestamp) {
         this.id = id;
         this.title = title;
         this.application = application;
         this.contentLength = contentLength;
         this.emoticons = emoticons;
-        this.loaded = loaded;
+        this.emoticonFrequencies = emoticonFrequencies;
         this.timestamp = timestamp;
         this.event = "NOTIFICATION";
     }
@@ -69,16 +70,12 @@ public class StressNotification {
         this.contentLength = contentLength;
     }
 
-    public Map<Emoji, Integer> getEmoticons() {
+    public String getEmoticons() {
         return emoticons;
     }
 
-    public boolean isLoaded() {
-        return loaded;
-    }
-
-    public void setLoaded(boolean loaded) {
-        this.loaded = loaded;
+    public Map<Emoji, Integer> getEmoticonFrequencies() {
+        return emoticonFrequencies;
     }
 
     public String getEvent() {
@@ -94,5 +91,6 @@ public class StressNotification {
         public static final String EMOTICONS = "emoticons";
         public static final String LOADED = "loaded";
         public static final String EVENT = "event";
+        public static final String SENT = "sent";
     }
 }

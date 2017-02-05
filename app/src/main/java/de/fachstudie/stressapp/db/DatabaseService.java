@@ -32,16 +32,21 @@ public class DatabaseService {
             StressNotification.NotificationEntry.EMOTICONS,
             StressNotification.NotificationEntry.LOADED,
             StressNotification.NotificationEntry.TIMESTAMP,
-            StressNotification.NotificationEntry.EVENT};
+            StressNotification.NotificationEntry.EVENT,
+            StressNotification.NotificationEntry.SENT};
 
     private final String[] surveyResultColumns = {SurveyResult.SurveyResultEntry._ID,
             SurveyResult.SurveyResultEntry.ANSWERS, SurveyResult.SurveyResultEntry.SENT};
 
-    private final String NOTIFICATION_SELECT_QUERY = "SELECT * FROM " + StressNotification.NotificationEntry
+    private final String NOTIFICATIONS_SELECT_QUERY = "SELECT * FROM " + StressNotification.NotificationEntry
             .TABLE_NAME + " WHERE " + StressNotification.NotificationEntry.APPLICATION + " != ''" +
             " AND " + StressNotification.NotificationEntry.LOADED + " = ?" +
             " AND " + StressNotification.NotificationEntry.EVENT + " = ?" +
             " ORDER BY " + StressNotification.NotificationEntry.TIMESTAMP + " DESC";
+
+    private final String NOTIFICATIONS_NOT_SENT_QUERY = "SELECT * FROM " +
+            StressNotification.NotificationEntry.TABLE_NAME + " WHERE " +
+            StressNotification.NotificationEntry.SENT + " = ?";
 
     private final String ANSWERS_SELECT_QUERY = "SELECT * FROM " + SurveyResult.SurveyResultEntry
             .TABLE_NAME + " WHERE " + SurveyResult.SurveyResultEntry.SENT + " = ?";
@@ -104,7 +109,7 @@ public class DatabaseService {
         return results;
     }
 
-    public void saveNotification(Intent intent) {
+    public void saveNotification(Intent intent, boolean successful) {
         String title = intent.getStringExtra("title");
         String content = intent.getStringExtra("content");
         String application = intent.getStringExtra("application");
@@ -126,52 +131,73 @@ public class DatabaseService {
         values.put(StressNotification.NotificationEntry.LOADED, "false");
         values.put(StressNotification.NotificationEntry.TIMESTAMP, timestamp);
         values.put(StressNotification.NotificationEntry.EVENT, event);
+        values.put(StressNotification.NotificationEntry.SENT, "" + successful);
         db.insert(StressNotification.NotificationEntry.TABLE_NAME, null, values);
     }
 
     public List<StressNotification> getNotifications() {
-        List<StressNotification> notifications = new ArrayList<>();
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         Cursor c = db.query(StressNotification.NotificationEntry.TABLE_NAME, notificationColumns, null,
                 null, null, null, null);
 
-        addNotifications(notifications, c);
+        List<StressNotification> notifications = loadNotifications(c);
         closeDatabaseComponents(c);
         return notifications;
     }
 
     public List<StressNotification> getSpecificNotifications(String loaded) {
-        List<StressNotification> notifications = new ArrayList<>();
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
         String[] selectionArgs = {loaded, "NOTIFICATION"};
-        Cursor c = db.rawQuery(NOTIFICATION_SELECT_QUERY, selectionArgs);
+        Cursor c = db.rawQuery(NOTIFICATIONS_SELECT_QUERY, selectionArgs);
 
-        addNotifications(notifications, c);
+        List<StressNotification> notifications = loadNotifications(c);
         closeDatabaseComponents(c);
         return notifications;
     }
 
+    public List<StressNotification> getNotSentNotifications() {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+        String[] selectionArgs = {"false"};
+        Cursor c = db.rawQuery(NOTIFICATIONS_NOT_SENT_QUERY, selectionArgs);
+
+        List<StressNotification> results = loadNotifications(c);
+        closeDatabaseComponents(c);
+        return results;
+    }
+
     public List<SurveyResult> getNotSentResults() {
-        List<SurveyResult> results;
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
         String[] selectionArgs = {"false"};
         Cursor c = db.rawQuery(ANSWERS_SELECT_QUERY, selectionArgs);
 
-        results = loadResults(c);
+        List<SurveyResult> results = loadResults(c);
         closeDatabaseComponents(c);
         return results;
     }
 
-    public void updateNotificationIsLoaded(StressNotification notification) {
+    public void updateNotificationIsLoaded(int id) {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(StressNotification.NotificationEntry.LOADED, "" + notification.isLoaded());
+        values.put(StressNotification.NotificationEntry.LOADED, "true");
 
         String selection = StressNotification.NotificationEntry._ID + " LIKE ?";
-        String[] selectionArgs = {"" + notification.getId()};
+        String[] selectionArgs = {"" + id};
+
+        db.update(StressNotification.NotificationEntry.TABLE_NAME, values, selection, selectionArgs);
+    }
+
+    public void updateNotificationIsSent(int id) {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(StressNotification.NotificationEntry.SENT, "true");
+
+        String selection = StressNotification.NotificationEntry._ID + " LIKE ?";
+        String[] selectionArgs = {"" + id};
 
         db.update(StressNotification.NotificationEntry.TABLE_NAME, values, selection, selectionArgs);
     }
@@ -188,7 +214,8 @@ public class DatabaseService {
         db.update(SurveyResult.SurveyResultEntry.TABLE_NAME, values, selection, selectionArgs);
     }
 
-    private void addNotifications(List<StressNotification> notifications, Cursor c) {
+    private List<StressNotification> loadNotifications(Cursor c) {
+        List<StressNotification> notifications = new ArrayList<>();
         if (c != null) {
             while (!c.isClosed() && c.moveToNext()) {
                 int id = c.getInt(c.getColumnIndex(StressNotification.NotificationEntry._ID));
@@ -210,15 +237,14 @@ public class DatabaseService {
 
                 Date timeStampDate = getTimeStampDate(timeStampText);
 
-                boolean loaded = ("true".equals(c.getString(
-                        c.getColumnIndex(StressNotification.NotificationEntry.LOADED))));
-
                 StressNotification notification = new StressNotification(id, title, application,
-                        contentLength, EmojiFrequency.getEmoticons(emoticons),
-                        loaded, timeStampDate);
+                        contentLength, emoticons, EmojiFrequency.getEmoticons(emoticons),
+                        timeStampDate);
                 notifications.add(notification);
             }
         }
+
+        return notifications;
     }
 
     private List<SurveyResult> loadResults(Cursor c) {
@@ -269,7 +295,7 @@ public class DatabaseService {
         c.close();
     }
 
-    public void saveScreenEvent(String event) {
+    public void saveScreenEvent(String event, boolean successful) {
         String title = "";
         String content = "";
         String application = "";
@@ -286,6 +312,7 @@ public class DatabaseService {
         values.put(StressNotification.NotificationEntry.LOADED, "false");
         values.put(StressNotification.NotificationEntry.TIMESTAMP, timestamp);
         values.put(StressNotification.NotificationEntry.EVENT, event);
+        values.put(StressNotification.NotificationEntry.SENT, "" + successful);
         db.insert(StressNotification.NotificationEntry.TABLE_NAME, null, values);
     }
 }

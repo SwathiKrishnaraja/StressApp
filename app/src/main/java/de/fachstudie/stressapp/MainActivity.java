@@ -36,6 +36,7 @@ import java.util.Date;
 import java.util.List;
 
 import de.fachstudie.stressapp.db.DatabaseService;
+import de.fachstudie.stressapp.model.StressNotification;
 import de.fachstudie.stressapp.model.SurveyResult;
 import de.fachstudie.stressapp.networking.StressAppClient;
 import de.fachstudie.stressapp.tetris.TetrisView;
@@ -309,6 +310,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         Log.d("onResume", " ");
+        sendNotifications();
         sendSurveyResults();
         if (!isNLServiceRunning()) {
             userInfoDialog.show();
@@ -356,6 +358,41 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    private void sendNotifications() {
+        if (dbService != null && client != null) {
+            List<StressNotification> results = dbService.getNotSentNotifications();
+            if (!results.isEmpty()) {
+                for (final StressNotification result : results) {
+                    client.sendNotificationEvent(loadJSONObject(result), new Handler.Callback() {
+                        @Override
+                        public boolean handleMessage(Message message) {
+                            boolean successful = message.getData().getBoolean("successful");
+                            if (successful)
+                                dbService.updateNotificationIsSent(result.getId());
+                            return false;
+                        }
+                    });
+                }
+            }
+        }
+    }
+
+    private JSONObject loadJSONObject(StressNotification notification) {
+        JSONObject event = new JSONObject();
+        try {
+            event.put("event", notification.getEvent());
+            event.put("application", notification.getApplication());
+            event.put("title", notification.getTitle());
+            event.put("content_length", notification.getContentLength());
+            String timestamp = dateFormat.format(notification.getTimestamp());
+            event.put("timestamp", timestamp);
+            event.put("emoticons", notification.getEmoticons());
+        } catch (JSONException e) {
+        }
+
+        return event;
+    }
+
     private void sendSurveyResults() {
         if (dbService != null && client != null) {
             List<SurveyResult> results = dbService.getNotSentResults();
@@ -383,8 +420,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onReceive(Context context, Intent intent) {
-            dbService.saveNotification(intent);
+        public void onReceive(Context context, final Intent intent) {
             tetrisView.notificationPosted();
             JSONObject event = new JSONObject();
             try {
@@ -398,7 +434,14 @@ public class MainActivity extends AppCompatActivity {
                         .getStringExtra("content")));
             } catch (JSONException e) {
             }
-            client.sendNotificationEvent(event);
+            client.sendNotificationEvent(event, new Handler.Callback() {
+                @Override
+                public boolean handleMessage(Message message) {
+                    boolean successful = message.getData().getBoolean("successful");
+                    dbService.saveNotification(intent, successful);
+                    return false;
+                }
+            });
         }
     }
 
@@ -410,12 +453,11 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onReceive(Context context, Intent intent) {
+        public void onReceive(Context context, final Intent intent) {
             if (intent != null && intent.getAction() != null) {
                 if (intent.getAction().equals(Intent.ACTION_SCREEN_ON)) {
                     // Screen is on but not unlocked (if any locking mechanism present)
                     Log.i("LockScreenReceiver", "Screen is on but not unlocked");
-                    dbService.saveScreenEvent("SCREEN_ON");
                     JSONObject event = new JSONObject();
                     try {
                         event.put("event", "SCREEN_ON");
@@ -427,11 +469,11 @@ public class MainActivity extends AppCompatActivity {
                         event.put("emoticons", "");
                     } catch (JSONException e) {
                     }
-                    client.sendNotificationEvent(event);
+                    sendNotificationEvent(event, "SCREEN_ON");
+
                 } else if (intent.getAction().equals(Intent.ACTION_SCREEN_OFF)) {
                     // Screen is locked
                     Log.i("LockScreenReceiver", "Screen is locked");
-                    dbService.saveScreenEvent("SCREEN_LOCK");
                     JSONObject event = new JSONObject();
                     try {
                         event.put("event", "SCREEN_LOCK");
@@ -443,11 +485,11 @@ public class MainActivity extends AppCompatActivity {
                         event.put("emoticons", "");
                     } catch (JSONException e) {
                     }
-                    client.sendNotificationEvent(event);
+                    sendNotificationEvent(event, "SCREEN_LOCK");
+
                 } else if (intent.getAction().equals(Intent.ACTION_USER_PRESENT)) {
                     // Screen is unlocked
                     Log.i("LockScreenReceiver", "Screen is unlocked");
-                    dbService.saveScreenEvent("SCREEN_UNLOCKED");
                     JSONObject event = new JSONObject();
                     try {
                         event.put("event", "SCREEN_UNLOCK");
@@ -459,9 +501,20 @@ public class MainActivity extends AppCompatActivity {
                         event.put("emoticons", "");
                     } catch (JSONException e) {
                     }
-                    client.sendNotificationEvent(event);
+                    sendNotificationEvent(event, "SCREEN_UNLOCKED");
                 }
             }
+        }
+
+        private void sendNotificationEvent(JSONObject event, final String screenEvent) {
+            client.sendNotificationEvent(event, new Handler.Callback() {
+                @Override
+                public boolean handleMessage(Message message) {
+                    boolean successful = message.getData().getBoolean("successful");
+                    dbService.saveScreenEvent(screenEvent, successful);
+                    return false;
+                }
+            });
         }
     }
 }
