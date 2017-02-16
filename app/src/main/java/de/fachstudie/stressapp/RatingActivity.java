@@ -1,23 +1,31 @@
 package de.fachstudie.stressapp;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import de.fachstudie.stressapp.db.DatabaseService;
 import de.fachstudie.stressapp.networking.StressAppClient;
+
+import static de.fachstudie.stressapp.tetris.constants.StringConstants.NOTIFICATION_TIMESTAMP;
 
 
 public class RatingActivity extends AppCompatActivity {
 
     private StressAppClient client;
     private DatabaseService dbService;
+    private SharedPreferences preferences;
 
     @Override
     public void onBackPressed() {
@@ -27,6 +35,13 @@ public class RatingActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        this.preferences = getSharedPreferences("de.fachstudie.stressapp" +
+                ".preferences", Context.MODE_PRIVATE);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String timestamp = dateFormat.format(new Date());
+
+        preferences.edit().putString(NOTIFICATION_TIMESTAMP, timestamp).commit();
+
         setContentView(R.layout.activity_rating);
         final SeekBar seekBar = (SeekBar) findViewById(R.id.seekBar);
 

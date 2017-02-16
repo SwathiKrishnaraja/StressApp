@@ -45,6 +45,9 @@ import de.fachstudie.stressapp.tetris.constants.StringConstants;
 import de.fachstudie.stressapp.tetris.utils.DialogUtils;
 
 import static de.fachstudie.stressapp.tetris.constants.StringConstants.GOLD_BLOCKS;
+import static de.fachstudie.stressapp.tetris.constants.StringConstants.NOTIFICATION_TIMESTAMP;
+import static de.fachstudie.stressapp.tetris.utils.NotificationUtils.createNotification;
+import static de.fachstudie.stressapp.tetris.utils.NotificationUtils.isLastNotficationLongAgo;
 
 public class MainActivity extends AppCompatActivity {
     public static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -60,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
     private int highScore;
     private boolean receiversCreated = false;
     private DatabaseService dbService;
+    private SharedPreferences prefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,17 +87,23 @@ public class MainActivity extends AppCompatActivity {
         tetrisView.setHandler(handler);
         tetrisView.setHeight(metrics.heightPixels);
 
-        SharedPreferences prefs = getSharedPreferences("de.fachstudie.stressapp.preferences",
+        prefs = getSharedPreferences("de.fachstudie.stressapp.preferences",
                 Context.MODE_PRIVATE);
-        if (prefs.getInt(GOLD_BLOCKS, -1) == -1)
+
+        if (prefs.getInt(GOLD_BLOCKS, -1) == -1) {
             prefs.edit().putInt(GOLD_BLOCKS, 0).commit();
+        }
+
+        if (prefs.getString(NOTIFICATION_TIMESTAMP, "-1").equals("-1")) {
+            prefs.edit().putString(NOTIFICATION_TIMESTAMP, "").commit();
+        }
 
         Bundle bundle = getIntent().getExtras();
         if (bundle != null && bundle.getString("message") != null) {
             String message = bundle.getString("message");
             if (message.equals("survey answered")) {
                 tetrisView.increaseGoldBlockCount(3);
-            }else if(message.equals("stresslevel defined")){
+            } else if (message.equals("stresslevel defined")) {
                 tetrisView.increaseGoldBlockCount(1);
             }
         }
@@ -126,6 +136,7 @@ public class MainActivity extends AppCompatActivity {
             cal.add(Calendar.DAY_OF_YEAR, 1);
         }
 
+        cal.set(Calendar.HOUR_OF_DAY, 19);
         Intent intent = new Intent(this, AlarmReceiver.class);
         intent.putExtra("de.fachstudie.stressapp.notification", "Test");
 
@@ -323,6 +334,9 @@ public class MainActivity extends AppCompatActivity {
             createReceivers();
         } else if (!gameOverDialog.isShowing() && !tetrisView.isPause()) {
             tetrisView.resumeGame();
+            if (isLastNotficationLongAgo(prefs)) {
+                createNotification(getApplicationContext());
+            }
         }
     }
 
@@ -361,6 +375,7 @@ public class MainActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
 
     private void sendNotifications() {
         if (dbService != null && client != null) {

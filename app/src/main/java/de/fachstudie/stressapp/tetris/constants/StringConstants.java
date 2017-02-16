@@ -33,5 +33,7 @@ public class StringConstants {
 
     public static final String GOLD_BLOCKS = "gold_blocks";
 
-    public static final String NO_INTERNET_MESSAGE = "No Internet." + "\n" + "Please try it again.";
+    public static final String NO_INTERNET_MESSAGE = "No Internet." + "\n" + "Please try again.";
+
+    public static final String NOTIFICATION_TIMESTAMP = "notification_timestamp";
 }
