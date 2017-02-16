@@ -136,7 +136,6 @@ public class MainActivity extends AppCompatActivity {
             cal.add(Calendar.DAY_OF_YEAR, 1);
         }
 
-        cal.set(Calendar.HOUR_OF_DAY, 19);
         Intent intent = new Intent(this, AlarmReceiver.class);
         intent.putExtra("de.fachstudie.stressapp.notification", "Test");
 
