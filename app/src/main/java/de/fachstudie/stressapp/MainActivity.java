@@ -46,6 +46,7 @@ import de.fachstudie.stressapp.tetris.utils.DialogUtils;
 
 import static de.fachstudie.stressapp.tetris.constants.StringConstants.GOLD_BLOCKS;
 import static de.fachstudie.stressapp.tetris.constants.StringConstants.NOTIFICATION_TIMESTAMP;
+import static de.fachstudie.stressapp.tetris.constants.StringConstants.USER_SCORES;
 import static de.fachstudie.stressapp.tetris.utils.NotificationUtils.createNotification;
 import static de.fachstudie.stressapp.tetris.utils.NotificationUtils.isLastNotficationLongAgo;
 
@@ -98,6 +99,10 @@ public class MainActivity extends AppCompatActivity {
             prefs.edit().putString(NOTIFICATION_TIMESTAMP, "").commit();
         }
 
+        if (prefs.getString(USER_SCORES, "-1").equals("-1")) {
+            prefs.edit().putString(USER_SCORES, "").commit();
+        }
+
         Bundle bundle = getIntent().getExtras();
         if (bundle != null && bundle.getString("message") != null) {
             String message = bundle.getString("message");
@@ -136,6 +141,7 @@ public class MainActivity extends AppCompatActivity {
             cal.add(Calendar.DAY_OF_YEAR, 1);
         }
 
+        Log.d("current hour", cal.get(Calendar.HOUR_OF_DAY) + "");
         Intent intent = new Intent(this, AlarmReceiver.class);
         intent.putExtra("de.fachstudie.stressapp.notification", "Test");
 

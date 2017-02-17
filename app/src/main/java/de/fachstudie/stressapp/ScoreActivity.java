@@ -18,6 +18,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import de.fachstudie.stressapp.model.Score;
@@ -25,6 +26,7 @@ import de.fachstudie.stressapp.networking.StressAppClient;
 import de.fachstudie.stressapp.score.ScoreAdapter;
 
 import static de.fachstudie.stressapp.tetris.constants.StringConstants.NO_INTERNET_MESSAGE;
+import static de.fachstudie.stressapp.tetris.constants.StringConstants.USER_SCORES;
 
 public class ScoreActivity extends AppCompatActivity {
 
@@ -64,8 +66,8 @@ public class ScoreActivity extends AppCompatActivity {
                     boolean userAvailable = false;
 
                     for (int i = 0; i < jsonScores.length(); i++) {
-                        scores[i] = new Score(jsonUsersIDs.optString(i), jsonScores.optInt(i));
-                        scores[i].setUsername(jsonUsers.optString(i));
+                        scores[i] = new Score(jsonUsersIDs.optString(i), jsonUsers.optString(i),
+                                jsonScores.optInt(i));
                     }
 
                     if (!localUserID.isEmpty() && !localUsername.isEmpty()) {
@@ -80,10 +82,11 @@ public class ScoreActivity extends AppCompatActivity {
 
                     if (!userAvailable && !localUsername.isEmpty()) {
                         scores = Arrays.copyOf(scores, scores.length + 1);
-                        scores[scores.length - 1] = new Score(localUserID,
+                        scores[scores.length - 1] = new Score(localUserID, localUsername,
                                 localUserScore);
-                        scores[scores.length - 1].setUsername(localUsername);
                     }
+
+                    cacheUserScores(scores);
 
                     ScoreAdapter adapter = new ScoreAdapter(ScoreActivity.this, scores);
                     listView.setAdapter(adapter);
@@ -91,15 +94,69 @@ public class ScoreActivity extends AppCompatActivity {
                 } catch (JSONException e) {
                     Log.e("JSON exception", e.getClass().toString() + " " + e.getMessage());
 
-                    TextView textView = getInfoTextView();
-                    ScoreAdapter adapter = new ScoreAdapter(ScoreActivity.this, new Score[0]);
-                    listView.setAdapter(adapter);
-                    listView.addHeaderView(textView);
+                    String userScores = preferences.getString(USER_SCORES, "");
+                    if (!userScores.isEmpty()) {
+                        Score[] scores = getCachedScores(userScores);
+                        if (scores != null) {
+                            ScoreAdapter adapter = new ScoreAdapter(ScoreActivity.this, scores);
+                            listView.setAdapter(adapter);
+                        }
+                    } else {
+                        TextView textView = getInfoTextView();
+                        ScoreAdapter adapter = new ScoreAdapter(ScoreActivity.this, new Score[0]);
+                        listView.setAdapter(adapter);
+                        listView.addHeaderView(textView);
+                    }
                 }
 
                 return false;
             }
+
+
         });
+    }
+
+    private void cacheUserScores(Score[] scores) {
+        if (scores.length > 0) {
+            StringBuilder builder = new StringBuilder("");
+            for (Score score : scores) {
+                if (!score.getUserID().isEmpty() && !score.getUsername().isEmpty()) {
+                    builder.append(score.getUserID());
+                    builder.append(",");
+                    builder.append(score.getUsername());
+                    builder.append(",");
+                    builder.append(score.getValue());
+                    builder.append(";");
+                }
+            }
+            String userScores = builder.toString();
+            if (!userScores.isEmpty()) {
+                preferences.edit().putString(USER_SCORES, userScores).commit();
+            }
+        }
+    }
+
+    private Score[] getCachedScores(String userScores) {
+        ArrayList<Score> scoreList = new ArrayList<>();
+        Score[] scores = null;
+
+        String[] tripleEntries = userScores.split(";");
+        String[] singleEntries;
+        for (String triple : tripleEntries) {
+            singleEntries = triple.split(",");
+            if (singleEntries != null && singleEntries.length == 3) {
+                Score score = new Score(singleEntries[0], singleEntries[1],
+                        Integer.valueOf(singleEntries[2]));
+                scoreList.add(score);
+            }
+        }
+
+        if (!scoreList.isEmpty()) {
+            scores = new Score[scoreList.size()];
+            scoreList.toArray(scores);
+        }
+
+        return scores;
     }
 
     @NonNull

@@ -12,8 +12,9 @@ public class Score {
     private int value;
     private String username;
 
-    public Score(String userID, int value) {
+    public Score(String userID, String username, int value) {
         this.userID = userID;
+        this.username = username;
         this.value = value;
     }
 
@@ -27,10 +28,6 @@ public class Score {
 
     public void setValue(int value) {
         this.value = value;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
     }
 
     public String getUsername() {

@@ -36,4 +36,7 @@ public class StringConstants {
     public static final String NO_INTERNET_MESSAGE = "No Internet." + "\n" + "Please try again.";
 
     public static final String NOTIFICATION_TIMESTAMP = "notification_timestamp";
+
+    public static final String USER_SCORES = "user_scores";
+
 }

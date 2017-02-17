@@ -37,7 +37,6 @@ public class AlarmReceiver extends BroadcastReceiver {
             }
 
             createNotification(context);
-            // 11 Uhr 14 Uhr 17 Uhr 20 Uhr
 
             PendingIntent sender = PendingIntent.getBroadcast(context, 10, intent, PendingIntent
                     .FLAG_UPDATE_CURRENT);
