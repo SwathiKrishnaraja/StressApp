@@ -48,9 +48,9 @@ public class NotificationUtils {
 
             if (diffMonths > 0) {
                 return true;
-            } else if (diffDays > 1) {
+            } else if (diffDays > 0) {
                 return true;
-            } else if (diffDays == 1 && previousHour < 20) {
+            } else if (diffDays == 1 && currentHour > 10) {
                 return true;
             } else if (currentHour > 10 && diffHours > 3) {
                 return true;
