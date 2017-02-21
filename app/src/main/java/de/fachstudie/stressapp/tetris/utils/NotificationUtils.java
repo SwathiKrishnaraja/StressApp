@@ -13,7 +13,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
-import de.fachstudie.stressapp.MainActivity;
 import de.fachstudie.stressapp.RatingActivity;
 
 import static de.fachstudie.stressapp.tetris.constants.StringConstants.NOTIFICATION_TIMESTAMP;
@@ -74,7 +73,7 @@ public class NotificationUtils {
         // your application to the Home screen.
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
         // Adds the back stack for the Intent (but not the Intent itself)
-        stackBuilder.addParentStack(MainActivity.class);
+        stackBuilder.addParentStack(RatingActivity.class);
         // Adds the Intent that starts the Activity to the top of the stack
         stackBuilder.addNextIntent(resultIntent);
         PendingIntent resultPendingIntent =

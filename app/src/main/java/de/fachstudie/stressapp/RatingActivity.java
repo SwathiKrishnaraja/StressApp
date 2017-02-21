@@ -35,6 +35,8 @@ public class RatingActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        overridePendingTransition(0, 0);
+
         this.preferences = getSharedPreferences("de.fachstudie.stressapp" +
                 ".preferences", Context.MODE_PRIVATE);
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -79,6 +81,7 @@ public class RatingActivity extends AppCompatActivity {
                         return false;
                     }
                 });
+
                 Intent i = new Intent(getApplicationContext(), MainActivity.class);
                 i.putExtra("message", "stresslevel defined");
                 startActivity(i);
@@ -111,5 +114,7 @@ public class RatingActivity extends AppCompatActivity {
             public void onStopTrackingTouch(SeekBar seekBar) {
             }
         });
+
+
     }
 }

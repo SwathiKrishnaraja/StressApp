@@ -103,16 +103,6 @@ public class MainActivity extends AppCompatActivity {
             prefs.edit().putString(USER_SCORES, "").commit();
         }
 
-        Bundle bundle = getIntent().getExtras();
-        if (bundle != null && bundle.getString("message") != null) {
-            String message = bundle.getString("message");
-            if (message.equals("survey answered")) {
-                tetrisView.increaseGoldBlockCount(3);
-            } else if (message.equals("stresslevel defined")) {
-                tetrisView.increaseGoldBlockCount(1);
-            }
-        }
-
         if (!isNLServiceRunning()) {
             if (userInfoDialog == null)
                 userInfoDialog = DialogUtils.getUserInfoDialog(this);
@@ -318,6 +308,21 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        Bundle bundle = intent.getExtras();
+        if (bundle != null && bundle.getString("message") != null && tetrisView != null) {
+            String message = bundle.getString("message");
+            Log.d("message", message);
+            if (message.equals("survey answered")) {
+                tetrisView.increaseGoldBlockCount(3);
+            } else if (message.equals("stresslevel defined")) {
+                tetrisView.increaseGoldBlockCount(1);
+            }
+        }
+    }
+
+    @Override
     public void onBackPressed() {
         tetrisView.pauseGame();
         exitDialog.setMessage(StringConstants.EXIT_MESSAGE);
@@ -327,6 +332,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        overridePendingTransition(0, 0);
         Log.d("onResume", " ");
         sendNotifications();
         sendSurveyResults();

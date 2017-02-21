@@ -1,6 +1,7 @@
 package de.fachstudie.stressapp;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -36,6 +37,7 @@ public class ScoreActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        overridePendingTransition(0, 0);
         this.preferences = getSharedPreferences("de.fachstudie.stressapp" +
                 ".preferences", Context.MODE_PRIVATE);
         setContentView(R.layout.activity_score);
@@ -114,6 +116,13 @@ public class ScoreActivity extends AppCompatActivity {
 
 
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent i = new Intent(getApplicationContext(), MainActivity.class);
+        startActivity(i);
+        finish();
     }
 
     private void cacheUserScores(Score[] scores) {
