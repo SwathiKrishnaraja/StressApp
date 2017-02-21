@@ -63,6 +63,7 @@ public class RatingActivity extends AppCompatActivity {
                 Intent i = new Intent(getApplicationContext(), SurveyActivity.class);
                 i.putExtra("message", "stresslevel defined");
                 startActivity(i);
+                finish();
             }
         });
 
@@ -81,6 +82,7 @@ public class RatingActivity extends AppCompatActivity {
                 Intent i = new Intent(getApplicationContext(), MainActivity.class);
                 i.putExtra("message", "stresslevel defined");
                 startActivity(i);
+                finish();
             }
         });
 
@@ -109,7 +111,5 @@ public class RatingActivity extends AppCompatActivity {
             public void onStopTrackingTouch(SeekBar seekBar) {
             }
         });
-
-
     }
 }
