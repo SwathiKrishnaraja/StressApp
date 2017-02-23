@@ -14,18 +14,18 @@ public class StressNotification {
 
     private String event;
     private int id;
-    private String title;
+    private int titleLength;
     private String application;
     private int contentLength;
     private String emoticons;
     private Map<Emoji, Integer> emoticonFrequencies;
     private Date timestamp;
 
-    public StressNotification(int id, String title, String application, int contentLength,
+    public StressNotification(int id, int title, String application, int contentLength,
                               String emoticons, Map<Emoji, Integer> emoticonFrequencies,
                               Date timestamp) {
         this.id = id;
-        this.title = title;
+        this.titleLength = title;
         this.application = application;
         this.contentLength = contentLength;
         this.emoticons = emoticons;
@@ -38,12 +38,12 @@ public class StressNotification {
         return id;
     }
 
-    public String getTitle() {
-        return title;
+    public int getTitleLength() {
+        return titleLength;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setTitleLength(int titleLength) {
+        this.titleLength = titleLength;
     }
 
     public String getApplication() {
@@ -84,7 +84,7 @@ public class StressNotification {
 
     public static class NotificationEntry implements BaseColumns {
         public static final String TABLE_NAME = "notification";
-        public static final String TITLE = "title";
+        public static final String TITLE_LENGTH = "title_length";
         public static final String APPLICATION = "application";
         public static final String TIMESTAMP = "timestamp";
         public static final String CONTENT_LENGTH = "content_length";

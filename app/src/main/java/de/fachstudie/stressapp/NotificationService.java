@@ -33,9 +33,10 @@ public class NotificationService extends NotificationListenerService {
 
         Intent i = new Intent("de.fachstudie.stressapp.notification");
         i.putExtra("application", app);
-        i.putExtra("title", title);
+        i.putExtra("title_length", title.length() + "");
         i.putExtra("content", text);
         i.putExtra("event", "NOTIFICATION");
+
         sendBroadcast(i);
     }
 
@@ -53,7 +54,7 @@ public class NotificationService extends NotificationListenerService {
 
         Intent i = new Intent("de.fachstudie.stressapp.notification");
         i.putExtra("application", app);
-        i.putExtra("title", title);
+        i.putExtra("title_length", title.length() + "");
         i.putExtra("content", text);
         i.putExtra("event", "NOTIFICATION_REMOVED");
         sendBroadcast(i);

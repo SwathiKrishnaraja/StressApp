@@ -27,7 +27,7 @@ import de.fachstudie.stressapp.model.SurveyResult;
 public class DatabaseService {
 
     private final String[] notificationColumns = {StressNotification.NotificationEntry._ID,
-            StressNotification.NotificationEntry.TITLE,
+            StressNotification.NotificationEntry.TITLE_LENGTH,
             StressNotification.NotificationEntry.APPLICATION,
             StressNotification.NotificationEntry.CONTENT_LENGTH,
             StressNotification.NotificationEntry.EMOTICONS,
@@ -122,20 +122,20 @@ public class DatabaseService {
     }
 
     public void saveNotification(Intent intent, boolean successful) {
-        String title = intent.getStringExtra("title");
+        String titleLength = intent.getStringExtra("title_length");
         String content = intent.getStringExtra("content");
         String application = intent.getStringExtra("application");
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String timestamp = dateFormat.format(new Date());
         String event = intent.getStringExtra("event");
 
-        Log.d("title", title);
+        Log.d("title_length", titleLength);
         Log.d("app", application);
         Log.d("content", content);
 
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(StressNotification.NotificationEntry.TITLE, title);
+        values.put(StressNotification.NotificationEntry.TITLE_LENGTH, Integer.valueOf(titleLength));
         values.put(StressNotification.NotificationEntry.CONTENT_LENGTH, content.length());
         values.put(StressNotification.NotificationEntry.EMOTICONS,
                 EmojiFrequency.getCommaSeparatedEmoticons(content));
@@ -255,8 +255,8 @@ public class DatabaseService {
             while (!c.isClosed() && c.moveToNext()) {
                 int id = c.getInt(c.getColumnIndex(StressNotification.NotificationEntry._ID));
 
-                String title = c.getString(c.getColumnIndex(StressNotification.NotificationEntry
-                        .TITLE));
+                int titleLength = c.getInt(c.getColumnIndex(StressNotification.NotificationEntry
+                        .TITLE_LENGTH));
                 String application = c.getString(c.getColumnIndex(StressNotification
                         .NotificationEntry.APPLICATION));
                 int contentLength = c.getInt(c.getColumnIndex(StressNotification.NotificationEntry
@@ -272,7 +272,7 @@ public class DatabaseService {
 
                 Date timeStampDate = getTimeStampDate(timeStampText);
 
-                StressNotification notification = new StressNotification(id, title, application,
+                StressNotification notification = new StressNotification(id, titleLength, application,
                         contentLength, emoticons, EmojiFrequency.getEmoticons(emoticons),
                         timeStampDate);
                 notifications.add(notification);
@@ -347,7 +347,7 @@ public class DatabaseService {
     }
 
     public void saveScreenEvent(String event, boolean successful) {
-        String title = "";
+        int titleLength = 0;
         String content = "";
         String application = "";
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -355,7 +355,7 @@ public class DatabaseService {
 
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(StressNotification.NotificationEntry.TITLE, title);
+        values.put(StressNotification.NotificationEntry.TITLE_LENGTH, titleLength);
         values.put(StressNotification.NotificationEntry.CONTENT_LENGTH, content.length());
         values.put(StressNotification.NotificationEntry.EMOTICONS,
                 EmojiFrequency.getCommaSeparatedEmoticons(content));

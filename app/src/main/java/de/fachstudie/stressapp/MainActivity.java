@@ -411,7 +411,7 @@ public class MainActivity extends AppCompatActivity {
         try {
             event.put("event", notification.getEvent());
             event.put("application", notification.getApplication());
-            event.put("title", notification.getTitle());
+            event.put("title_length", notification.getTitleLength());
             event.put("content_length", notification.getContentLength());
             String timestamp = dateFormat.format(notification.getTimestamp());
             event.put("timestamp", timestamp);
@@ -474,7 +474,7 @@ public class MainActivity extends AppCompatActivity {
             try {
                 event.put("event", intent.getStringExtra("event"));
                 event.put("application", intent.getStringExtra("application"));
-                event.put("title", intent.getStringExtra("title"));
+                event.put("title_length", intent.getStringExtra("title_length"));
                 event.put("content_length", intent.getStringExtra("content").length());
                 String timestamp = dateFormat.format(new Date());
                 event.put("timestamp", timestamp);
@@ -512,7 +512,7 @@ public class MainActivity extends AppCompatActivity {
                         String timestamp = dateFormat.format(new Date());
                         event.put("timestamp", timestamp);
                         event.put("application", "");
-                        event.put("title", "");
+                        event.put("title_length", "");
                         event.put("content_length", 0);
                         event.put("emoticons", "");
                     } catch (JSONException e) {
@@ -528,7 +528,7 @@ public class MainActivity extends AppCompatActivity {
                         String timestamp = dateFormat.format(new Date());
                         event.put("timestamp", timestamp);
                         event.put("application", "");
-                        event.put("title", "");
+                        event.put("title_length", "");
                         event.put("content_length", 0);
                         event.put("emoticons", "");
                     } catch (JSONException e) {
@@ -544,7 +544,7 @@ public class MainActivity extends AppCompatActivity {
                         String timestamp = dateFormat.format(new Date());
                         event.put("timestamp", timestamp);
                         event.put("application", "");
-                        event.put("title", "");
+                        event.put("title_length", "");
                         event.put("content_length", 0);
                         event.put("emoticons", "");
                     } catch (JSONException e) {

@@ -368,7 +368,15 @@ public class TetrisWorld {
         int canvasWidth = canvas.getWidth();
         int canvasHeight = canvas.getHeight();
 
-        gridSize = (canvasWidth - 2 * PADDING) / WIDTH;
+        int gridSize_1 = (canvasWidth - 2 * PADDING) / WIDTH;
+        int gridSize_2 = (canvasHeight - 2 * PADDING) / HEIGHT;
+
+        if(gridSize_1 <= gridSize_2){
+            gridSize = gridSize_1;
+        }else {
+            gridSize = gridSize_2;
+        }
+
         int iconSize = gridSize - 2 * (gridSize / 8);
         int previewGridSize = (PADDING - 2 * PREVIEW_PADDING) / PREVIEW_WIDTH;
 

@@ -11,7 +11,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "stress.db";
     private static final int DATABASE_VERSION = 1;
     private static final String NOTIFICATION_DATABASE_CREATE = "CREATE TABLE notification " +
-            "( _id integer primary key autoincrement, title text," +
+            "( _id integer primary key autoincrement, title_length integer," +
             " application text, content_length integer, emoticons text," +
             " loaded text, timestamp datetime default current_timestamp, event text, sent text)";
 
