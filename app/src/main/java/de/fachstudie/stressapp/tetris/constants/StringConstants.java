@@ -14,7 +14,7 @@ public class StringConstants {
             " \n" +
             "-\tTimestamp of each notification\n" +
             "-\tApp each notification was sent from\n" +
-            "-\tTitle of each notification \n" +
+            "-\tTitle length of each notification \n" +
             "-\tLength of each notification text\n" +
             "-\tEmoticons of each notification text\n" +
             "-\tTimestamp of unlocking the phone\n" +
