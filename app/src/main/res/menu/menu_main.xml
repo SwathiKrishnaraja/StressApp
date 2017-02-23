@@ -6,7 +6,7 @@
         android:id="@+id/action_score"
         android:orderInCategory="100"
         android:icon="@mipmap/ic_format_list_numbered_white_24dp"
-        android:titleLength="Score"
+        android:title="Score"
         android:tint="@color/white"
         app:showAsAction="always" />
 </menu>
