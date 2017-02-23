@@ -783,7 +783,17 @@ public class TetrisWorld {
     public void drawIcon(Canvas canvas, Paint p) {
         if (currentBlock.getY() > 1) {
             int canvasWidth = canvas.getWidth();
-            int gridSize = (canvasWidth - 2 * PADDING) / WIDTH;
+            int canvasHeight = canvas.getHeight();
+
+            int gridSize_1 = (canvasWidth - 2 * PADDING) / WIDTH;
+            int gridSize_2 = (canvasHeight - 2 * PADDING) / HEIGHT;
+
+            if(gridSize_1 <= gridSize_2){
+                gridSize = gridSize_1;
+            }else {
+                gridSize = gridSize_2;
+            }
+
             int iconSize = gridSize - 2 * (gridSize / 8);
             Bitmap bitmap = getResizedBitmap(this.currentBlockIcon, iconSize, iconSize);
 
