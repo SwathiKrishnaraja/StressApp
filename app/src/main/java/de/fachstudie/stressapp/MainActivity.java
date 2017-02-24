@@ -17,9 +17,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -64,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
     private int highScore;
     private boolean receiversCreated = false;
     private DatabaseService dbService;
-    private SharedPreferences prefs;
+    private SharedPreferences preferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,27 +78,22 @@ public class MainActivity extends AppCompatActivity {
         gameOverDialog = getCustomDialog(true, true, false, false);
         Handler handler = createGameOverHandler();
 
-        Display display = getWindowManager().getDefaultDisplay();
-        DisplayMetrics metrics = new DisplayMetrics();
-        display.getMetrics(metrics);
-
         tetrisView = (TetrisView) findViewById(R.id.tetrisview);
         tetrisView.setHandler(handler);
-        tetrisView.setHeight(metrics.heightPixels);
 
-        prefs = getSharedPreferences("de.fachstudie.stressapp.preferences",
+        preferences = getSharedPreferences("de.fachstudie.stressapp.preferences",
                 Context.MODE_PRIVATE);
 
-        if (prefs.getInt(GOLD_BLOCKS, -1) == -1) {
-            prefs.edit().putInt(GOLD_BLOCKS, 0).commit();
+        if (preferences.getInt(GOLD_BLOCKS, -1) == -1) {
+            preferences.edit().putInt(GOLD_BLOCKS, 0).commit();
         }
 
-        if (prefs.getString(NOTIFICATION_TIMESTAMP, "-1").equals("-1")) {
-            prefs.edit().putString(NOTIFICATION_TIMESTAMP, "").commit();
+        if (preferences.getString(NOTIFICATION_TIMESTAMP, "-1").equals("-1")) {
+            preferences.edit().putString(NOTIFICATION_TIMESTAMP, "").commit();
         }
 
-        if (prefs.getString(USER_SCORES, "-1").equals("-1")) {
-            prefs.edit().putString(USER_SCORES, "").commit();
+        if (preferences.getString(USER_SCORES, "-1").equals("-1")) {
+            preferences.edit().putString(USER_SCORES, "").commit();
         }
 
         if (!isNLServiceRunning()) {
@@ -344,7 +337,7 @@ public class MainActivity extends AppCompatActivity {
             createReceivers();
         } else if (!gameOverDialog.isShowing() && !tetrisView.isPause()) {
             tetrisView.resumeGame();
-            if (isLastNotficationLongAgo(prefs)) {
+            if (isLastNotficationLongAgo(preferences)) {
                 createNotification(getApplicationContext());
             }
         }

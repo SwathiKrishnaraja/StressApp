@@ -94,44 +94,48 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     public void draw(Canvas canvas) {
-        if (this.model.isDropping()) {
-            if (System.currentTimeMillis() - lastUpdate > 70 && lastUpdate != 0) {
-                dropping = this.model.gravityStep();
-                this.model.setDropping(dropping);
-                lastUpdate = System.currentTimeMillis();
-            }
-        }
-
-        setGravityTime();
-
-        if (!model.isDropping() && (System.currentTimeMillis() - lastUpdateTime > gravityTime ||
-                lastUpdateTime == -1)) {
-            model.gravityStep();
-            lastUpdateTime = System.currentTimeMillis();
-        }
         if (canvas != null) {
-            canvas.drawColor(Color.WHITE);
-            model.drawState(canvas, p);
-
-            if (model.getCurrentBlockIcon() != null)
-                model.drawIcon(canvas, p);
-        }
-
-        if (this.model.isGameOver()) {
-            this.pauseGame();
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    final Message msg = new Message();
-                    final Bundle bundle = new Bundle();
-                    model.saveScore();
-                    model.setGameOver(false);
-                    bundle.putInt("highscore", model.getHighScore());
-                    bundle.putInt("score", model.getScore());
-                    msg.setData(bundle);
-                    handler.sendMessage(msg);
+            model.setPaddings(canvas);
+            model.setTextSize(canvas);
+            if (this.model.isDropping()) {
+                if (System.currentTimeMillis() - lastUpdate > 70 && lastUpdate != 0) {
+                    dropping = this.model.gravityStep();
+                    this.model.setDropping(dropping);
+                    lastUpdate = System.currentTimeMillis();
                 }
-            });
+            }
+
+            setGravityTime();
+
+            if (!model.isDropping() && (System.currentTimeMillis() - lastUpdateTime > gravityTime ||
+                    lastUpdateTime == -1)) {
+                model.gravityStep();
+                lastUpdateTime = System.currentTimeMillis();
+            }
+            if (canvas != null) {
+                canvas.drawColor(Color.WHITE);
+                model.drawState(canvas, p);
+
+                if (model.getCurrentBlockIcon() != null)
+                    model.drawIcon(canvas, p);
+            }
+
+            if (this.model.isGameOver()) {
+                this.pauseGame();
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        final Message msg = new Message();
+                        final Bundle bundle = new Bundle();
+                        model.saveScore();
+                        model.setGameOver(false);
+                        bundle.putInt("highscore", model.getHighScore());
+                        bundle.putInt("score", model.getScore());
+                        msg.setData(bundle);
+                        handler.sendMessage(msg);
+                    }
+                });
+            }
         }
     }
 
@@ -203,10 +207,6 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
 
     public void notificationPosted() {
         model.notificationPosted();
-    }
-
-    public void setHeight(int heightPixels) {
-        model.setTopPadding(heightPixels);
     }
 
     private boolean isInRange(float x, float y) {

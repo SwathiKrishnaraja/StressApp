@@ -10,6 +10,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,10 +42,10 @@ public class TetrisWorld {
     private final int HEIGHT = 20;
     private final int FULL_HEIGHT = 22;
     private final int PREVIEW_WIDTH = 4;
-    private final int PADDING = 150;
     private final int PREVIEW_PADDING = 10;
     private final int NOTIFICATIONS_SIZE_PREVIEW_PADDING = 20;
-    private final int TEXT_SIZE = 40;
+    private int TEXT_SIZE = 40;
+    private int PADDING = 0;
     private int TOP_PADDING = 0;
 
     // Initialization of the tetris field
@@ -368,12 +369,18 @@ public class TetrisWorld {
         int canvasWidth = canvas.getWidth();
         int canvasHeight = canvas.getHeight();
 
+        Log.d("canvasHeigth", canvasHeight + " ");
+        Log.d("canvasWidth", canvasWidth + " ");
+
+        Log.d("TOP_PADDING", TOP_PADDING + "");
+        Log.d("PADDING", PADDING + "");
+
         int gridSize_1 = (canvasWidth - 2 * PADDING) / WIDTH;
         int gridSize_2 = (canvasHeight - 2 * PADDING) / HEIGHT;
 
-        if(gridSize_1 <= gridSize_2){
+        if (gridSize_1 <= gridSize_2) {
             gridSize = gridSize_1;
-        }else {
+        } else {
             gridSize = gridSize_2;
         }
 
@@ -430,9 +437,8 @@ public class TetrisWorld {
 
         // Draw boundary of the golden blocks preview
         canvas.drawRect(PREVIEW_PADDING,
-                TOP_PADDING + (canvasHeight / 2) - 100,
-                PADDING - PREVIEW_PADDING,
-                TOP_PADDING + (canvasHeight / 2) - 100 + PADDING - HEIGHT, p);
+                (canvasHeight / 2) + 50,
+                PADDING - PREVIEW_PADDING, (canvasHeight / 2) + 50 + PADDING - HEIGHT, p);
 
         // Draw boundary of the next block preview
         canvas.drawRect(PADDING + WIDTH * gridSize + PREVIEW_PADDING,
@@ -641,15 +647,15 @@ public class TetrisWorld {
         for (int j = 1; j < 3; j++) {
             for (int i = 1; i < 3; i++) {
                 canvas.drawRect(i * previewGridSize + PREVIEW_PADDING + 1,
-                        j * previewGridSize + TOP_PADDING + (canvasHeight / 2) - 100 + 1,
+                        j * previewGridSize + (canvasHeight / 2) + 50 + 1,
                         (i + 1) * previewGridSize + PREVIEW_PADDING - 1,
-                        (j + 1) * previewGridSize + TOP_PADDING + (canvasHeight / 2) - 100 - 1, p);
+                        (j + 1) * previewGridSize + (canvasHeight / 2) + 50 - 1, p);
 
                 if (bitmap != null)
                     canvas.drawBitmap(bitmap,
                             i * previewGridSize + PREVIEW_PADDING + 1
                                     + (previewGridSize / 8),
-                            j * previewGridSize + TOP_PADDING + (canvasHeight / 2) - 100 +
+                            j * previewGridSize + (canvasHeight / 2) + 50 +
                                     1 + (previewGridSize / 8), p);
             }
         }
@@ -661,8 +667,8 @@ public class TetrisWorld {
         p.setStrokeWidth(5);
         p.setColor(Color.parseColor("white"));
         canvas.drawText("" + goldBlockCount,
-                PREVIEW_PADDING + 64,
-                TOP_PADDING + (canvasHeight / 2) - 25,
+                PREVIEW_PADDING + ((PADDING - 2 * PREVIEW_PADDING) / 2),
+                (canvasHeight / 2) + 60 + ((PADDING - HEIGHT) / 2),
                 p);
 
         p.setColor(Color.parseColor("black"));
@@ -670,8 +676,8 @@ public class TetrisWorld {
 
         // Draw number of golden blocks
         canvas.drawText("" + goldBlockCount,
-                PREVIEW_PADDING + 64,
-                TOP_PADDING + (canvasHeight / 2) - 25,
+                PREVIEW_PADDING + ((PADDING - 2 * PREVIEW_PADDING) / 2),
+                (canvasHeight / 2) + 60 + ((PADDING - HEIGHT) / 2),
                 p);
 
         p.setTextAlign(Paint.Align.LEFT);
@@ -711,18 +717,17 @@ public class TetrisWorld {
         p.setColor(Color.parseColor("white"));
         // Draw number of notifications
         canvas.drawText("" + notificationCount,
-                PADDING + WIDTH * gridSize + PREVIEW_PADDING + 64,
-                TOP_PADDING + PADDING - HEIGHT + NOTIFICATIONS_SIZE_PREVIEW_PADDING + (PADDING / 2),
-                p);
+                PADDING + WIDTH * gridSize + PREVIEW_PADDING + ((PADDING - 2 * PREVIEW_PADDING) / 2),
+                TOP_PADDING + PADDING - HEIGHT + 30 + ((PADDING - 20) / 2), p);
 
         p.setColor(Color.parseColor("black"));
         p.setStyle(Paint.Style.FILL);
 
         // Draw number of notifications
         canvas.drawText("" + notificationCount,
-                PADDING + WIDTH * gridSize + PREVIEW_PADDING + 64,
-                TOP_PADDING + PADDING - HEIGHT + NOTIFICATIONS_SIZE_PREVIEW_PADDING + (PADDING / 2),
-                p);
+                PADDING + WIDTH * gridSize + PREVIEW_PADDING + ((PADDING - 2 * PREVIEW_PADDING) / 2),
+                TOP_PADDING + PADDING - HEIGHT + 30 + ((PADDING - 20) / 2), p);
+
 
         p.setTextAlign(Paint.Align.LEFT);
         p.setStrokeWidth(sw);
@@ -788,9 +793,9 @@ public class TetrisWorld {
             int gridSize_1 = (canvasWidth - 2 * PADDING) / WIDTH;
             int gridSize_2 = (canvasHeight - 2 * PADDING) / HEIGHT;
 
-            if(gridSize_1 <= gridSize_2){
+            if (gridSize_1 <= gridSize_2) {
                 gridSize = gridSize_1;
-            }else {
+            } else {
                 gridSize = gridSize_2;
             }
 
@@ -961,16 +966,8 @@ public class TetrisWorld {
         notificationPosted = true;
     }
 
-    public void setTopPadding(int heightPixels) {
-        TOP_PADDING = (int) (heightPixels * 0.15);
-    }
-
     public float getStressLevel() {
         return stressLevel;
-    }
-
-    public boolean isCurrentBlockGolden() {
-        return currentBlockGolden;
     }
 
     public boolean isNextBlockGolden() {
@@ -996,5 +993,28 @@ public class TetrisWorld {
         int golden_blocks = prefs.getInt(GOLD_BLOCKS, 0);
         this.goldBlockCount = golden_blocks + count;
         prefs.edit().putInt(GOLD_BLOCKS, goldBlockCount).commit();
+    }
+
+    public void setPaddings(Canvas canvas) {
+        if (canvas != null) {
+            int canvasWidth = canvas.getWidth();
+            int canvasHeight = canvas.getHeight();
+
+            PADDING = (int) (canvasWidth * 0.20);
+            TOP_PADDING = (int) (canvasHeight * 0.15);
+        }
+    }
+
+    public void setTextSize(Canvas canvas){
+        if(canvas != null){
+            int canvasHeight = canvas.getHeight();
+            if (canvasHeight > 1400 && canvasHeight < 2000) {
+                TEXT_SIZE = 50;
+            } else if (canvasHeight > 2000 && canvasHeight < 2500) {
+                TEXT_SIZE = 55;
+            } else if (canvasHeight > 2500) {
+                TEXT_SIZE = 60;
+            }
+        }
     }
 }
