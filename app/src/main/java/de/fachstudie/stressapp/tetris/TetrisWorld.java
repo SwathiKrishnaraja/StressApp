@@ -42,11 +42,10 @@ public class TetrisWorld {
     private final int HEIGHT = 20;
     private final int FULL_HEIGHT = 22;
     private final int PREVIEW_WIDTH = 4;
-    private final int PREVIEW_PADDING = 10;
-    private final int NOTIFICATIONS_SIZE_PREVIEW_PADDING = 20;
     private int TEXT_SIZE = 40;
     private int PADDING = 0;
     private int TOP_PADDING = 0;
+    private int PREVIEW_PADDING = 0;
 
     // Initialization of the tetris field
     private int[][] occupancy = new int[FULL_HEIGHT][WIDTH];
@@ -372,17 +371,11 @@ public class TetrisWorld {
         Log.d("canvasHeigth", canvasHeight + " ");
         Log.d("canvasWidth", canvasWidth + " ");
 
-        Log.d("TOP_PADDING", TOP_PADDING + "");
         Log.d("PADDING", PADDING + "");
+        Log.d("TOP_PADDING", TOP_PADDING + "");
+        Log.d("PREVIEW_PADDING", PREVIEW_PADDING + "");
 
-        int gridSize_1 = (canvasWidth - 2 * PADDING) / WIDTH;
-        int gridSize_2 = (canvasHeight - 2 * PADDING) / HEIGHT;
-
-        if (gridSize_1 <= gridSize_2) {
-            gridSize = gridSize_1;
-        } else {
-            gridSize = gridSize_2;
-        }
+        gridSize = (canvasWidth - 2 * PADDING) / WIDTH;
 
         int iconSize = gridSize - 2 * (gridSize / 8);
         int previewGridSize = (PADDING - 2 * PREVIEW_PADDING) / PREVIEW_WIDTH;
@@ -564,12 +557,9 @@ public class TetrisWorld {
         p.setTextAlign(Paint.Align.CENTER);
         canvas.drawText("Stress", PADDING / 2, TOP_PADDING + 10, p);
 
-        float barHeight = 400f;
+        float barHeight = canvas.getHeight() * 0.322f;
         // Map stress level 0 - 100 to height of bar
-        float top = -(barHeight / 100f) * this.stressLevel + barHeight + TOP_PADDING;
         p.setColor(context.getResources().getColor(android.R.color.holo_red_dark));
-        //canvas.drawRect(stressLevelPadding, top + 10, PADDING - stressLevelPadding,
-        //TOP_PADDING + barHeight + 10, p);
 
         for (int i = 0; i < 10; i++) {
             if (this.stressLevel > 0 && i > 8) {
@@ -603,7 +593,7 @@ public class TetrisWorld {
         p.setStyle(Paint.Style.STROKE);
         p.setColor(context.getResources().getColor(android.R.color.black));
         canvas.drawRect(stressLevelPadding, TOP_PADDING + 20, PADDING - stressLevelPadding,
-                TOP_PADDING + 420, p);
+                TOP_PADDING + 20 + canvas.getHeight() * 0.322f, p);
     }
 
     public void drawCurrentItem(Canvas canvas, Paint p, Block item) {
@@ -788,16 +778,8 @@ public class TetrisWorld {
     public void drawIcon(Canvas canvas, Paint p) {
         if (currentBlock.getY() > 1) {
             int canvasWidth = canvas.getWidth();
-            int canvasHeight = canvas.getHeight();
 
-            int gridSize_1 = (canvasWidth - 2 * PADDING) / WIDTH;
-            int gridSize_2 = (canvasHeight - 2 * PADDING) / HEIGHT;
-
-            if (gridSize_1 <= gridSize_2) {
-                gridSize = gridSize_1;
-            } else {
-                gridSize = gridSize_2;
-            }
+            gridSize = (canvasWidth - 2 * PADDING) / WIDTH;
 
             int iconSize = gridSize - 2 * (gridSize / 8);
             Bitmap bitmap = getResizedBitmap(this.currentBlockIcon, iconSize, iconSize);
@@ -1000,13 +982,14 @@ public class TetrisWorld {
             int canvasWidth = canvas.getWidth();
             int canvasHeight = canvas.getHeight();
 
-            PADDING = (int) (canvasWidth * 0.20);
+            PADDING = (int) (canvasWidth * 0.2);
+            PREVIEW_PADDING = (int) (canvasWidth * 0.013);
             TOP_PADDING = (int) (canvasHeight * 0.15);
         }
     }
 
-    public void setTextSize(Canvas canvas){
-        if(canvas != null){
+    public void setTextSize(Canvas canvas) {
+        if (canvas != null) {
             int canvasHeight = canvas.getHeight();
             if (canvasHeight > 1400 && canvasHeight < 2000) {
                 TEXT_SIZE = 50;

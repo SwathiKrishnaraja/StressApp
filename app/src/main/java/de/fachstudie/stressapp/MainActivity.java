@@ -159,7 +159,7 @@ public class MainActivity extends AppCompatActivity {
 
         for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer
                 .MAX_VALUE)) {
-            if (NotificationService.class.getName().equals(service.service.getClassName())) {
+            if (NotificationRegistryService.class.getName().equals(service.service.getClassName())) {
                 return true;
             }
         }

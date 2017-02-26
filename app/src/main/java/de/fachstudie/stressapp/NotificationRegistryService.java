@@ -2,6 +2,7 @@ package de.fachstudie.stressapp;
 
 import android.app.Notification;
 import android.content.Intent;
+import android.os.IBinder;
 import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
 import android.util.Log;
@@ -10,7 +11,7 @@ import android.util.Log;
  * Created by Paul Kuznecov on 01.11.2016.
  */
 
-public class NotificationService extends NotificationListenerService {
+public class NotificationRegistryService extends NotificationListenerService {
 
     @Override
     public void onCreate() {
@@ -58,5 +59,22 @@ public class NotificationService extends NotificationListenerService {
         i.putExtra("content", text);
         i.putExtra("event", "NOTIFICATION_REMOVED");
         sendBroadcast(i);
+    }
+
+    @Override
+    public void onListenerConnected() {
+        super.onListenerConnected();
+        Log.d("listener connected", " ");
+    }
+
+    @Override
+    public void onListenerDisconnected() {
+        super.onListenerDisconnected();
+        Log.d("listener disconnected", " ");
+    }
+
+    @Override
+    public IBinder onBind(Intent intent) {
+        return super.onBind(intent);
     }
 }
