@@ -26,7 +26,7 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
     private boolean dropping = false;
     private long lastUpdate = -1;
     private long lastTouchDown = -1;
-    private int gravityTime = 5;
+    private int gravityTime = 1;
     private int canvasWidth = 0 ;
     private int canvasHeight = 0;
     private Handler handler;
@@ -147,7 +147,7 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
         if (model.isBlockVisible()) {
             gravityTime = (int) (GRAVITY_TIME - 6 * (this.model.getStressLevel()));
         } else {
-            gravityTime = 5;
+            gravityTime = 1;
         }
     }
 

@@ -10,7 +10,7 @@ import android.util.Log;
  * Created by Paul Kuznecov on 01.11.2016.
  */
 
-public class NotificationRegistryService extends NotificationListenerService {
+public class NotificationRegisterService extends NotificationListenerService {
 
     @Override
     public void onCreate() {
