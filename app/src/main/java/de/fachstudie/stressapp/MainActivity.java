@@ -307,9 +307,7 @@ public class MainActivity extends AppCompatActivity {
         if (bundle != null && bundle.getString("message") != null && tetrisView != null) {
             String message = bundle.getString("message");
             Log.d("message", message);
-            if (message.equals("survey answered")) {
-                tetrisView.increaseGoldBlockCount(3);
-            } else if (message.equals("stresslevel defined")) {
+            if (message.equals("stresslevel defined")) {
                 tetrisView.increaseGoldBlockCount(1);
             }
         }
@@ -331,8 +329,13 @@ public class MainActivity extends AppCompatActivity {
         sendSurveyResults();
         sendStressLevels();
         if (!isNLServiceRunning()) {
+            if (userInfoDialog == null) {
+                userInfoDialog = DialogUtils.getUserInfoDialog(this);
+            }
             userInfoDialog.show();
-            tetrisView.pauseGame();
+            if (tetrisView != null) {
+                tetrisView.pauseGame();
+            }
         } else if (!receiversCreated) {
             createReceivers();
         } else if (!gameOverDialog.isShowing() && !tetrisView.isPause()) {

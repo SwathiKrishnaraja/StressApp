@@ -1,6 +1,8 @@
 package de.fachstudie.stressapp;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -17,11 +19,14 @@ import java.util.regex.Pattern;
 import de.fachstudie.stressapp.db.DatabaseService;
 import de.fachstudie.stressapp.networking.StressAppClient;
 
+import static de.fachstudie.stressapp.tetris.constants.StringConstants.GOLD_BLOCKS;
+
 public class SurveyActivity extends AppCompatActivity {
 
     private static final int SURVEY_REQUEST = 1337;
     private DatabaseService dbService;
     private StressAppClient client;
+    private SharedPreferences prefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +36,8 @@ public class SurveyActivity extends AppCompatActivity {
 
         client = new StressAppClient(this);
         dbService = DatabaseService.getInstance(SurveyActivity.this);
+        prefs = getSharedPreferences("de.fachstudie.stressapp.preferences",
+                Context.MODE_PRIVATE);
 
         Intent i_survey = new Intent(SurveyActivity.this, com.androidadvance.androidsurvey.SurveyActivity.class);
         //you have to pass as an extra the json string.
@@ -52,9 +59,9 @@ public class SurveyActivity extends AppCompatActivity {
                         boolean successful = message.getData().getBoolean("successful");
                         dbService.saveSurveyAnswers(answers, successful);
 
-                        Intent intent = new Intent(SurveyActivity.this, MainActivity.class);
-                        intent.putExtra("message", "survey answered");
-                        startActivity(intent);
+                        int gold_blocks = prefs.getInt(GOLD_BLOCKS, 0) + 3;
+                        prefs.edit().putInt(GOLD_BLOCKS, gold_blocks).commit();
+                        System.exit(0);
                         return false;
                     }
                 });

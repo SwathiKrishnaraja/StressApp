@@ -26,8 +26,9 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
     private boolean dropping = false;
     private long lastUpdate = -1;
     private long lastTouchDown = -1;
-    private int gravityTime = 20;
-
+    private int gravityTime = 5;
+    private int canvasWidth = 0 ;
+    private int canvasHeight = 0;
     private Handler handler;
 
     public TetrisView(Context context, AttributeSet attrs) {
@@ -95,8 +96,11 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
 
     public void draw(Canvas canvas) {
         if (canvas != null) {
-            model.setPaddings(canvas);
-            model.setTextSize(canvas);
+            this.canvasHeight = canvas.getHeight();
+            this.canvasWidth = canvas.getWidth();
+            this.model.setPaddings(canvas);
+            this.model.setTextSize(canvas);
+
             if (this.model.isDropping()) {
                 if (System.currentTimeMillis() - lastUpdate > 70 && lastUpdate != 0) {
                     dropping = this.model.gravityStep();
@@ -143,7 +147,7 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
         if (model.isBlockVisible()) {
             gravityTime = (int) (GRAVITY_TIME - 6 * (this.model.getStressLevel()));
         } else {
-            gravityTime = 20;
+            gravityTime = 5;
         }
     }
 
@@ -210,8 +214,11 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     private boolean isInRange(float x, float y) {
-        if ((x > 15 && x < 100) && (y > 650 && y < 780)) {
-            return true;
+        if (canvasHeight > 0 && canvasWidth > 0) {
+            if ((x > (canvasWidth * 0.0208) && x < (canvasWidth * 0.139)) &&
+                    (y > (canvasHeight * 0.572) && y < (canvasHeight * 0.687))) {
+                return true;
+            }
         }
         return false;
     }

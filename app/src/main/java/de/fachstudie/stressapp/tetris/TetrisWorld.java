@@ -10,7 +10,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -325,7 +324,7 @@ public class TetrisWorld {
         return result;
     }
 
-    private void freezeCurrentBlock() {
+    private synchronized void freezeCurrentBlock() {
         highlighting = true;
         lastFrozenTime = System.currentTimeMillis();
         for (int j = currentBlock.getY(); j < currentBlock.getY() + currentBlock.getHeight(); j++) {
@@ -367,13 +366,6 @@ public class TetrisWorld {
     public void drawState(Canvas canvas, Paint p) {
         int canvasWidth = canvas.getWidth();
         int canvasHeight = canvas.getHeight();
-
-        Log.d("canvasHeigth", canvasHeight + " ");
-        Log.d("canvasWidth", canvasWidth + " ");
-
-        Log.d("PADDING", PADDING + "");
-        Log.d("TOP_PADDING", TOP_PADDING + "");
-        Log.d("PREVIEW_PADDING", PREVIEW_PADDING + "");
 
         gridSize = (canvasWidth - 2 * PADDING) / WIDTH;
 
@@ -972,8 +964,8 @@ public class TetrisWorld {
     }
 
     public void increaseGoldBlockCount(int count) {
-        int golden_blocks = prefs.getInt(GOLD_BLOCKS, 0);
-        this.goldBlockCount = golden_blocks + count;
+        int gold_blocks = prefs.getInt(GOLD_BLOCKS, 0);
+        this.goldBlockCount = gold_blocks + count;
         prefs.edit().putInt(GOLD_BLOCKS, goldBlockCount).commit();
     }
 
