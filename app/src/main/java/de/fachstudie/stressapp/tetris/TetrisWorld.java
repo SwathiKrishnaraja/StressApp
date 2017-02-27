@@ -75,7 +75,7 @@ public class TetrisWorld {
     private DatabaseService dbService;
     private Context context;
     private StressAppClient client;
-    private String scoreString = "0000";
+    private String scoreString = "00000";
     private long lastScoreChange = -1;
     private long lastFrozenTime = -1;
     private long lastShowCombo = -1;
@@ -262,7 +262,7 @@ public class TetrisWorld {
         this.score += 10 * notificationBlocks;
         if (oldScore != this.score) {
             scoreString = String.valueOf(score);
-            while (scoreString.length() < 4) {
+            while (scoreString.length() < 5) {
                 scoreString = "0" + scoreString;
             }
             lastScoreChange = System.currentTimeMillis();
@@ -380,7 +380,7 @@ public class TetrisWorld {
         p.setStrokeWidth(2);
 
         boolean notZero = false;
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 5; i++) {
             if (scoreString.charAt(i) != '0') {
                 notZero = true;
             }
@@ -404,13 +404,13 @@ public class TetrisWorld {
                 p.setColor(Color.parseColor("#D3D3D3"));
             }
             canvas.drawRect(
-                    PADDING + (WIDTH * gridSize / 2) + i * (gridSize + 5) - 2 * gridSize,
+                    PADDING + (WIDTH * gridSize / 2) + i * (gridSize + 5) - 2.5f * gridSize,
                     TOP_PADDING - 5 - gridSize,
-                    PADDING + (WIDTH * gridSize / 2) + i * (gridSize + 5) - gridSize,
+                    PADDING + (WIDTH * gridSize / 2) + i * (gridSize + 5) - 1.5f * gridSize,
                     TOP_PADDING - 5, p);
             p.setColor(Color.parseColor("white"));
             canvas.drawText(scoreString.charAt(i) + "",
-                    PADDING + (WIDTH * gridSize / 2) + i * (gridSize + 5) - 2 * gridSize + 0.25f *
+                    PADDING + (WIDTH * gridSize / 2) + i * (gridSize + 5) - 2.5f * gridSize + 0.25f *
                             gridSize,
                     TOP_PADDING - 10, p);
         }
@@ -875,7 +875,7 @@ public class TetrisWorld {
         occupancy = new int[FULL_HEIGHT][WIDTH];
         bitmaps = new Bitmap[FULL_HEIGHT][WIDTH];
         score = 0;
-        scoreString = "0000";
+        scoreString = "00000";
         this.stressLevel = 0;
     }
 
