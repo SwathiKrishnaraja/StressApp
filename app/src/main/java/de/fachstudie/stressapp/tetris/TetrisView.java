@@ -119,9 +119,6 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
             if (canvas != null) {
                 canvas.drawColor(Color.WHITE);
                 model.drawState(canvas, p);
-
-                if (model.getCurrentBlockIcon() != null)
-                    model.drawIcon(canvas, p);
             }
 
             if (this.model.isGameOver()) {

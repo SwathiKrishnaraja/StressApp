@@ -135,7 +135,6 @@ public class TetrisWorld {
                 currentBlock.increaseDroppedRows();
             }
             return true;
-
         } else if (currentBlockGolden && currentBlock.getY() + currentBlock.getHeight() <
                 FULL_HEIGHT) {
             currentBlock.stepDown();
@@ -501,6 +500,20 @@ public class TetrisWorld {
                                 (j - 2) * gridSize + TOP_PADDING + 1 + (gridSize / 8), p);
                     }
                 }
+                if (currentBlockIcon != null && j < currentBlock.getY() + currentBlock.getHeight() && i < currentBlock
+                        .getX() + currentBlock.getWidth
+                        ()) {
+                    Bitmap bitmap = getResizedBitmap(this.currentBlockIcon, iconSize, iconSize);
+                    int yOffset = j - currentBlock.getY();
+                    int xOffset = i - currentBlock.getX();
+                    if (indexExists(yOffset, currentBlock.getShape()) && indexExists(xOffset,
+                            currentBlock.getShape()[yOffset]) &&
+                            currentBlock
+                                    .getShape()[yOffset][xOffset] == 1) {
+                        canvas.drawBitmap(bitmap, i * gridSize + PADDING + 1 + (gridSize / 8),
+                                (j - 2) * gridSize + TOP_PADDING + 1 + (gridSize / 8), p);
+                    }
+                }
             }
         }
 
@@ -699,7 +712,8 @@ public class TetrisWorld {
         p.setColor(Color.parseColor("white"));
         // Draw number of notifications
         canvas.drawText("" + notificationCount,
-                PADDING + WIDTH * gridSize + PREVIEW_PADDING + ((PADDING - 2 * PREVIEW_PADDING) / 2),
+                PADDING + WIDTH * gridSize + PREVIEW_PADDING + ((PADDING - 2 * PREVIEW_PADDING) /
+                        2),
                 TOP_PADDING + PADDING - HEIGHT + 30 + ((PADDING - 20) / 2), p);
 
         p.setColor(Color.parseColor("black"));
@@ -707,9 +721,9 @@ public class TetrisWorld {
 
         // Draw number of notifications
         canvas.drawText("" + notificationCount,
-                PADDING + WIDTH * gridSize + PREVIEW_PADDING + ((PADDING - 2 * PREVIEW_PADDING) / 2),
+                PADDING + WIDTH * gridSize + PREVIEW_PADDING + ((PADDING - 2 * PREVIEW_PADDING) /
+                        2),
                 TOP_PADDING + PADDING - HEIGHT + 30 + ((PADDING - 20) / 2), p);
-
 
         p.setTextAlign(Paint.Align.LEFT);
         p.setStrokeWidth(sw);
