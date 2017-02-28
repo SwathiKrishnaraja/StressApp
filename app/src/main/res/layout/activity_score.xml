@@ -4,7 +4,7 @@
     android:id="@+id/activity_score"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    tools:context="de.fachstudie.stressapp.ScoreActivity">
+    tools:context="org.hcilab.projects.stressblocks.ScoreActivity">
 
     <ListView
         android:id="@android:id/list"
