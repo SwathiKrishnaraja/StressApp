@@ -11,10 +11,6 @@ import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import org.hcilab.projects.stressblocks.R;
 import org.hcilab.projects.stressblocks.db.DatabaseService;
 import org.hcilab.projects.stressblocks.model.StressNotification;
@@ -22,6 +18,10 @@ import org.hcilab.projects.stressblocks.networking.StressAppClient;
 import org.hcilab.projects.stressblocks.tetris.constants.BlockColors;
 import org.hcilab.projects.stressblocks.tetris.utils.ArrayUtils;
 import org.hcilab.projects.stressblocks.tetris.utils.ColorUtils;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.hcilab.projects.stressblocks.tetris.Block.randomItem;
 import static org.hcilab.projects.stressblocks.tetris.constants.StringConstants.GOLD_BLOCKS;
@@ -981,6 +981,11 @@ public class TetrisWorld {
         int gold_blocks = prefs.getInt(GOLD_BLOCKS, 0);
         this.goldBlockCount = gold_blocks + count;
         prefs.edit().putInt(GOLD_BLOCKS, goldBlockCount).commit();
+    }
+
+    protected void updateGoldBlockCount() {
+        goldBlockCount = prefs.getInt(GOLD_BLOCKS, 0);
+
     }
 
     public void setPaddings(Canvas canvas) {

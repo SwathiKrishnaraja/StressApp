@@ -25,6 +25,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
+import org.hcilab.projects.stressblocks.db.DatabaseService;
+import org.hcilab.projects.stressblocks.model.StressLevel;
+import org.hcilab.projects.stressblocks.model.StressNotification;
+import org.hcilab.projects.stressblocks.model.SurveyResult;
+import org.hcilab.projects.stressblocks.networking.StressAppClient;
+import org.hcilab.projects.stressblocks.tetris.TetrisView;
+import org.hcilab.projects.stressblocks.tetris.utils.DialogUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -32,15 +39,6 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-
-import org.hcilab.projects.stressblocks.db.DatabaseService;
-import org.hcilab.projects.stressblocks.model.StressLevel;
-import org.hcilab.projects.stressblocks.model.StressNotification;
-import org.hcilab.projects.stressblocks.model.SurveyResult;
-import org.hcilab.projects.stressblocks.networking.StressAppClient;
-import org.hcilab.projects.stressblocks.tetris.TetrisView;
-import org.hcilab.projects.stressblocks.tetris.constants.StringConstants;
-import org.hcilab.projects.stressblocks.tetris.utils.DialogUtils;
 
 import static org.hcilab.projects.stressblocks.tetris.constants.StringConstants.GOLD_BLOCKS;
 import static org.hcilab.projects.stressblocks.tetris.constants.StringConstants.NOTIFICATION_TIMESTAMP;
@@ -67,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d("onCreate", " ");
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -228,7 +227,7 @@ public class MainActivity extends AppCompatActivity {
             exitBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    System.exit(0);
+                    exitDialog.dismiss();
                 }
             });
         }
@@ -309,15 +308,15 @@ public class MainActivity extends AppCompatActivity {
             Log.d("message", message);
             if (message.equals("stresslevel defined")) {
                 tetrisView.increaseGoldBlockCount(1);
+            }else if(message.equals("exit app")){
+                moveTaskToBack(true);
             }
         }
     }
 
     @Override
     public void onBackPressed() {
-        tetrisView.pauseGame();
-        exitDialog.setMessage(StringConstants.EXIT_MESSAGE);
-        exitDialog.show();
+        moveTaskToBack(true);
     }
 
     @Override

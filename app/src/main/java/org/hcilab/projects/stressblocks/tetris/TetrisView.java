@@ -193,6 +193,7 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
     public void resumeGame() {
         createNewThread();
         thread.setPause(false);
+        this.model.updateGoldBlockCount();
     }
 
     public boolean isPause() {

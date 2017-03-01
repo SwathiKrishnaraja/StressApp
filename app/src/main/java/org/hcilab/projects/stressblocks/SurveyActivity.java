@@ -9,15 +9,15 @@ import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 
+import org.hcilab.projects.stressblocks.db.DatabaseService;
+import org.hcilab.projects.stressblocks.networking.StressAppClient;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.hcilab.projects.stressblocks.db.DatabaseService;
-import org.hcilab.projects.stressblocks.networking.StressAppClient;
 
 import static org.hcilab.projects.stressblocks.tetris.constants.StringConstants.GOLD_BLOCKS;
 
@@ -61,7 +61,11 @@ public class SurveyActivity extends AppCompatActivity {
 
                         int gold_blocks = prefs.getInt(GOLD_BLOCKS, 0) + 3;
                         prefs.edit().putInt(GOLD_BLOCKS, gold_blocks).commit();
-                        System.exit(0);
+
+                        Intent i = new Intent(getApplicationContext(), MainActivity.class);
+                        i.putExtra("message", "exit app");
+                        startActivity(i);
+                        finish();
                         return false;
                     }
                 });
