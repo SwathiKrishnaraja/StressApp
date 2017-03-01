@@ -9,11 +9,12 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 
+import org.hcilab.projects.stressblocks.R;
+import org.hcilab.projects.stressblocks.RatingActivity;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-
-import org.hcilab.projects.stressblocks.RatingActivity;
 
 import static org.hcilab.projects.stressblocks.tetris.constants.StringConstants.NOTIFICATION_TIMESTAMP;
 
@@ -61,7 +62,7 @@ public class NotificationUtils {
     public static void createNotification(Context context){
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(context)
-                        .setSmallIcon(android.R.drawable.ic_menu_report_image)
+                        .setSmallIcon(R.mipmap.ic_launcher)
                         .setContentTitle("Are you feeling stressed?")
                         .setContentText("Please take a minute to answer our survey!");
         // Creates an explicit intent for an Activity in your app
