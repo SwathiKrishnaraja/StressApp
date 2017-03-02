@@ -170,7 +170,7 @@ public class TetrisWorld {
 
                 this.setBitmaps();
                 if (currentBlockIcon != null && !currentBlockGolden) {
-                    this.stressLevel += 5;
+                    this.stressLevel += 2;
                     if (stressLevel > 100) {
                         this.stressLevel = 100;
                     }
