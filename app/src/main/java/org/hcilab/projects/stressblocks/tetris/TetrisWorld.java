@@ -1011,4 +1011,16 @@ public class TetrisWorld {
             }
         }
     }
+
+    protected void initialStart() {
+        this.addItem(new Block(3, 0, 0, 0));
+        this.createNextItem();
+        this.notifications = dbService.getSpecificNotifications("false");
+        if (!notifications.isEmpty()) {
+            this.setNextNotificationBitmap();
+            this.notificationCount = notifications.size();
+            this.updateNotificationIsLoaded(loadedNotification);
+            this.setBitmaps();
+        }
+    }
 }

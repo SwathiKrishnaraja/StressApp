@@ -40,8 +40,7 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
         p.setColor(Color.GREEN);
 
         this.model = new TetrisWorld(context);
-        this.model.addItem(new Block(3, 0, 0, 0));
-        this.model.createNextItem();
+        this.model.initialStart();
     }
 
     @Override
