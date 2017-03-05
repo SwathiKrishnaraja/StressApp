@@ -23,7 +23,7 @@ public class StringConstants {
             " \n" +
             "This data will be securely sent to servers at the University of Stuttgart and stored only for the purpose of analysis and evaluation. No data will be linked to personal information and all data will be handled securely.\n" +
             " \n" +
-            "If you have questions or concerns, do not hesitate to contact test@test.de\n";
+            "If you have questions or concerns, do not hesitate to contact hcilab@gmail.com\n";
 
     public static final String ANDROID_SETTINGS_NOTIFICATION_LISTENER = "android.settings." +
             "ACTION_NOTIFICATION_LISTENER_SETTINGS";
