@@ -8,7 +8,7 @@ android {
     compileSdkVersion 25
     buildToolsVersion "25.0.0"
     defaultConfig {
-        applicationId "de.fachstudie.stressapp"
+        applicationId "org.hcilab.projects.stressblocks"
         minSdkVersion 22
         targetSdkVersion 25
         versionCode 1
