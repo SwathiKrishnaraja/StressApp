@@ -33,6 +33,8 @@
             </intent-filter>
         </service>
 
+        <service android:name=".ScreenStatusReceiverService"/>
+
         <activity
             android:name="com.androidadvance.androidsurvey.SurveyActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"

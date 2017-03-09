@@ -4,6 +4,7 @@ import android.app.ActivityManager;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.PendingIntent;
+import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -11,8 +12,10 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Message;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
@@ -49,7 +52,6 @@ import static org.hcilab.projects.stressblocks.tetris.utils.NotificationUtils.is
 public class MainActivity extends AppCompatActivity {
     public static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private NotificationReceiver notificationReceiver;
-    private LockScreenReceiver lockScreenReceiver;
     private IntentFilter filter;
     private IntentFilter filterLock;
     private TetrisView tetrisView;
@@ -102,6 +104,9 @@ public class MainActivity extends AppCompatActivity {
             createReceivers();
         }
 
+        Intent serviceIntent = new Intent(this, ScreenStatusReceiverService.class);
+        startService(serviceIntent);
+
         // get a Calendar object with current time
         Calendar cal = Calendar.getInstance();
         int currentHour = cal.get(Calendar.HOUR_OF_DAY);
@@ -142,14 +147,6 @@ public class MainActivity extends AppCompatActivity {
         filter = new IntentFilter();
         filter.addAction("de.fachstudie.stressapp.notification");
         registerReceiver(notificationReceiver, filter);
-
-        lockScreenReceiver = new LockScreenReceiver();
-        filterLock = new IntentFilter();
-        filterLock.addAction(Intent.ACTION_SCREEN_ON);
-        filterLock.addAction(Intent.ACTION_SCREEN_OFF);
-        filterLock.addAction(Intent.ACTION_USER_PRESENT);
-
-        registerReceiver(lockScreenReceiver, filterLock);
         receiversCreated = true;
     }
 
@@ -308,7 +305,7 @@ public class MainActivity extends AppCompatActivity {
             Log.d("message", message);
             if (message.equals("stresslevel defined")) {
                 tetrisView.increaseGoldBlockCount(1);
-            }else if(message.equals("exit app")){
+            } else if (message.equals("exit app")) {
                 moveTaskToBack(true);
             }
         }
@@ -350,10 +347,6 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
         if (notificationReceiver != null) {
             unregisterReceiver(notificationReceiver);
-        }
-
-        if (lockScreenReceiver != null) {
-            unregisterReceiver(lockScreenReceiver);
         }
     }
 
@@ -456,108 +449,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private class NotificationReceiver extends BroadcastReceiver {
-        DatabaseService dbService = null;
-
-        public NotificationReceiver() {
-            dbService = DatabaseService.getInstance(MainActivity.this);
-        }
-
         @Override
         public void onReceive(Context context, final Intent intent) {
             tetrisView.notificationPosted();
-            JSONObject event = new JSONObject();
-            try {
-                event.put("event", intent.getStringExtra("event"));
-                event.put("application", intent.getStringExtra("application"));
-                event.put("title_length", intent.getStringExtra("title_length"));
-                event.put("content_length", intent.getStringExtra("content").length());
-                String timestamp = dateFormat.format(new Date());
-                event.put("timestamp", timestamp);
-                event.put("emoticons", EmojiFrequency.getCommaSeparatedEmoticons(intent
-                        .getStringExtra("content")));
-            } catch (JSONException e) {
-            }
-            client.sendNotificationEvent(event, new Handler.Callback() {
-                @Override
-                public boolean handleMessage(Message message) {
-                    boolean sent = message.getData().getBoolean("sent");
-                    dbService.saveNotification(intent, sent);
-                    return false;
-                }
-            });
         }
     }
 
-    private class LockScreenReceiver extends BroadcastReceiver {
-        DatabaseService dbService = null;
-
-        public LockScreenReceiver() {
-            dbService = DatabaseService.getInstance(MainActivity.this);
-        }
-
-        @Override
-        public void onReceive(Context context, final Intent intent) {
-            if (intent != null && intent.getAction() != null) {
-                if (intent.getAction().equals(Intent.ACTION_SCREEN_ON)) {
-                    // Screen is on but not unlocked (if any locking mechanism present)
-                    Log.i("LockScreenReceiver", "Screen is on but not unlocked");
-                    JSONObject event = new JSONObject();
-                    try {
-                        event.put("event", "SCREEN_ON");
-                        String timestamp = dateFormat.format(new Date());
-                        event.put("timestamp", timestamp);
-                        event.put("application", "");
-                        event.put("title_length", "");
-                        event.put("content_length", 0);
-                        event.put("emoticons", "");
-                    } catch (JSONException e) {
-                    }
-                    sendNotificationEvent(event, "SCREEN_ON");
-
-                } else if (intent.getAction().equals(Intent.ACTION_SCREEN_OFF)) {
-                    // Screen is locked
-                    Log.i("LockScreenReceiver", "Screen is locked");
-                    JSONObject event = new JSONObject();
-                    try {
-                        event.put("event", "SCREEN_LOCK");
-                        String timestamp = dateFormat.format(new Date());
-                        event.put("timestamp", timestamp);
-                        event.put("application", "");
-                        event.put("title_length", "");
-                        event.put("content_length", 0);
-                        event.put("emoticons", "");
-                    } catch (JSONException e) {
-                    }
-                    sendNotificationEvent(event, "SCREEN_LOCK");
-
-                } else if (intent.getAction().equals(Intent.ACTION_USER_PRESENT)) {
-                    // Screen is unlocked
-                    Log.i("LockScreenReceiver", "Screen is unlocked");
-                    JSONObject event = new JSONObject();
-                    try {
-                        event.put("event", "SCREEN_UNLOCK");
-                        String timestamp = dateFormat.format(new Date());
-                        event.put("timestamp", timestamp);
-                        event.put("application", "");
-                        event.put("title_length", "");
-                        event.put("content_length", 0);
-                        event.put("emoticons", "");
-                    } catch (JSONException e) {
-                    }
-                    sendNotificationEvent(event, "SCREEN_UNLOCKED");
-                }
+    private void sendNotificationEvent(JSONObject event, final String screenEvent) {
+        client.sendNotificationEvent(event, new Handler.Callback() {
+            @Override
+            public boolean handleMessage(Message message) {
+                boolean sent = message.getData().getBoolean("sent");
+                dbService.saveScreenEvent(screenEvent, sent);
+                return false;
             }
-        }
-
-        private void sendNotificationEvent(JSONObject event, final String screenEvent) {
-            client.sendNotificationEvent(event, new Handler.Callback() {
-                @Override
-                public boolean handleMessage(Message message) {
-                    boolean sent = message.getData().getBoolean("sent");
-                    dbService.saveScreenEvent(screenEvent, sent);
-                    return false;
-                }
-            });
-        }
+        });
     }
 }
