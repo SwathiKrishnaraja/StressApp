@@ -12,11 +12,11 @@ import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import org.hcilab.projects.stressblocks.db.DatabaseService;
 import org.hcilab.projects.stressblocks.networking.StressAppClient;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import static org.hcilab.projects.stressblocks.tetris.constants.StringConstants.NOTIFICATION_TIMESTAMP;
 
@@ -89,6 +89,17 @@ public class RatingActivity extends AppCompatActivity {
             }
         });
 
+        final Button btnExitApp = (Button) findViewById(R.id.buttonExitApp);
+        btnExitApp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(getApplicationContext(), MainActivity.class);
+                i.putExtra("message", "exit app");
+                startActivity(i);
+                finish();
+            }
+        });
+
         final TextView seekBarValue = (TextView) findViewById(R.id.textViewStresslevel);
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -102,6 +113,10 @@ public class RatingActivity extends AppCompatActivity {
 
                 if (!btnBackToGame.isEnabled()) {
                     btnBackToGame.setEnabled(true);
+                }
+
+                if (!btnExitApp.isEnabled()) {
+                    btnExitApp.setEnabled(true);
                 }
                 seekBarValue.setText("StressLevel: " + String.valueOf(progress));
             }

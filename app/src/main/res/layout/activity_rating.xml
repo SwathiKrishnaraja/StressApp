@@ -33,11 +33,23 @@
         android:textStyle="normal|bold"
         android:textSize="16sp" />
 
+
+    <Button
+        android:text="@string/surveyButtonText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="140dp"
+        android:id="@+id/buttonStartSurvey"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentStart="true"
+        android:enabled="false" />
+
     <Button
         android:text="@string/buttonResumeText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="97dp"
+        android:layout_marginBottom="80dp"
         android:id="@+id/buttonResumeToGame"
         android:layout_alignParentBottom="true"
         android:layout_alignEnd="@+id/seekBar"
@@ -45,13 +57,13 @@
         android:enabled="false" />
 
     <Button
-        android:text="@string/surveyButtonText"
+        android:text="@string/buttonExitText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:id="@+id/buttonExitApp"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="30dp"
-        android:id="@+id/buttonStartSurvey"
-        android:layout_alignParentEnd="true"
+        android:layout_alignEnd="@+id/seekBar"
         android:layout_alignParentStart="true"
         android:enabled="false" />
 
