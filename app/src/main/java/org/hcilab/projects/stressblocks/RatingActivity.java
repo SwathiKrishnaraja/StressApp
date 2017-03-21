@@ -93,6 +93,14 @@ public class RatingActivity extends AppCompatActivity {
         btnExitApp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                client.sendStressLevel(seekBar.getProgress(), new Handler.Callback() {
+                    @Override
+                    public boolean handleMessage(Message message) {
+                        boolean sent = message.getData().getBoolean("sent");
+                        dbService.saveStressLevel(seekBar.getProgress(), sent);
+                        return false;
+                    }
+                });
                 Intent i = new Intent(getApplicationContext(), MainActivity.class);
                 i.putExtra("message", "exit app");
                 startActivity(i);
