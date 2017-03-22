@@ -23,7 +23,7 @@ import java.util.Date;
  * Created by Paul Kuznecov on 01.11.2016.
  */
 
-public class NotificationRegisterService extends NotificationListenerService {
+public class NLService extends NotificationListenerService {
 
     private NotificationReceiver notificationReceiver;
 

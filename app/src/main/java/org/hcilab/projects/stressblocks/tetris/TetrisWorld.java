@@ -504,14 +504,18 @@ public class TetrisWorld {
                         .getX() + currentBlock.getWidth
                         ()) {
                     Bitmap bitmap = getResizedBitmap(this.currentBlockIcon, iconSize, iconSize);
-                    int yOffset = j - currentBlock.getY();
-                    int xOffset = i - currentBlock.getX();
-                    if (indexExists(yOffset, currentBlock.getShape()) && indexExists(xOffset,
-                            currentBlock.getShape()[yOffset]) &&
-                            currentBlock
-                                    .getShape()[yOffset][xOffset] == 1) {
-                        canvas.drawBitmap(bitmap, i * gridSize + PADDING + 1 + (gridSize / 8),
-                                (j - 2) * gridSize + TOP_PADDING + 1 + (gridSize / 8), p);
+                    synchronized (this) {
+                        synchronized (currentBlock.getShape()) {
+                            int yOffset = j - currentBlock.getY();
+                            int xOffset = i - currentBlock.getX();
+                            if (indexExists(yOffset, currentBlock.getShape()) && indexExists(xOffset,
+                                    currentBlock.getShape()[yOffset]) &&
+                                    currentBlock
+                                            .getShape()[yOffset][xOffset] == 1) {
+                                canvas.drawBitmap(bitmap, i * gridSize + PADDING + 1 + (gridSize / 8),
+                                        (j - 2) * gridSize + TOP_PADDING + 1 + (gridSize / 8), p);
+                            }
+                        }
                     }
                 }
             }
