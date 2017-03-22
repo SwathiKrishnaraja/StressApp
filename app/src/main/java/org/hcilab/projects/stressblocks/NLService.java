@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Message;
 import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
@@ -28,6 +29,12 @@ public class NLService extends NotificationListenerService {
     private NotificationReceiver notificationReceiver;
 
     @Override
+    public IBinder onBind(Intent intent) {
+        Log.d("onBind", "" + intent.getAction());
+        return super.onBind(intent);
+    }
+
+    @Override
     public void onCreate() {
         super.onCreate();
         Log.d("notification service", " created");
@@ -39,7 +46,20 @@ public class NLService extends NotificationListenerService {
     }
 
     @Override
+    public boolean onUnbind(Intent intent) {
+        Log.d("onUnbind", " " + intent.getAction());
+        return super.onUnbind(intent);
+    }
+
+    @Override
+    public void onRebind(Intent intent) {
+        Log.d("onRebind", " ");
+        super.onRebind(intent);
+    }
+
+    @Override
     public void onDestroy() {
+        Log.d("onDestroyed", " ");
         super.onDestroy();
         unregisterReceiver(notificationReceiver);
     }
@@ -128,5 +148,4 @@ public class NLService extends NotificationListenerService {
             });
         }
     }
-
 }

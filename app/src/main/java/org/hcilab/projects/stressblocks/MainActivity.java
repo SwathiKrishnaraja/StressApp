@@ -4,7 +4,6 @@ import android.app.ActivityManager;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.PendingIntent;
-import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -12,10 +11,8 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.IBinder;
 import android.os.Message;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
@@ -40,7 +37,6 @@ import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import static org.hcilab.projects.stressblocks.tetris.constants.StringConstants.GOLD_BLOCKS;
@@ -155,7 +151,7 @@ public class MainActivity extends AppCompatActivity {
 
         for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer
                 .MAX_VALUE)) {
-            if (NotificationRegisterService.class.getName().equals(service.service.getClassName())) {
+            if (NLService.class.getName().equals(service.service.getClassName())) {
                 return true;
             }
         }
@@ -324,6 +320,7 @@ public class MainActivity extends AppCompatActivity {
         sendNotifications();
         sendSurveyResults();
         sendStressLevels();
+
         if (!isNLServiceRunning()) {
             if (userInfoDialog == null) {
                 userInfoDialog = DialogUtils.getUserInfoDialog(this);
