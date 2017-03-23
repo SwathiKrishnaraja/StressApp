@@ -63,9 +63,9 @@ public class ScoreAdapter extends ArrayAdapter<Score> {
         String localUsername = preferences.getString("username", "");
 
         if (localUserID.equals(score.getUserID()) && localUsername.equals(score.getUsername())) {
-            usernameView.setTextColor(context.getResources().getColor(R.color.lightblue));
-            scoreView.setTextColor(context.getResources().getColor(R.color.lightblue));
-            rankView.setTextColor(context.getResources().getColor(R.color.lightblue));
+            usernameView.setTextColor(context.getResources().getColor(R.color.orange));
+            scoreView.setTextColor(context.getResources().getColor(R.color.orange));
+            rankView.setTextColor(context.getResources().getColor(R.color.orange));
         }
     }
 }

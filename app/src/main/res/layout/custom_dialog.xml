@@ -53,7 +53,7 @@
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
         android:layout_marginBottom="5dp"
-        android:id="@+id/scoreboard_btn" />
+        android:id="@+id/btn_view_scoreboard" />
 
     <Button
         android:text="Exit"
@@ -64,7 +64,7 @@
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
         android:layout_marginBottom="5dp"
-        android:id="@+id/exit_btn"/>
+        android:id="@+id/btn_start_game"/>
 
     <Button
         android:text="Cancel"

@@ -82,7 +82,7 @@ public class RatingActivity extends AppCompatActivity {
                     }
                 });
 
-                Intent i = new Intent(getApplicationContext(), MainActivity.class);
+                Intent i = new Intent(getApplicationContext(), TetrisActivity.class);
                 i.putExtra("message", "stresslevel defined");
                 startActivity(i);
                 finish();
@@ -101,7 +101,7 @@ public class RatingActivity extends AppCompatActivity {
                         return false;
                     }
                 });
-                Intent i = new Intent(getApplicationContext(), MainActivity.class);
+                Intent i = new Intent(getApplicationContext(), TetrisActivity.class);
                 i.putExtra("message", "stresslevel defined and exit app");
                 startActivity(i);
                 finish();

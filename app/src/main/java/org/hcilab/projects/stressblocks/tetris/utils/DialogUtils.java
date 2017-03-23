@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.widget.TextView;
 
+import org.hcilab.projects.stressblocks.MainActivity;
 import org.hcilab.projects.stressblocks.tetris.constants.StringConstants;
 
 /**
@@ -20,7 +21,13 @@ public class DialogUtils {
         builder.setTitle(StringConstants.USER_INFORMATION);
         builder.setMessage(StringConstants.USER_INFORMATION_INFO);
 
-        builder.setPositiveButton("Go to Settings", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                Intent intent = new Intent(activity, MainActivity.class);
+                activity.startActivity(intent);
+                dialog.dismiss();
+            }
+        }).setNegativeButton("Go to Settings", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 Intent settingsIntent = new Intent(StringConstants.ANDROID_SETTINGS_NOTIFICATION_LISTENER);
                 settingsIntent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
@@ -28,6 +35,7 @@ public class DialogUtils {
                 dialog.dismiss();
             }
         }).setCancelable(false);
+
 
         AlertDialog dialog = builder.create();
         dialog.show();

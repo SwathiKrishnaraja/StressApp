@@ -15,16 +15,15 @@ import android.view.Gravity;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import org.hcilab.projects.stressblocks.model.Score;
+import org.hcilab.projects.stressblocks.networking.StressAppClient;
+import org.hcilab.projects.stressblocks.score.ScoreAdapter;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-
-import org.hcilab.projects.stressblocks.model.Score;
-import org.hcilab.projects.stressblocks.networking.StressAppClient;
-import org.hcilab.projects.stressblocks.score.ScoreAdapter;
 
 import static org.hcilab.projects.stressblocks.tetris.constants.StringConstants.NO_INTERNET_MESSAGE;
 import static org.hcilab.projects.stressblocks.tetris.constants.StringConstants.USER_SCORES;
@@ -33,6 +32,7 @@ public class ScoreActivity extends AppCompatActivity {
 
     private StressAppClient client;
     private SharedPreferences preferences;
+    private String predeccessorActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +41,8 @@ public class ScoreActivity extends AppCompatActivity {
         this.preferences = getSharedPreferences("de.fachstudie.stressapp" +
                 ".preferences", Context.MODE_PRIVATE);
         setContentView(R.layout.activity_score);
+
+        predeccessorActivity = this.getIntent().getStringExtra("activity");
 
         final ListView listView = (ListView) findViewById(android.R.id.list);
         client = new StressAppClient(this);
@@ -120,8 +122,18 @@ public class ScoreActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        Intent i = new Intent(getApplicationContext(), MainActivity.class);
-        startActivity(i);
+        if (predeccessorActivity != null) {
+            Intent intent = null;
+            if (predeccessorActivity.equals("main")) {
+                intent = new Intent(this, MainActivity.class);
+            } else if (predeccessorActivity.equals("tetris")) {
+                intent = new Intent(this, TetrisActivity.class);
+            }
+
+            if (intent != null) {
+                startActivity(intent);
+            }
+        }
         finish();
     }
 

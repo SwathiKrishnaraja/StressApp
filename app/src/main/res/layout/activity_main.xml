@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:bind="http://schemas.android.com/apk/res-auto">
-
     <android.support.design.widget.CoordinatorLayout xmlns:app="http://schemas.android.com/apk/res-auto"
-                                                     xmlns:tools="http://schemas.android.com/tools"
-                                                     android:layout_width="match_parent"
-                                                     android:layout_height="match_parent"
-                                                     android:fitsSystemWindows="true"
-                                                     tools:context="org.hcilab.projects.stressblocks.MainActivity">
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true"
+        tools:context="org.hcilab.projects.stressblocks.MainActivity">
 
         <android.support.design.widget.AppBarLayout
             android:layout_width="match_parent"
@@ -23,11 +22,43 @@
 
         </android.support.design.widget.AppBarLayout>
 
-        <org.hcilab.projects.stressblocks.tetris.TetrisView
-            android:id="@+id/tetrisview"
+        <Button
+            android:text="Play Tetris"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            />
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/white"
+            android:background="@color/blue"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:id="@+id/btn_start_game"
+            android:layout_marginTop="160dp"
+            android:layout_alignParentTop="true"/>
+
+        <Button
+            android:text="View Scoreboard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/white"
+            android:background="@color/orange"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:id="@+id/btn_view_scoreboard"
+            android:layout_marginTop="250dp"
+            android:layout_below="@+id/btn_start_game" />
+
+        <Button
+            android:text="Start Survey"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/white"
+            android:background="@color/green"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:id="@+id/btn_start_survey"
+            android:layout_marginTop="340dp"
+            android:layout_below="@+id/btn_view_scoreboard"/>
 
     </android.support.design.widget.CoordinatorLayout>
+
+
 </layout>

@@ -62,7 +62,7 @@ public class SurveyActivity extends AppCompatActivity {
                         int gold_blocks = prefs.getInt(GOLD_BLOCKS, 0) + 3;
                         prefs.edit().putInt(GOLD_BLOCKS, gold_blocks).commit();
 
-                        Intent i = new Intent(getApplicationContext(), MainActivity.class);
+                        Intent i = new Intent(getApplicationContext(), TetrisActivity.class);
                         i.putExtra("message", "exit app");
                         startActivity(i);
                         finish();
@@ -71,6 +71,9 @@ public class SurveyActivity extends AppCompatActivity {
                 });
             }
         }
+
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
         finish();
     }
 

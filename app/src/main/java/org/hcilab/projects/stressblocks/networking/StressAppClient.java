@@ -34,7 +34,7 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManagerFactory;
 
-import org.hcilab.projects.stressblocks.MainActivity;
+import org.hcilab.projects.stressblocks.TetrisActivity;
 import org.hcilab.projects.stressblocks.R;
 
 public class StressAppClient {
@@ -113,7 +113,7 @@ public class StressAppClient {
             body.put("deviceid", Settings.Secure.getString(context.getContentResolver(),
                     Settings.Secure.ANDROID_ID));
             body.put("answers", answers);
-            body.put("timestamp", MainActivity.dateFormat.format(new Date()));
+            body.put("timestamp", TetrisActivity.dateFormat.format(new Date()));
         } catch (JSONException e) {
         }
         String data = "data=" + body.toString();
@@ -127,7 +127,7 @@ public class StressAppClient {
             data.put("deviceid", Settings.Secure.getString(context.getContentResolver(),
                     Settings.Secure.ANDROID_ID))
                     .put("value", value)
-                    .put("timestamp", MainActivity.dateFormat.format(new Date()));
+                    .put("timestamp", TetrisActivity.dateFormat.format(new Date()));
         } catch (JSONException e) {
         }
         String result = "data=" + data.toString();
@@ -142,7 +142,7 @@ public class StressAppClient {
                     Settings.Secure.ANDROID_ID))
                     .put("value", value)
                     .put("username", username)
-                    .put("timestamp", MainActivity.dateFormat.format(new Date()));
+                    .put("timestamp", TetrisActivity.dateFormat.format(new Date()));
         } catch (JSONException e) {
         }
         String result = "data=" + data.toString();

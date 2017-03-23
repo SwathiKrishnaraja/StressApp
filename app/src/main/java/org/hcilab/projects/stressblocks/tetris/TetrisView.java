@@ -29,11 +29,13 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
     private int gravityTime = 1;
     private int canvasWidth = 0 ;
     private int canvasHeight = 0;
+    private int thresholdX = 50;
+    private int thresholdY = 60;
     private Handler handler;
 
     public TetrisView(Context context, AttributeSet attrs) {
         super(context, attrs);
-
+        setZOrderOnTop(false);
         getHolder().addCallback(this);
         thread = new TetrisViewThread(this, getHolder());
         p = new Paint();
@@ -72,18 +74,18 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
         } else if (event.getAction() == MotionEvent.ACTION_MOVE &&
                 !isInRange(event.getX(), event.getY())) {
 
-            if (lastTouchX - event.getX() > 60 && lastTouchX != -1 && !dropping) {
+            if (lastTouchX - event.getX() > thresholdX && lastTouchX != -1 && !dropping) {
                 this.model.moveLeft();
                 lastTouchX = event.getX();
                 lastTouchY = event.getY();
                 swiping = true;
-            } else if (event.getX() - lastTouchX > 60 && lastTouchX != -1 && !dropping) {
+            } else if (event.getX() - lastTouchX > thresholdX && lastTouchX != -1 && !dropping) {
                 this.model.moveRight();
                 lastTouchX = event.getX();
                 lastTouchY = event.getY();
                 swiping = true;
             }
-            if (event.getY() - lastTouchY > 60 && !dropping) {
+            if (event.getY() - lastTouchY > thresholdY && !dropping) {
                 dropping = true;
                 this.model.drop();
                 lastTouchY = 0;
@@ -95,6 +97,7 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
 
     public void draw(Canvas canvas) {
         if (canvas != null) {
+            this.setThresholdX();
             this.canvasHeight = canvas.getHeight();
             this.canvasWidth = canvas.getWidth();
             this.model.setPaddings(canvas);
@@ -208,6 +211,12 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
 
     public void notificationPosted() {
         model.notificationPosted();
+    }
+
+    private void setThresholdX(){
+        if(canvasWidth > 0){
+            thresholdX = (int) (canvasWidth * 0.044);
+        }
     }
 
     private boolean isInRange(float x, float y) {
