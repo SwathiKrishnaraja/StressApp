@@ -301,6 +301,9 @@ public class MainActivity extends AppCompatActivity {
             Log.d("message", message);
             if (message.equals("stresslevel defined")) {
                 tetrisView.increaseGoldBlockCount(1);
+            }else if (message.equals("stresslevel defined and exit app")) {
+                tetrisView.increaseGoldBlockCount(1);
+                moveTaskToBack(true);
             } else if (message.equals("exit app")) {
                 moveTaskToBack(true);
             }

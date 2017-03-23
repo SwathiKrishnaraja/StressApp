@@ -102,7 +102,7 @@ public class RatingActivity extends AppCompatActivity {
                     }
                 });
                 Intent i = new Intent(getApplicationContext(), MainActivity.class);
-                i.putExtra("message", "exit app");
+                i.putExtra("message", "stresslevel defined and exit app");
                 startActivity(i);
                 finish();
             }
