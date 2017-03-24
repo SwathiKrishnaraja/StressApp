@@ -38,14 +38,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        final Button btnStartSurvey = (Button) findViewById(R.id.btn_start_survey);
-        btnStartSurvey.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent i = new Intent(getApplicationContext(), SurveyActivity.class);
-                startActivity(i);
-                finish();
-            }
-        });
+        final Button btnRateStressLevel = (Button) findViewById(R.id.btn_rate_stress_level);
+        btnRateStressLevel.setVisibility(View.GONE);
+
     }
 }

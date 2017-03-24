@@ -64,7 +64,7 @@ public class NotificationUtils {
                 new NotificationCompat.Builder(context)
                         .setSmallIcon(R.mipmap.ic_launcher)
                         .setContentTitle("Are you feeling stressed?")
-                        .setContentText("Please take a minute to answer our survey!");
+                        .setContentText("Please take few seconds to rate your stress level and gain extra blocks!");
         // Creates an explicit intent for an Activity in your app
         Intent resultIntent = new Intent(context, RatingActivity.class);
 

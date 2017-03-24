@@ -10,72 +10,71 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="org.hcilab.projects.stressblocks.RatingActivity">
 
-    <SeekBar
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/seekBar"
-        android:max="100"
-        android:progress="50"
-        android:layout_marginTop="181dp"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true"
-        android:layout_toStartOf="@+id/textViewStresslevel"
-        android:layout_alignParentEnd="true" />
 
-    <TextView
-        android:text="@string/seekBarText"
-        android:layout_width="wrap_content"
+    <RadioGroup
+        android:id="@+id/radio_group_stress_level"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/textViewChooseValueText"
-        android:layout_marginTop="15dp"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true"
-        android:textStyle="normal|bold"
-        android:textSize="16sp" />
+        android:orientation="vertical">
 
+        <TextView
+            android:id="@+id/tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="What is your stress level?"
+            android:textColor="@android:color/black" />
+
+        <RadioButton
+            android:id="@+id/radio_not_at_all"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="very slightly or not at all" />
+
+        <RadioButton
+            android:id="@+id/radio_slightly"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="slightly" />
+
+        <RadioButton
+            android:id="@+id/radio_somewhat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="somewhat" />
+
+        <RadioButton
+            android:id="@+id/radio_moderately"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="moderately" />
+
+        <RadioButton
+            android:id="@+id/radio_extremely"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="extremely" />
+    </RadioGroup>
 
     <Button
-        android:text="@string/surveyButtonText"
+        android:id="@+id/buttonPlayTetris"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/radio_group_stress_level"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="140dp"
-        android:id="@+id/buttonStartSurvey"
-        android:layout_alignParentEnd="true"
         android:layout_alignParentStart="true"
-        android:enabled="false" />
+        android:layout_marginBottom="200dp"
+        android:enabled="false"
+        android:text="@string/buttonPlayTetris" />
 
     <Button
-        android:text="@string/buttonResumeText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="80dp"
-        android:id="@+id/buttonResumeToGame"
-        android:layout_alignParentBottom="true"
-        android:layout_alignEnd="@+id/seekBar"
-        android:layout_alignParentStart="true"
-        android:enabled="false" />
-
-    <Button
-        android:text="@string/buttonExitText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp"
         android:id="@+id/buttonExitApp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignEnd="@+id/seekBar"
-        android:layout_alignParentStart="true"
-        android:enabled="false" />
-
-    <TextView
-        android:text="@string/stresslevelText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/textViewStresslevel"
-        android:textAlignment="textEnd"
-        android:layout_marginTop="58dp"
-        android:layout_below="@+id/seekBar"
-        android:layout_centerHorizontal="true"
-        android:textStyle="normal|bold" />
+        android:layout_alignEnd="@+id/radio_group_stress_level"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="120dp"
+        android:enabled="false"
+        android:text="@string/buttonExitText" />
 
 </RelativeLayout>

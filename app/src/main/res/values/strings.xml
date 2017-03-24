@@ -3,7 +3,7 @@
     <string name="action_settings">Settings</string>
     <string name="seekBarText">Choose a value between 0-100 to express your stress level. Zero means you are not stressed at all and hundred means you are very stressed. You can resume to the game or fill out a survey to gain extra bonus blocks to maximize your highscore.</string>
     <string name="surveyButtonText">Fill out the survey to gain extra blocks</string>
-    <string name="buttonResumeText">Resume to game</string>
+    <string name="buttonPlayTetris">Play Tetris</string>
     <string name="buttonExitText">Exit Stress Blocks</string>
     <string name="stresslevelText">Stresslevel: 50</string>
 </resources>

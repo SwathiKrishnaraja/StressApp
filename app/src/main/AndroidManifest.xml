@@ -15,8 +15,7 @@
             android:name=".TetrisActivity"
             android:launchMode="singleInstance"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar"></activity>
 
         <service
             android:name=".NLService"
@@ -40,9 +39,12 @@
 
         <receiver android:name=".AlarmReceiver" />
 
-        <activity android:name=".RatingActivity" />
+        <activity
+            android:name=".RatingActivity"
+            android:screenOrientation="portrait" />
 
-        <activity android:name=".MainActivity"
+        <activity
+            android:name=".MainActivity"
             android:label="Stress Blocks"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">

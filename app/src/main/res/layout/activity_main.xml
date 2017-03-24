@@ -27,7 +27,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@android:color/white"
-            android:background="@color/blue"
+            android:background="@color/green"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:id="@+id/btn_start_game"
@@ -47,14 +47,14 @@
             android:layout_below="@+id/btn_start_game" />
 
         <Button
-            android:text="Start Survey"
+            android:text="Rate Your Stress Level"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@android:color/white"
-            android:background="@color/green"
+            android:background="@color/blue"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
-            android:id="@+id/btn_start_survey"
+            android:id="@+id/btn_rate_stress_level"
             android:layout_marginTop="340dp"
             android:layout_below="@+id/btn_view_scoreboard"/>
 

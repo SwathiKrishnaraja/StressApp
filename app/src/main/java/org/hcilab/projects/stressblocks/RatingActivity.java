@@ -9,8 +9,8 @@ import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
-import android.widget.SeekBar;
-import android.widget.TextView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 
 import org.hcilab.projects.stressblocks.db.DatabaseService;
 import org.hcilab.projects.stressblocks.networking.StressAppClient;
@@ -45,39 +45,26 @@ public class RatingActivity extends AppCompatActivity {
         preferences.edit().putString(NOTIFICATION_TIMESTAMP, timestamp).commit();
 
         setContentView(R.layout.activity_rating);
-        final SeekBar seekBar = (SeekBar) findViewById(R.id.seekBar);
 
         client = new StressAppClient(this);
         dbService = DatabaseService.getInstance(this);
 
-        final Button btnSurvey = (Button) findViewById(R.id.buttonStartSurvey);
-        btnSurvey.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                client.sendStressLevel(seekBar.getProgress(), new Handler.Callback() {
-                    @Override
-                    public boolean handleMessage(Message message) {
-                        boolean sent = message.getData().getBoolean("sent");
-                        dbService.saveStressLevel(seekBar.getProgress(), sent);
-                        return false;
-                    }
-                });
-                Intent i = new Intent(getApplicationContext(), SurveyActivity.class);
-                i.putExtra("message", "stresslevel defined");
-                startActivity(i);
-                finish();
-            }
-        });
+        final RadioGroup radioGroupStressLevel = (RadioGroup) findViewById(R.id.radio_group_stress_level);
 
-        final Button btnBackToGame = (Button) findViewById(R.id.buttonResumeToGame);
+
+        final Button btnBackToGame = (Button) findViewById(R.id.buttonPlayTetris);
         btnBackToGame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                client.sendStressLevel(seekBar.getProgress(), new Handler.Callback() {
+                RadioButton checkedRadioButton = (RadioButton) radioGroupStressLevel.
+                        findViewById(radioGroupStressLevel.getCheckedRadioButtonId());
+                final int scale = getScale(checkedRadioButton.getText().toString());
+
+                client.sendStressLevel(scale, new Handler.Callback() {
                     @Override
                     public boolean handleMessage(Message message) {
                         boolean sent = message.getData().getBoolean("sent");
-                        dbService.saveStressLevel(seekBar.getProgress(), sent);
+                        dbService.saveStressLevel(scale, sent);
                         return false;
                     }
                 });
@@ -93,14 +80,20 @@ public class RatingActivity extends AppCompatActivity {
         btnExitApp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                client.sendStressLevel(seekBar.getProgress(), new Handler.Callback() {
+
+                RadioButton checkedRadioButton = (RadioButton) radioGroupStressLevel.
+                        findViewById(radioGroupStressLevel.getCheckedRadioButtonId());
+                final int scale = getScale(checkedRadioButton.getText().toString());
+
+                client.sendStressLevel(scale, new Handler.Callback() {
                     @Override
                     public boolean handleMessage(Message message) {
                         boolean sent = message.getData().getBoolean("sent");
-                        dbService.saveStressLevel(seekBar.getProgress(), sent);
+                        dbService.saveStressLevel(scale, sent);
                         return false;
                     }
                 });
+
                 Intent i = new Intent(getApplicationContext(), TetrisActivity.class);
                 i.putExtra("message", "stresslevel defined and exit app");
                 startActivity(i);
@@ -108,36 +101,45 @@ public class RatingActivity extends AppCompatActivity {
             }
         });
 
-        final TextView seekBarValue = (TextView) findViewById(R.id.textViewStresslevel);
 
-        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        radioGroupStressLevel.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                RadioButton checkedRadioButton = (RadioButton) group.findViewById(checkedId);
+                boolean isChecked = checkedRadioButton.isChecked();
 
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress,
-                                          boolean fromUser) {
-                if (!btnSurvey.isEnabled()) {
-                    btnSurvey.setEnabled(true);
+                if (isChecked) {
+                    if (!btnBackToGame.isEnabled()) {
+                        btnBackToGame.setEnabled(true);
+                    }
+
+                    if (!btnExitApp.isEnabled()) {
+                        btnExitApp.setEnabled(true);
+                    }
                 }
-
-                if (!btnBackToGame.isEnabled()) {
-                    btnBackToGame.setEnabled(true);
-                }
-
-                if (!btnExitApp.isEnabled()) {
-                    btnExitApp.setEnabled(true);
-                }
-                seekBarValue.setText("StressLevel: " + String.valueOf(progress));
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
             }
         });
 
+    }
 
+    private int getScale(String option) {
+        int scale = 0;
+        switch (option) {
+            case "very slightly or not at all":
+                scale = 1;
+                break;
+            case "slightly":
+                scale = 2;
+                break;
+            case "somewhat":
+                scale = 3;
+                break;
+            case "moderately":
+                scale = 4;
+                break;
+            case "extremely":
+                scale = 5;
+                break;
+        }
+        return scale;
     }
 }
