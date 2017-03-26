@@ -119,21 +119,22 @@ public class ScoreActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        Log.d("intent", "" + this.getIntent().getStringExtra("activity"));
         Intent predecessorIntent = this.getIntent();
+        Intent nextActivity = null;
+
         if (predecessorIntent != null && predecessorIntent.getStringExtra("activity") != null) {
             String predecessorActivity = predecessorIntent.getStringExtra("activity");
-            Intent nextActivity;
-            
+
             if (predecessorActivity.equals("main")) {
                 nextActivity = new Intent(this, MainActivity.class);
-            } else {
-                nextActivity = new Intent(this, TetrisActivity.class);
             }
+        }else {
+            nextActivity = new Intent(this, TetrisActivity.class);
+        }
 
-            if (nextActivity != null) {
-                startActivity(nextActivity);
-            }
+        if (nextActivity != null) {
+            Log.d("next", nextActivity.getAction() + " ");
+            startActivity(nextActivity);
         }
         finish();
     }
