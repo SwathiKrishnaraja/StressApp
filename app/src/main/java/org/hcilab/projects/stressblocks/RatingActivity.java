@@ -118,7 +118,6 @@ public class RatingActivity extends AppCompatActivity {
                 }
             }
         });
-
     }
 
     private int getScale(String option) {

@@ -32,7 +32,6 @@ public class ScoreActivity extends AppCompatActivity {
 
     private StressAppClient client;
     private SharedPreferences preferences;
-    private String predeccessorActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,8 +40,6 @@ public class ScoreActivity extends AppCompatActivity {
         this.preferences = getSharedPreferences("de.fachstudie.stressapp" +
                 ".preferences", Context.MODE_PRIVATE);
         setContentView(R.layout.activity_score);
-
-        predeccessorActivity = this.getIntent().getStringExtra("activity");
 
         final ListView listView = (ListView) findViewById(android.R.id.list);
         client = new StressAppClient(this);
@@ -122,16 +119,20 @@ public class ScoreActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (predeccessorActivity != null) {
-            Intent intent = null;
-            if (predeccessorActivity.equals("main")) {
-                intent = new Intent(this, MainActivity.class);
-            } else if (predeccessorActivity.equals("tetris")) {
-                intent = new Intent(this, TetrisActivity.class);
+        Log.d("intent", "" + this.getIntent().getStringExtra("activity"));
+        Intent predecessorIntent = this.getIntent();
+        if (predecessorIntent != null && predecessorIntent.getStringExtra("activity") != null) {
+            String predecessorActivity = predecessorIntent.getStringExtra("activity");
+            Intent nextActivity;
+            
+            if (predecessorActivity.equals("main")) {
+                nextActivity = new Intent(this, MainActivity.class);
+            } else {
+                nextActivity = new Intent(this, TetrisActivity.class);
             }
 
-            if (intent != null) {
-                startActivity(intent);
+            if (nextActivity != null) {
+                startActivity(nextActivity);
             }
         }
         finish();

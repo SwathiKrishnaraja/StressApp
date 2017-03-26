@@ -207,7 +207,6 @@ public class TetrisActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View view) {
                     Intent score_activity = new Intent(TetrisActivity.this, ScoreActivity.class);
-                    score_activity.putExtra("activity", "tetris");
                     startActivity(score_activity);
                     usernameLayout.setVisibility(View.GONE);
                 }
