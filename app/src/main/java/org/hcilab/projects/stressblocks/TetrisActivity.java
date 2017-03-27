@@ -38,12 +38,15 @@ import org.json.JSONObject;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Random;
 
 import static org.hcilab.projects.stressblocks.tetris.constants.StringConstants.GOLD_BLOCKS;
-import static org.hcilab.projects.stressblocks.tetris.constants.StringConstants.NOTIFICATION_TIMESTAMP;
+import static org.hcilab.projects.stressblocks.tetris.constants.StringConstants
+        .NOTIFICATION_TIMESTAMP;
 import static org.hcilab.projects.stressblocks.tetris.constants.StringConstants.USER_SCORES;
 import static org.hcilab.projects.stressblocks.tetris.utils.NotificationUtils.createNotification;
-import static org.hcilab.projects.stressblocks.tetris.utils.NotificationUtils.isLastNotficationLongAgo;
+import static org.hcilab.projects.stressblocks.tetris.utils.NotificationUtils
+        .isLastNotficationLongAgo;
 
 public class TetrisActivity extends AppCompatActivity {
     public static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -103,24 +106,27 @@ public class TetrisActivity extends AppCompatActivity {
         Intent serviceIntent = new Intent(this, ScreenStatusReceiverService.class);
         startService(serviceIntent);
 
-        // get a Calendar object with current time
+        Random r = new Random();
+        int hourOffset = r.nextInt(2);
+        int minuteOffset = r.nextInt(60);
         Calendar cal = Calendar.getInstance();
         int currentHour = cal.get(Calendar.HOUR_OF_DAY);
-        if (currentHour < 11) {
-            cal.set(Calendar.HOUR_OF_DAY, 11);
-            cal.set(Calendar.MINUTE, 0);
-        } else if (currentHour < 14) {
-            cal.set(Calendar.HOUR_OF_DAY, 14);
-            cal.set(Calendar.MINUTE, 0);
-        } else if (currentHour < 17) {
-            cal.set(Calendar.HOUR_OF_DAY, 17);
-            cal.set(Calendar.MINUTE, 0);
-        } else if (currentHour < 20) {
-            cal.set(Calendar.HOUR_OF_DAY, 20);
-            cal.set(Calendar.MINUTE, 0);
+
+        if (currentHour < 10) {
+            cal.set(Calendar.HOUR_OF_DAY, 10 + hourOffset);
+            cal.set(Calendar.MINUTE, minuteOffset);
+        } else if (currentHour < 13) {
+            cal.set(Calendar.HOUR_OF_DAY, 13 + hourOffset);
+            cal.set(Calendar.MINUTE, minuteOffset);
+        } else if (currentHour < 16) {
+            cal.set(Calendar.HOUR_OF_DAY, 16 + hourOffset);
+            cal.set(Calendar.MINUTE, minuteOffset);
+        } else if (currentHour < 19) {
+            cal.set(Calendar.HOUR_OF_DAY, 19 + hourOffset);
+            cal.set(Calendar.MINUTE, minuteOffset);
         } else {
-            cal.set(Calendar.HOUR_OF_DAY, 11);
-            cal.set(Calendar.MINUTE, 0);
+            cal.set(Calendar.HOUR_OF_DAY, 10 + hourOffset);
+            cal.set(Calendar.MINUTE, minuteOffset);
             cal.add(Calendar.DAY_OF_YEAR, 1);
         }
 
@@ -279,7 +285,8 @@ public class TetrisActivity extends AppCompatActivity {
                 public void onFocusChange(View view, boolean hasFocus) {
                     if (!hasFocus) {
                         client.sendScore(getApplicationContext(), highScore,
-                                getApplicationContext().getSharedPreferences("de.fachstudie.stressapp.preferences",
+                                getApplicationContext().getSharedPreferences("de.fachstudie" +
+                                        ".stressapp.preferences",
                                         Context.MODE_PRIVATE).getString("username", ""));
                     }
                 }
@@ -301,7 +308,7 @@ public class TetrisActivity extends AppCompatActivity {
             Log.d("message", message);
             if (message.equals("stresslevel defined")) {
                 tetrisView.increaseGoldBlockCount(3);
-            }else if (message.equals("stresslevel defined and exit app")) {
+            } else if (message.equals("stresslevel defined and exit app")) {
                 tetrisView.increaseGoldBlockCount(3);
                 moveTaskToBack(true);
             } else if (message.equals("exit app")) {
@@ -376,7 +383,6 @@ public class TetrisActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-
     private void sendNotifications() {
         if (dbService != null && client != null) {
             List<StressNotification> results = dbService.getNotSentNotifications();
@@ -450,13 +456,6 @@ public class TetrisActivity extends AppCompatActivity {
         }
     }
 
-    private class NotificationReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, final Intent intent) {
-            tetrisView.notificationPosted();
-        }
-    }
-
     private void sendNotificationEvent(JSONObject event, final String screenEvent) {
         client.sendNotificationEvent(event, new Handler.Callback() {
             @Override
@@ -466,5 +465,12 @@ public class TetrisActivity extends AppCompatActivity {
                 return false;
             }
         });
+    }
+
+    private class NotificationReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, final Intent intent) {
+            tetrisView.notificationPosted();
+        }
     }
 }

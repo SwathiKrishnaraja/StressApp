@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import java.util.Calendar;
+import java.util.Random;
 
 import static org.hcilab.projects.stressblocks.tetris.utils.NotificationUtils.createNotification;
 
@@ -16,23 +17,27 @@ public class AlarmReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
 
         try {
+            Random r = new Random();
+            int hourOffset = r.nextInt(2);
+            int minuteOffset = r.nextInt(60);
             Calendar cal = Calendar.getInstance();
             int currentHour = cal.get(Calendar.HOUR_OF_DAY);
-            if (currentHour < 11) {
-                cal.set(Calendar.HOUR_OF_DAY, 11);
-                cal.set(Calendar.MINUTE, 0);
-            } else if (currentHour < 14) {
-                cal.set(Calendar.HOUR_OF_DAY, 14);
-                cal.set(Calendar.MINUTE, 0);
-            } else if (currentHour < 17) {
-                cal.set(Calendar.HOUR_OF_DAY, 17);
-                cal.set(Calendar.MINUTE, 0);
-            } else if (currentHour < 20) {
-                cal.set(Calendar.HOUR_OF_DAY, 20);
-                cal.set(Calendar.MINUTE, 0);
+
+            if (currentHour < 10) {
+                cal.set(Calendar.HOUR_OF_DAY, 10 + hourOffset);
+                cal.set(Calendar.MINUTE, minuteOffset);
+            } else if (currentHour < 13) {
+                cal.set(Calendar.HOUR_OF_DAY, 13 + hourOffset);
+                cal.set(Calendar.MINUTE, minuteOffset);
+            } else if (currentHour < 16) {
+                cal.set(Calendar.HOUR_OF_DAY, 16 + hourOffset);
+                cal.set(Calendar.MINUTE, minuteOffset);
+            } else if (currentHour < 19) {
+                cal.set(Calendar.HOUR_OF_DAY, 19 + hourOffset);
+                cal.set(Calendar.MINUTE, minuteOffset);
             } else {
-                cal.set(Calendar.HOUR_OF_DAY, 11);
-                cal.set(Calendar.MINUTE, 0);
+                cal.set(Calendar.HOUR_OF_DAY, 10 + hourOffset);
+                cal.set(Calendar.MINUTE, minuteOffset);
                 cal.add(Calendar.DAY_OF_YEAR, 1);
             }
 
