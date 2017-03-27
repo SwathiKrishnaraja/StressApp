@@ -133,7 +133,6 @@ public class ScoreActivity extends AppCompatActivity {
         }
 
         if (nextActivity != null) {
-            Log.d("next", nextActivity.getAction() + " ");
             startActivity(nextActivity);
         }
         finish();

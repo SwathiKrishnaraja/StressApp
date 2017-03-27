@@ -42,6 +42,7 @@
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
         android:layout_marginBottom="5dp"
+        android:visibility="gone"
         android:id="@+id/start_new_game_btn" />
 
     <Button
@@ -53,6 +54,7 @@
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
         android:layout_marginBottom="5dp"
+        android:visibility="gone"
         android:id="@+id/btn_view_scoreboard" />
 
     <Button
@@ -64,15 +66,17 @@
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
         android:layout_marginBottom="5dp"
+        android:visibility="gone"
         android:id="@+id/btn_start_game"/>
 
     <Button
-        android:text="Cancel"
+        android:text="Ok"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
         android:textColor="@android:color/white"
-        android:background="@color/blue"
-        android:id="@+id/cancel_btn"/>
+        android:background="@color/darkgray"
+        android:visibility="gone"
+        android:id="@+id/btn_ok"/>
 </LinearLayout>

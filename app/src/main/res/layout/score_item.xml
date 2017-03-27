@@ -15,7 +15,7 @@
         />
 
     <TextView
-        android:id="@+id/username"
+        android:id="@+id/text_view_username"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="3"

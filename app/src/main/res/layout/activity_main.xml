@@ -22,8 +22,46 @@
 
         </android.support.design.widget.AppBarLayout>
 
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="1dip"
+            android:layout_marginTop="130dp"
+            android:background="#BDBDBD" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="150dp"
+            android:orientation="vertical"
+            android:background="@drawable/border">
+            <TextView
+                android:id="@+id/text_view_username"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="USER:"
+                android:textSize="16dp"
+                android:textColor="@color/black"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="20dp"/>
+
+            <TextView
+                android:id="@+id/text_view_highscore"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="HIGHSCORE: 0"
+                android:textSize="16dp"
+                android:textColor="@color/black"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="20dp"/>
+        </LinearLayout>
+
         <Button
-            android:text="Play Tetris"
+            android:text="Play Block Puzzle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@android:color/white"
@@ -31,7 +69,7 @@
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:id="@+id/btn_start_game"
-            android:layout_marginTop="160dp"
+            android:layout_marginTop="280dp"
             android:layout_alignParentTop="true"/>
 
         <Button
@@ -43,7 +81,7 @@
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:id="@+id/btn_view_scoreboard"
-            android:layout_marginTop="250dp"
+            android:layout_marginTop="350dp"
             android:layout_below="@+id/btn_start_game" />
 
         <Button
@@ -55,8 +93,17 @@
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:id="@+id/btn_rate_stress_level"
-            android:layout_marginTop="340dp"
+            android:layout_marginTop="420dp"
             android:layout_below="@+id/btn_view_scoreboard"/>
+
+        <ImageView
+            android:id="@+id/send_icon"
+            android:layout_width="fill_parent"
+            android:layout_height="70dp"
+            android:layout_gravity="top"
+            android:padding="5dip"
+            android:layout_marginTop="60dp"
+            android:src="@mipmap/ic_launcher" />
 
     </android.support.design.widget.CoordinatorLayout>
 

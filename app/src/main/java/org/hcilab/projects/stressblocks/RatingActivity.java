@@ -29,7 +29,17 @@ public class RatingActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+        Intent predecessorIntent = this.getIntent();
 
+        if (predecessorIntent != null && predecessorIntent.getStringExtra("activity") != null) {
+            String predecessorActivity = predecessorIntent.getStringExtra("activity");
+
+            if (predecessorActivity.equals("main")) {
+                Intent nextActivity = new Intent(this, MainActivity.class);
+                startActivity(nextActivity);
+                finish();
+            }
+        }
     }
 
     @Override
@@ -39,10 +49,8 @@ public class RatingActivity extends AppCompatActivity {
 
         this.preferences = getSharedPreferences("de.fachstudie.stressapp" +
                 ".preferences", Context.MODE_PRIVATE);
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String timestamp = dateFormat.format(new Date());
-
-        preferences.edit().putString(NOTIFICATION_TIMESTAMP, timestamp).commit();
+        final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        final String timestamp = dateFormat.format(new Date());
 
         setContentView(R.layout.activity_rating);
 
@@ -69,6 +77,8 @@ public class RatingActivity extends AppCompatActivity {
                     }
                 });
 
+                preferences.edit().putString(NOTIFICATION_TIMESTAMP, timestamp).commit();
+
                 Intent i = new Intent(getApplicationContext(), TetrisActivity.class);
                 i.putExtra("message", "stresslevel defined");
                 startActivity(i);
@@ -93,6 +103,8 @@ public class RatingActivity extends AppCompatActivity {
                         return false;
                     }
                 });
+
+                preferences.edit().putString(NOTIFICATION_TIMESTAMP, timestamp).commit();
 
                 Intent i = new Intent(getApplicationContext(), TetrisActivity.class);
                 i.putExtra("message", "stresslevel defined and exit app");

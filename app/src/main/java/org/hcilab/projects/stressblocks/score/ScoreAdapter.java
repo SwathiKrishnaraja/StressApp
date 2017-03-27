@@ -13,7 +13,7 @@ import android.widget.TextView;
 import org.hcilab.projects.stressblocks.R;
 import org.hcilab.projects.stressblocks.model.Score;
 
-import static org.hcilab.projects.stressblocks.R.id.username;
+import static org.hcilab.projects.stressblocks.R.id.text_view_username;
 
 /**
  * Created by Paul Kuznecov on 24.01.2017.
@@ -40,7 +40,7 @@ public class ScoreAdapter extends ArrayAdapter<Score> {
 
         if (scores.length > 0) {
             View rowView = inflater.inflate(R.layout.score_item, parent, false);
-            TextView usernameView = (TextView) rowView.findViewById(username);
+            TextView usernameView = (TextView) rowView.findViewById(text_view_username);
             TextView scoreView = (TextView) rowView.findViewById(R.id.score);
             TextView rankView = (TextView) rowView.findViewById(R.id.rank);
 

@@ -52,7 +52,6 @@ public class TetrisActivity extends AppCompatActivity {
     public static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private NotificationReceiver notificationReceiver;
     private IntentFilter filter;
-    private IntentFilter filterLock;
     private TetrisView tetrisView;
     private AlertDialog userInfoDialog;
     private AlertDialog exitDialog;
@@ -175,6 +174,16 @@ public class TetrisActivity extends AppCompatActivity {
                 gameOverDialog.setTitle("GAME OVER");
                 gameOverDialog.setMessage("HIGHSCORE: " + highScore + "\n" + "\n" +
                         "SCORE: " + data.getInt("score"));
+
+                if(preferences != null){
+                    String localUsername = preferences.getString("username", "");
+                    if(localUsername != null && !localUsername.isEmpty()){
+                        gameOverDialog.setMessage("USER: " + localUsername + "\n" + "\n" +
+                                "HIGHSCORE: " + highScore + "\n" + "\n" +
+                                "SCORE: " + data.getInt("score"));
+                    }
+                }
+
                 if (!isFinishing()) {
                     gameOverDialog.show();
                 }
@@ -191,8 +200,6 @@ public class TetrisActivity extends AppCompatActivity {
 
         final LinearLayout usernameLayout = (LinearLayout) view.findViewById(R.id.username_layout);
         final Button newGameBtn = (Button) view.findViewById(R.id.start_new_game_btn);
-        newGameBtn.setVisibility(View.GONE);
-
         if (newGame) {
             newGameBtn.setVisibility(View.VISIBLE);
             newGameBtn.setOnClickListener(new View.OnClickListener() {
@@ -206,7 +213,6 @@ public class TetrisActivity extends AppCompatActivity {
         }
 
         final Button scoreboardBtn = (Button) view.findViewById(R.id.btn_view_scoreboard);
-        scoreboardBtn.setVisibility(View.GONE);
         if (topScores) {
             scoreboardBtn.setVisibility(View.VISIBLE);
             scoreboardBtn.setOnClickListener(new View.OnClickListener() {
@@ -220,7 +226,6 @@ public class TetrisActivity extends AppCompatActivity {
         }
 
         Button exitBtn = (Button) view.findViewById(R.id.btn_start_game);
-        exitBtn.setVisibility(View.GONE);
         if (exit) {
             exitBtn.setVisibility(View.VISIBLE);
             exitBtn.setOnClickListener(new View.OnClickListener() {
@@ -231,9 +236,7 @@ public class TetrisActivity extends AppCompatActivity {
             });
         }
 
-        Button cancelBtn = (Button) view.findViewById(R.id.cancel_btn);
-        cancelBtn.setVisibility(View.GONE);
-
+        Button cancelBtn = (Button) view.findViewById(R.id.btn_ok);
         if (cancel) {
             cancelBtn.setVisibility(View.VISIBLE);
             cancelBtn.setOnClickListener(new View.OnClickListener() {
@@ -265,7 +268,7 @@ public class TetrisActivity extends AppCompatActivity {
 
                 @Override
                 public void afterTextChanged(Editable editable) {
-                    if (!editable.toString().isEmpty()) {
+                    if (!editable.toString().isEmpty() && editable.toString().length() < 25) {
                         newGameBtn.setEnabled(true);
                         newGameBtn.setBackgroundColor(getResources().getColor(R.color.green));
                         scoreboardBtn.setEnabled(true);
@@ -307,9 +310,9 @@ public class TetrisActivity extends AppCompatActivity {
             String message = bundle.getString("message");
             Log.d("message", message);
             if (message.equals("stresslevel defined")) {
-                tetrisView.increaseGoldBlockCount(3);
+                tetrisView.increaseGoldBlockCount(2);
             } else if (message.equals("stresslevel defined and exit app")) {
-                tetrisView.increaseGoldBlockCount(3);
+                tetrisView.increaseGoldBlockCount(2);
                 moveTaskToBack(true);
             } else if (message.equals("exit app")) {
                 moveTaskToBack(true);
