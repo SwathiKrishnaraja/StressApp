@@ -63,34 +63,6 @@ public class NotificationUtils {
         return false;
     }
 
-    public static boolean isLastNotficationMoreThanOneHourAgo(SharedPreferences preferences){
-        String timestamp = preferences.getString(NOTIFICATION_TIMESTAMP, "");
-
-        if (!timestamp.isEmpty()) {
-            Log.d("last notification date", timestamp);
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            Calendar cal = Calendar.getInstance();
-            try {
-                cal.setTime(dateFormat.parse(timestamp));
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-
-            Calendar currentCal = Calendar.getInstance();
-
-            long diffMillis = currentCal.getTimeInMillis() - cal.getTimeInMillis();
-
-
-            if (diffMillis >= 60 * 60 * 1000) {
-                return true;
-            }else{
-                return false;
-            }
-        }
-        return true;
-    }
-
-
     public static void createNotification(Context context){
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(context)

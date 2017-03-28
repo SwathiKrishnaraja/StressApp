@@ -8,6 +8,8 @@ import android.os.Message;
 import android.provider.Settings;
 import android.util.Log;
 
+import org.hcilab.projects.stressblocks.R;
+import org.hcilab.projects.stressblocks.TetrisActivity;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -33,9 +35,6 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManagerFactory;
-
-import org.hcilab.projects.stressblocks.TetrisActivity;
-import org.hcilab.projects.stressblocks.R;
 
 public class StressAppClient {
 
@@ -121,12 +120,13 @@ public class StressAppClient {
         return true;
     }
 
-    public boolean sendStressLevel(int value, Handler.Callback callback) {
+    public boolean sendStressLevel(int value, String rating, Handler.Callback callback) {
         JSONObject data = new JSONObject();
         try {
             data.put("deviceid", Settings.Secure.getString(context.getContentResolver(),
                     Settings.Secure.ANDROID_ID))
                     .put("value", value)
+                    .put("rating", rating)
                     .put("timestamp", TetrisActivity.dateFormat.format(new Date()));
         } catch (JSONException e) {
         }

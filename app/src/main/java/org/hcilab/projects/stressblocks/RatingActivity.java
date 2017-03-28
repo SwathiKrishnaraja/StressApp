@@ -29,16 +29,10 @@ public class RatingActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        Intent predecessorIntent = this.getIntent();
-
-        if (predecessorIntent != null && predecessorIntent.getStringExtra("activity") != null) {
-            String predecessorActivity = predecessorIntent.getStringExtra("activity");
-
-            if (predecessorActivity.equals("main")) {
-                Intent nextActivity = new Intent(this, MainActivity.class);
-                startActivity(nextActivity);
-                finish();
-            }
+        if (isPredecessorMainActivity(this.getIntent())) {
+            Intent nextActivity = new Intent(this, MainActivity.class);
+            startActivity(nextActivity);
+            finish();
         }
     }
 
@@ -58,7 +52,7 @@ public class RatingActivity extends AppCompatActivity {
         dbService = DatabaseService.getInstance(this);
 
         final RadioGroup radioGroupStressLevel = (RadioGroup) findViewById(R.id.radio_group_stress_level);
-
+        final String rating = (isPredecessorMainActivity(this.getIntent())) ? "manual" : "time";
 
         final Button btnBackToGame = (Button) findViewById(R.id.buttonPlayTetris);
         btnBackToGame.setOnClickListener(new View.OnClickListener() {
@@ -68,7 +62,7 @@ public class RatingActivity extends AppCompatActivity {
                         findViewById(radioGroupStressLevel.getCheckedRadioButtonId());
                 final int scale = getScale(checkedRadioButton.getText().toString());
 
-                client.sendStressLevel(scale, new Handler.Callback() {
+                client.sendStressLevel(scale, rating, new Handler.Callback() {
                     @Override
                     public boolean handleMessage(Message message) {
                         boolean sent = message.getData().getBoolean("sent");
@@ -95,7 +89,7 @@ public class RatingActivity extends AppCompatActivity {
                         findViewById(radioGroupStressLevel.getCheckedRadioButtonId());
                 final int scale = getScale(checkedRadioButton.getText().toString());
 
-                client.sendStressLevel(scale, new Handler.Callback() {
+                client.sendStressLevel(scale, rating, new Handler.Callback() {
                     @Override
                     public boolean handleMessage(Message message) {
                         boolean sent = message.getData().getBoolean("sent");
@@ -152,5 +146,15 @@ public class RatingActivity extends AppCompatActivity {
                 break;
         }
         return scale;
+    }
+
+    private boolean isPredecessorMainActivity(Intent predecessorIntent) {
+        if (predecessorIntent != null && predecessorIntent.getStringExtra("activity") != null) {
+            String predecessorActivity = predecessorIntent.getStringExtra("activity");
+            if (predecessorActivity.equals("main")) {
+                return true;
+            }
+        }
+        return false;
     }
 }
