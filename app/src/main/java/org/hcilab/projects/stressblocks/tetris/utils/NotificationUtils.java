@@ -11,11 +11,15 @@ import android.util.Log;
 
 import org.hcilab.projects.stressblocks.R;
 import org.hcilab.projects.stressblocks.RatingActivity;
+import org.hcilab.projects.stressblocks.model.StressNotification;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
+import static org.hcilab.projects.stressblocks.TetrisActivity.dateFormat;
 import static org.hcilab.projects.stressblocks.tetris.constants.StringConstants.NOTIFICATION_TIMESTAMP;
 
 /**
@@ -116,6 +120,21 @@ public class NotificationUtils {
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         // mId allows you to update the notification later on.
         mNotificationManager.notify(0, mBuilder.build());
+    }
+
+    public static JSONObject loadJSONObject(StressNotification notification) {
+        JSONObject event = new JSONObject();
+        try {
+            event.put("event", notification.getEvent());
+            event.put("application", notification.getApplication());
+            event.put("title_length", notification.getTitleLength());
+            event.put("content_length", notification.getContentLength());
+            String timestamp = dateFormat.format(notification.getTimestamp());
+            event.put("timestamp", timestamp);
+            event.put("emoticons", notification.getEmoticons());
+        } catch (JSONException e) {
+        }
+        return event;
     }
 
 }

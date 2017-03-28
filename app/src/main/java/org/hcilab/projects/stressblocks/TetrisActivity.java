@@ -26,27 +26,18 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 
 import org.hcilab.projects.stressblocks.db.DatabaseService;
-import org.hcilab.projects.stressblocks.model.StressLevel;
-import org.hcilab.projects.stressblocks.model.StressNotification;
-import org.hcilab.projects.stressblocks.model.SurveyResult;
 import org.hcilab.projects.stressblocks.networking.StressAppClient;
 import org.hcilab.projects.stressblocks.tetris.TetrisView;
 import org.hcilab.projects.stressblocks.tetris.utils.DialogUtils;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.List;
 import java.util.Random;
 
 import static org.hcilab.projects.stressblocks.tetris.constants.StringConstants.GOLD_BLOCKS;
-import static org.hcilab.projects.stressblocks.tetris.constants.StringConstants
-        .NOTIFICATION_TIMESTAMP;
+import static org.hcilab.projects.stressblocks.tetris.constants.StringConstants.NOTIFICATION_TIMESTAMP;
 import static org.hcilab.projects.stressblocks.tetris.constants.StringConstants.USER_SCORES;
-import static org.hcilab.projects.stressblocks.tetris.utils.NotificationUtils.createNotification;
-import static org.hcilab.projects.stressblocks.tetris.utils.NotificationUtils
-        .isLastNotficationLongAgo;
 
 public class TetrisActivity extends AppCompatActivity {
     public static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -65,7 +56,7 @@ public class TetrisActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d("onCreate", " ");
+        Log.d("onCreate tetris", " ");
         setContentView(R.layout.activity_tetris);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -331,10 +322,7 @@ public class TetrisActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         overridePendingTransition(0, 0);
-        Log.d("onResume", " ");
-        sendNotifications();
-        sendSurveyResults();
-        sendStressLevels();
+        Log.d("onResume tetris", " ");
 
         if (!isNLServiceRunning()) {
             if (userInfoDialog == null) {
@@ -346,11 +334,8 @@ public class TetrisActivity extends AppCompatActivity {
             }
         } else if (!receiversCreated) {
             createReceivers();
-        } else if (!gameOverDialog.isShowing() && !tetrisView.isPause()) {
+        } else if (gameOverDialog != null && !gameOverDialog.isShowing() && !tetrisView.isPause()) {
             tetrisView.resumeGame();
-            if (isLastNotficationLongAgo(preferences)) {
-                createNotification(getApplicationContext());
-            }
         }
     }
 
@@ -384,79 +369,6 @@ public class TetrisActivity extends AppCompatActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    private void sendNotifications() {
-        if (dbService != null && client != null) {
-            List<StressNotification> results = dbService.getNotSentNotifications();
-            if (!results.isEmpty()) {
-                for (final StressNotification result : results) {
-                    client.sendNotificationEvent(loadJSONObject(result), new Handler.Callback() {
-                        @Override
-                        public boolean handleMessage(Message message) {
-                            boolean sent = message.getData().getBoolean("sent");
-                            if (sent)
-                                dbService.updateNotificationIsSent(result.getId());
-                            return false;
-                        }
-                    });
-                }
-            }
-        }
-    }
-
-    private JSONObject loadJSONObject(StressNotification notification) {
-        JSONObject event = new JSONObject();
-        try {
-            event.put("event", notification.getEvent());
-            event.put("application", notification.getApplication());
-            event.put("title_length", notification.getTitleLength());
-            event.put("content_length", notification.getContentLength());
-            String timestamp = dateFormat.format(notification.getTimestamp());
-            event.put("timestamp", timestamp);
-            event.put("emoticons", notification.getEmoticons());
-        } catch (JSONException e) {
-        }
-
-        return event;
-    }
-
-    private void sendSurveyResults() {
-        if (dbService != null && client != null) {
-            List<SurveyResult> results = dbService.getNotSentSurveyResults();
-            if (!results.isEmpty()) {
-                for (final SurveyResult result : results) {
-                    client.sendSurveyAnswers(result.getEntireAnswer(), new Handler.Callback() {
-                        @Override
-                        public boolean handleMessage(Message message) {
-                            boolean sent = message.getData().getBoolean("sent");
-                            if (sent)
-                                dbService.updateAnswersSent(result.getId());
-                            return false;
-                        }
-                    });
-                }
-            }
-        }
-    }
-
-    private void sendStressLevels() {
-        if (dbService != null && client != null) {
-            List<StressLevel> results = dbService.getNotSentStressLevels();
-            if (!results.isEmpty()) {
-                for (final StressLevel result : results) {
-                    client.sendStressLevel(result.getValue(), new Handler.Callback() {
-                        @Override
-                        public boolean handleMessage(Message message) {
-                            boolean sent = message.getData().getBoolean("sent");
-                            if (sent)
-                                dbService.updateStressLevelIsSent(result.getId());
-                            return false;
-                        }
-                    });
-                }
-            }
-        }
     }
 
     private void sendNotificationEvent(JSONObject event, final String screenEvent) {

@@ -5,23 +5,38 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.hcilab.projects.stressblocks.db.DatabaseService;
+import org.hcilab.projects.stressblocks.model.StressLevel;
+import org.hcilab.projects.stressblocks.model.StressNotification;
+import org.hcilab.projects.stressblocks.model.SurveyResult;
+import org.hcilab.projects.stressblocks.networking.StressAppClient;
 import org.hcilab.projects.stressblocks.tetris.utils.NotificationUtils;
+
+import java.util.List;
+
+import static org.hcilab.projects.stressblocks.tetris.utils.NotificationUtils.createNotification;
+import static org.hcilab.projects.stressblocks.tetris.utils.NotificationUtils.isLastNotficationLongAgo;
+import static org.hcilab.projects.stressblocks.tetris.utils.NotificationUtils.loadJSONObject;
 
 public class MainActivity extends AppCompatActivity {
     private DatabaseService dbService;
+    private StressAppClient client;
     private SharedPreferences preferences;
     private AlertDialog infoDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d("onCreate main", " ");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -29,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         this.dbService = DatabaseService.getInstance(this);
+        this.client = new StressAppClient(this);
         this.preferences = this.getSharedPreferences("de.fachstudie.stressapp" +
                 ".preferences", Context.MODE_PRIVATE);
 
@@ -75,6 +91,20 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        this.sendNotifications();
+        this.sendSurveyResults();
+        this.sendStressLevels();
+
+        if (isLastNotficationLongAgo(preferences)) {
+            createNotification(getApplicationContext());
+        }
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d("onResume main", " ");
     }
 
     private AlertDialog getInfoDialog() {
@@ -116,6 +146,63 @@ public class MainActivity extends AppCompatActivity {
         if (dbService != null) {
             int highscore = dbService.getHighScore();
             highscoreView.setText("HIGHSCORE: " + highscore);
+        }
+    }
+
+    private void sendNotifications() {
+        if (dbService != null && client != null) {
+            List<StressNotification> results = dbService.getNotSentNotifications();
+            if (!results.isEmpty()) {
+                for (final StressNotification result : results) {
+                    client.sendNotificationEvent(loadJSONObject(result), new Handler.Callback() {
+                        @Override
+                        public boolean handleMessage(Message message) {
+                            boolean sent = message.getData().getBoolean("sent");
+                            if (sent)
+                                dbService.updateNotificationIsSent(result.getId());
+                            return false;
+                        }
+                    });
+                }
+            }
+        }
+    }
+
+    private void sendSurveyResults() {
+        if (dbService != null && client != null) {
+            List<SurveyResult> results = dbService.getNotSentSurveyResults();
+            if (!results.isEmpty()) {
+                for (final SurveyResult result : results) {
+                    client.sendSurveyAnswers(result.getEntireAnswer(), new Handler.Callback() {
+                        @Override
+                        public boolean handleMessage(Message message) {
+                            boolean sent = message.getData().getBoolean("sent");
+                            if (sent)
+                                dbService.updateAnswersSent(result.getId());
+                            return false;
+                        }
+                    });
+                }
+            }
+        }
+    }
+
+    private void sendStressLevels() {
+        if (dbService != null && client != null) {
+            List<StressLevel> results = dbService.getNotSentStressLevels();
+            if (!results.isEmpty()) {
+                for (final StressLevel result : results) {
+                    client.sendStressLevel(result.getValue(), new Handler.Callback() {
+                        @Override
+                        public boolean handleMessage(Message message) {
+                            boolean sent = message.getData().getBoolean("sent");
+                            if (sent)
+                                dbService.updateStressLevelIsSent(result.getId());
+                            return false;
+                        }
+                    });
+                }
+            }
         }
     }
 }
