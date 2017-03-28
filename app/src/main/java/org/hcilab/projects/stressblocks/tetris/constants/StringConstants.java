@@ -19,7 +19,7 @@ public class StringConstants {
             "-\tEmoticons of each notification text\n" +
             "-\tTimestamp of unlocking the phone\n" +
             "-\tTimestamp of turning on the phone\n" +
-            "-\tAnswers of survey\n" +
+            "-\tStressLevels of the ratings\n" +
             " \n" +
             "This data will be securely sent to servers at the University of Stuttgart and stored only for the purpose of analysis and evaluation. No data will be linked to personal information and all data will be handled securely.\n" +
             " \n" +

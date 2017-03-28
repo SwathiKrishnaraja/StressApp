@@ -38,6 +38,7 @@ import java.util.Random;
 import static org.hcilab.projects.stressblocks.tetris.constants.StringConstants.GOLD_BLOCKS;
 import static org.hcilab.projects.stressblocks.tetris.constants.StringConstants.NOTIFICATION_TIMESTAMP;
 import static org.hcilab.projects.stressblocks.tetris.constants.StringConstants.USER_SCORES;
+import static org.hcilab.projects.stressblocks.tetris.utils.NotificationUtils.isNLServiceRunning;
 
 public class TetrisActivity extends AppCompatActivity {
     public static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -86,7 +87,8 @@ public class TetrisActivity extends AppCompatActivity {
             preferences.edit().putString(USER_SCORES, "").commit();
         }
 
-        if (!isNLServiceRunning()) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        if (!isNLServiceRunning(manager)) {
             if (userInfoDialog == null)
                 userInfoDialog = DialogUtils.getUserInfoDialog(this);
         } else {
@@ -140,18 +142,6 @@ public class TetrisActivity extends AppCompatActivity {
         filter.addAction("de.fachstudie.stressapp.notification");
         registerReceiver(notificationReceiver, filter);
         receiversCreated = true;
-    }
-
-    private boolean isNLServiceRunning() {
-        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-
-        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer
-                .MAX_VALUE)) {
-            if (NLService.class.getName().equals(service.service.getClassName())) {
-                return true;
-            }
-        }
-        return false;
     }
 
     @NonNull
@@ -324,7 +314,8 @@ public class TetrisActivity extends AppCompatActivity {
         overridePendingTransition(0, 0);
         Log.d("onResume tetris", " ");
 
-        if (!isNLServiceRunning()) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        if (!isNLServiceRunning(manager)) {
             if (userInfoDialog == null) {
                 userInfoDialog = DialogUtils.getUserInfoDialog(this);
             }

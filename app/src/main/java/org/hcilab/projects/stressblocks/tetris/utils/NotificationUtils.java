@@ -1,5 +1,6 @@
 package org.hcilab.projects.stressblocks.tetris.utils;
 
+import android.app.ActivityManager;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -9,6 +10,7 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 
+import org.hcilab.projects.stressblocks.NLService;
 import org.hcilab.projects.stressblocks.R;
 import org.hcilab.projects.stressblocks.RatingActivity;
 import org.hcilab.projects.stressblocks.model.StressNotification;
@@ -107,6 +109,16 @@ public class NotificationUtils {
         } catch (JSONException e) {
         }
         return event;
+    }
+
+    public static boolean isNLServiceRunning(ActivityManager manager) {
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer
+                .MAX_VALUE)) {
+            if (NLService.class.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }
