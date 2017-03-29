@@ -114,7 +114,7 @@ public class ScoreActivity extends AppCompatActivity {
             }
 
 
-        });
+        },preferences.getString("username", ""));
     }
 
     @Override

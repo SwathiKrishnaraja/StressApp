@@ -87,10 +87,10 @@ public class StressAppClient {
         return sslContext.getSocketFactory();
     }
 
-    public void getScores(Handler.Callback callback) {
+    public void getScores(Handler.Callback callback, String username) {
         String url = "score?top=10&deviceid=" + Settings.Secure.getString(context
                         .getContentResolver(),
-                Settings.Secure.ANDROID_ID);
+                Settings.Secure.ANDROID_ID)+"&username=" + username;
         new GetTask(callback).execute(url);
     }
 
