@@ -914,7 +914,7 @@ public class TetrisWorld {
         int prefsHighscore = preferences.getInt(HIGHSCORE, 0);
         Log.d("highscore model", " " + prefsHighscore);
         int dbHighscore = dbService.getHighScore();
-        return (dbHighscore > prefsHighscore) ? dbHighscore : prefsHighscore;
+        return (dbHighscore >= prefsHighscore) ? dbHighscore : prefsHighscore;
     }
 
     public int getScore() {

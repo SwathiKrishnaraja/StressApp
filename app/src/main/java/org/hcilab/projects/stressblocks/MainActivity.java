@@ -117,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
 
             int prefsHighscore = preferences.getInt(HIGHSCORE, 0);
             int dbHighscore = dbService.getHighScore();
-            int highscore = (dbHighscore > prefsHighscore) ? dbHighscore : prefsHighscore;
+            int highscore = (dbHighscore >= prefsHighscore) ? dbHighscore : prefsHighscore;
             highscoreView.setText("HIGHSCORE: " + highscore);
         }
     }
