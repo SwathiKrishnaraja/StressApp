@@ -24,7 +24,7 @@ import java.util.Date;
  * Created by Paul Kuznecov on 01.11.2016.
  */
 
-public class NLRegistryService extends NotificationListenerService {
+public class NLRService extends NotificationListenerService {
 
     private NotificationReceiver notificationReceiver;
 

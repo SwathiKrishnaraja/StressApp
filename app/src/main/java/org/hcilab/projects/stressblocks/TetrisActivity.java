@@ -29,7 +29,6 @@ import org.hcilab.projects.stressblocks.db.DatabaseService;
 import org.hcilab.projects.stressblocks.networking.StressAppClient;
 import org.hcilab.projects.stressblocks.tetris.TetrisView;
 import org.hcilab.projects.stressblocks.tetris.utils.DialogUtils;
-import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -39,6 +38,7 @@ import static org.hcilab.projects.stressblocks.tetris.constants.StringConstants.
 import static org.hcilab.projects.stressblocks.tetris.constants.StringConstants.NOTIFICATION_TIMESTAMP;
 import static org.hcilab.projects.stressblocks.tetris.constants.StringConstants.USER_SCORES;
 import static org.hcilab.projects.stressblocks.tetris.utils.NotificationUtils.isNLServiceRunning;
+import static org.hcilab.projects.stressblocks.tetris.utils.ScoreUtils.addHighscoreToPreferences;
 
 public class TetrisActivity extends AppCompatActivity {
     public static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -272,6 +272,7 @@ public class TetrisActivity extends AppCompatActivity {
                                 getApplicationContext().getSharedPreferences("de.fachstudie" +
                                         ".stressapp.preferences",
                                         Context.MODE_PRIVATE).getString("username", ""));
+                        addHighscoreToPreferences(client, preferences);
                     }
                 }
             });
@@ -360,17 +361,6 @@ public class TetrisActivity extends AppCompatActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    private void sendNotificationEvent(JSONObject event, final String screenEvent) {
-        client.sendNotificationEvent(event, new Handler.Callback() {
-            @Override
-            public boolean handleMessage(Message message) {
-                boolean sent = message.getData().getBoolean("sent");
-                dbService.saveScreenEvent(screenEvent, sent);
-                return false;
-            }
-        });
     }
 
     private class NotificationReceiver extends BroadcastReceiver {

@@ -21,9 +21,11 @@ import org.hcilab.projects.stressblocks.networking.StressAppClient;
 
 import java.util.List;
 
+import static org.hcilab.projects.stressblocks.tetris.constants.StringConstants.HIGHSCORE;
 import static org.hcilab.projects.stressblocks.tetris.utils.NotificationUtils.createNotification;
 import static org.hcilab.projects.stressblocks.tetris.utils.NotificationUtils.isLastNotficationLongAgo;
 import static org.hcilab.projects.stressblocks.tetris.utils.NotificationUtils.loadJSONObject;
+import static org.hcilab.projects.stressblocks.tetris.utils.ScoreUtils.addHighscoreToPreferences;
 
 public class MainActivity extends AppCompatActivity {
     private DatabaseService dbService;
@@ -43,7 +45,6 @@ public class MainActivity extends AppCompatActivity {
         this.client = new StressAppClient(this);
         this.preferences = this.getSharedPreferences("de.fachstudie.stressapp" +
                 ".preferences", Context.MODE_PRIVATE);
-
 
         this.setUsernameView();
         this.setHighscoreView();
@@ -110,7 +111,13 @@ public class MainActivity extends AppCompatActivity {
     private void setHighscoreView() {
         final TextView highscoreView = (TextView) findViewById(R.id.text_view_highscore);
         if (dbService != null) {
-            int highscore = dbService.getHighScore();
+            if (preferences.getInt(HIGHSCORE, 0) == 0) {
+                addHighscoreToPreferences(client, preferences);
+            }
+
+            int prefsHighscore = preferences.getInt(HIGHSCORE, 0);
+            int dbHighscore = dbService.getHighScore();
+            int highscore = (dbHighscore > prefsHighscore) ? dbHighscore : prefsHighscore;
             highscoreView.setText("HIGHSCORE: " + highscore);
         }
     }

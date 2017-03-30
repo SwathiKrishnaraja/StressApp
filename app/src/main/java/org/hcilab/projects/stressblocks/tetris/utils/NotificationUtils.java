@@ -10,7 +10,7 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 
-import org.hcilab.projects.stressblocks.NLRegistryService;
+import org.hcilab.projects.stressblocks.NLRService;
 import org.hcilab.projects.stressblocks.R;
 import org.hcilab.projects.stressblocks.RatingActivity;
 import org.hcilab.projects.stressblocks.model.StressNotification;
@@ -114,7 +114,7 @@ public class NotificationUtils {
     public static boolean isNLServiceRunning(ActivityManager manager) {
         for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer
                 .MAX_VALUE)) {
-            if (NLRegistryService.class.getName().equals(service.service.getClassName())) {
+            if (NLRService.class.getName().equals(service.service.getClassName())) {
                 return true;
             }
         }

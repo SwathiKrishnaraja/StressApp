@@ -39,4 +39,7 @@ public class StringConstants {
 
     public static final String USER_SCORES = "user_scores";
 
+    public static final String HIGHSCORE = "highscore";
+
+
 }

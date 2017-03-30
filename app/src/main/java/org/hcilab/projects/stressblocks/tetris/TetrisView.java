@@ -132,7 +132,7 @@ public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
                         final Bundle bundle = new Bundle();
                         model.saveScore();
                         model.setGameOver(false);
-                        bundle.putInt("highscore", model.getHighScore());
+                        bundle.putInt("highscore", model.getHighscore());
                         bundle.putInt("score", model.getScore());
                         msg.setData(bundle);
                         handler.sendMessage(msg);

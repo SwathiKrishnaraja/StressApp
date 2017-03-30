@@ -10,6 +10,9 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.os.Handler;
+import android.os.Message;
+import android.util.Log;
 
 import org.hcilab.projects.stressblocks.R;
 import org.hcilab.projects.stressblocks.db.DatabaseService;
@@ -18,6 +21,8 @@ import org.hcilab.projects.stressblocks.networking.StressAppClient;
 import org.hcilab.projects.stressblocks.tetris.constants.BlockColors;
 import org.hcilab.projects.stressblocks.tetris.utils.ArrayUtils;
 import org.hcilab.projects.stressblocks.tetris.utils.ColorUtils;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +30,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.hcilab.projects.stressblocks.tetris.Block.randomItem;
 import static org.hcilab.projects.stressblocks.tetris.constants.StringConstants.GOLD_BLOCKS;
+import static org.hcilab.projects.stressblocks.tetris.constants.StringConstants.HIGHSCORE;
 import static org.hcilab.projects.stressblocks.tetris.utils.ArrayUtils.copy;
 import static org.hcilab.projects.stressblocks.tetris.utils.ArrayUtils.indexExists;
 import static org.hcilab.projects.stressblocks.tetris.utils.BitmapUtils.drawableToBitmap;
@@ -86,7 +92,7 @@ public class TetrisWorld {
     private float stressLevel = 0;
     private boolean clearedLastTime;
 
-    private SharedPreferences prefs;
+    private SharedPreferences preferences;
     private boolean clearFullLinesNext = false;
     private List<Integer> currentFullLines;
     private long lastClearLinesTime = -1;
@@ -96,9 +102,9 @@ public class TetrisWorld {
         dbService = DatabaseService.getInstance(this.context);
         client = new StressAppClient(this.context);
         setEventIcons(context);
-        prefs = context.getSharedPreferences("de.fachstudie.stressapp.preferences",
+        preferences = context.getSharedPreferences("de.fachstudie.stressapp.preferences",
                 Context.MODE_PRIVATE);
-        goldBlockCount = prefs.getInt(GOLD_BLOCKS, 0);
+        goldBlockCount = preferences.getInt(GOLD_BLOCKS, 0);
     }
 
     private void setEventIcons(Context context) {
@@ -904,9 +910,11 @@ public class TetrisWorld {
         return false;
     }
 
-    public int getHighScore() {
-        int score = dbService.getHighScore();
-        return score;
+    public int getHighscore() {
+        int prefsHighscore = preferences.getInt(HIGHSCORE, 0);
+        Log.d("highscore model", " " + prefsHighscore);
+        int dbHighscore = dbService.getHighScore();
+        return (dbHighscore > prefsHighscore) ? dbHighscore : prefsHighscore;
     }
 
     public int getScore() {
@@ -916,8 +924,26 @@ public class TetrisWorld {
     public void saveScore() {
         if (score != 0) {
             dbService.saveScore(score);
-            if (!prefs.getString("username", "").isEmpty()) {
-                client.sendScore(this.context, score, prefs.getString("username", ""));
+            if (!preferences.getString("username", "").isEmpty()) {
+                client.sendScore(this.context, score, preferences.getString("username", ""));
+                client.getScores(new Handler.Callback() {
+                    @Override
+                    public boolean handleMessage(Message message) {
+                        String response = message.getData().getString("response");
+                        try {
+                            JSONObject result = new JSONObject(response);
+                            int highscore = result.getInt("userscore");
+                            if (highscore != preferences.getInt(HIGHSCORE, 0)) {
+                                preferences.edit().putInt(HIGHSCORE, highscore).commit();
+                            }
+                            return true;
+
+                        } catch (JSONException e) {
+                            Log.e("JSON exception", e.getClass().toString() + " " + e.getMessage());
+                        }
+                        return false;
+                    }
+                }, preferences.getString("username", ""));
             }
         }
     }
@@ -977,18 +1003,18 @@ public class TetrisWorld {
     public void decreaseGoldBlockCount() {
         if (goldBlockCount != 0) {
             this.goldBlockCount--;
-            prefs.edit().putInt(GOLD_BLOCKS, goldBlockCount).commit();
+            preferences.edit().putInt(GOLD_BLOCKS, goldBlockCount).commit();
         }
     }
 
     public void increaseGoldBlockCount(int count) {
-        int gold_blocks = prefs.getInt(GOLD_BLOCKS, 0);
+        int gold_blocks = preferences.getInt(GOLD_BLOCKS, 0);
         this.goldBlockCount = gold_blocks + count;
-        prefs.edit().putInt(GOLD_BLOCKS, goldBlockCount).commit();
+        preferences.edit().putInt(GOLD_BLOCKS, goldBlockCount).commit();
     }
 
     protected void updateGoldBlockCount() {
-        goldBlockCount = prefs.getInt(GOLD_BLOCKS, 0);
+        goldBlockCount = preferences.getInt(GOLD_BLOCKS, 0);
 
     }
 
