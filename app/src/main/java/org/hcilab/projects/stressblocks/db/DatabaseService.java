@@ -7,18 +7,18 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import org.hcilab.projects.stressblocks.EmojiFrequency;
+import org.hcilab.projects.stressblocks.model.Score;
+import org.hcilab.projects.stressblocks.model.StressLevel;
+import org.hcilab.projects.stressblocks.model.StressNotification;
+import org.hcilab.projects.stressblocks.model.SurveyResult;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-
-import org.hcilab.projects.stressblocks.EmojiFrequency;
-import org.hcilab.projects.stressblocks.model.Score;
-import org.hcilab.projects.stressblocks.model.StressLevel;
-import org.hcilab.projects.stressblocks.model.StressNotification;
-import org.hcilab.projects.stressblocks.model.SurveyResult;
 
 /**
  * Created by Sanjeev on 03.01.2017.
@@ -128,10 +128,6 @@ public class DatabaseService {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String timestamp = dateFormat.format(new Date());
         String event = intent.getStringExtra("event");
-
-        Log.d("title_length", titleLength);
-        Log.d("app", application);
-        Log.d("content", content);
 
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();

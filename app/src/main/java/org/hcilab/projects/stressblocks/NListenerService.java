@@ -24,7 +24,7 @@ import java.util.Date;
  * Created by Paul Kuznecov on 01.11.2016.
  */
 
-public class NLRService extends NotificationListenerService {
+public class NListenerService extends NotificationListenerService {
 
     private NotificationReceiver notificationReceiver;
 
@@ -42,7 +42,7 @@ public class NLRService extends NotificationListenerService {
         filter.addAction("de.fachstudie.stressapp.notification");
 
         notificationReceiver = new NotificationReceiver();
-        registerReceiver(notificationReceiver,filter);
+        registerReceiver(notificationReceiver, filter);
     }
 
     @Override
@@ -66,6 +66,9 @@ public class NLRService extends NotificationListenerService {
 
     @Override
     public void onNotificationPosted(StatusBarNotification sbn) {
+        Log.d("ongoing notification", " " + sbn.isOngoing());
+        if (sbn.isOngoing()) return;
+
         super.onNotificationPosted(sbn);
         CharSequence sequenceText = sbn.getNotification().extras.getCharSequence(Notification
                 .EXTRA_TEXT);
