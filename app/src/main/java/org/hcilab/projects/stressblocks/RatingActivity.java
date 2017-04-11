@@ -1,8 +1,10 @@
 package org.hcilab.projects.stressblocks;
 
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -14,6 +16,7 @@ import android.widget.RadioGroup;
 
 import org.hcilab.projects.stressblocks.db.DatabaseService;
 import org.hcilab.projects.stressblocks.networking.StressAppClient;
+import org.hcilab.projects.stressblocks.tetris.utils.NotificationUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -54,8 +57,11 @@ public class RatingActivity extends AppCompatActivity {
         final RadioGroup radioGroupStressLevel = (RadioGroup) findViewById(R.id.radio_group_stress_level);
         final String rating = (isPredecessorMainActivity(this.getIntent())) ? "manual" : "time";
 
+        final Button btnSendStressLevel = (Button) findViewById(R.id.buttonSendStressLevel);
         final Button btnBackToGame = (Button) findViewById(R.id.buttonPlayTetris);
-        btnBackToGame.setOnClickListener(new View.OnClickListener() {
+        final Button btnExitApp = (Button) findViewById(R.id.buttonExitApp);
+
+        btnSendStressLevel.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
                 RadioButton checkedRadioButton = (RadioButton) radioGroupStressLevel.
@@ -72,7 +78,26 @@ public class RatingActivity extends AppCompatActivity {
                 });
 
                 preferences.edit().putString(NOTIFICATION_TIMESTAMP, timestamp).commit();
+                disableRadioButtons(radioGroupStressLevel);
 
+                btnSendStressLevel.setEnabled(false);
+                btnSendStressLevel.setBackgroundColor(Color.GRAY);
+
+                if (!btnBackToGame.isEnabled()) {
+                    btnBackToGame.setBackgroundColor(getResources().getColor(R.color.green));
+                    btnBackToGame.setEnabled(true);
+                }
+
+                if (!btnExitApp.isEnabled()) {
+                    btnExitApp.setBackgroundColor(getResources().getColor(R.color.red));
+                    btnExitApp.setEnabled(true);
+                }
+            }
+        });
+
+        btnBackToGame.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
                 Intent i = new Intent(getApplicationContext(), TetrisActivity.class);
                 i.putExtra("message", "stresslevel defined");
                 startActivity(i);
@@ -80,29 +105,16 @@ public class RatingActivity extends AppCompatActivity {
             }
         });
 
-        final Button btnExitApp = (Button) findViewById(R.id.buttonExitApp);
         btnExitApp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
 
-                RadioButton checkedRadioButton = (RadioButton) radioGroupStressLevel.
-                        findViewById(radioGroupStressLevel.getCheckedRadioButtonId());
-                final int scale = getScale(checkedRadioButton.getText().toString());
-
-                client.sendStressLevel(scale, rating, new Handler.Callback() {
-                    @Override
-                    public boolean handleMessage(Message message) {
-                        boolean sent = message.getData().getBoolean("sent");
-                        dbService.saveStressLevel(scale, sent);
-                        return false;
-                    }
-                });
-
-                preferences.edit().putString(NOTIFICATION_TIMESTAMP, timestamp).commit();
-
-                Intent i = new Intent(getApplicationContext(), TetrisActivity.class);
-                i.putExtra("message", "stresslevel defined and exit app");
-                startActivity(i);
+                if(NotificationUtils.isNLServiceRunning(manager)) {
+                    Intent i = new Intent(getApplicationContext(), TetrisActivity.class);
+                    i.putExtra("message", "stresslevel defined and exit app");
+                    startActivity(i);
+                }
                 finish();
             }
         });
@@ -114,16 +126,19 @@ public class RatingActivity extends AppCompatActivity {
                 boolean isChecked = checkedRadioButton.isChecked();
 
                 if (isChecked) {
-                    if (!btnBackToGame.isEnabled()) {
-                        btnBackToGame.setEnabled(true);
-                    }
-
-                    if (!btnExitApp.isEnabled()) {
-                        btnExitApp.setEnabled(true);
+                    if (!btnSendStressLevel.isEnabled()) {
+                        btnSendStressLevel.setBackgroundColor(getResources().getColor(R.color.blue));
+                        btnSendStressLevel.setEnabled(true);
                     }
                 }
             }
         });
+    }
+
+    private void disableRadioButtons(RadioGroup radioGroupStressLevel) {
+        for (int index = 0; index < radioGroupStressLevel.getChildCount(); index++) {
+            radioGroupStressLevel.getChildAt(index).setEnabled(false);
+        }
     }
 
     private int getScale(String option) {

@@ -18,7 +18,7 @@
             android:theme="@style/AppTheme.NoActionBar"></activity>
 
         <service
-            android:name=".NListenerService"
+            android:name=".NotificationLService"
             android:label="Stress Blocks"
             android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
             <intent-filter>

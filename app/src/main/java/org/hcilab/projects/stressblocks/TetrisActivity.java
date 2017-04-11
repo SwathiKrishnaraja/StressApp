@@ -57,20 +57,13 @@ public class TetrisActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d("onCreate tetris", " ");
-        setContentView(R.layout.activity_tetris);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        Log.d("onCreate tetris", " ");
+        setContentView(R.layout.activity_tetris);
 
         client = new StressAppClient(this);
         dbService = DatabaseService.getInstance(this);
-
-        exitDialog = getCustomDialog(false, false, true, true);
-        gameOverDialog = getCustomDialog(true, true, false, false);
-        Handler handler = createGameOverHandler();
-
-        tetrisView = (TetrisView) findViewById(R.id.tetrisview);
-        tetrisView.setHandler(handler);
 
         preferences = getSharedPreferences("de.fachstudie.stressapp.preferences",
                 Context.MODE_PRIVATE);
@@ -86,6 +79,13 @@ public class TetrisActivity extends AppCompatActivity {
         if (preferences.getString(USER_SCORES, "-1").equals("-1")) {
             preferences.edit().putString(USER_SCORES, "").commit();
         }
+
+        exitDialog = getCustomDialog(false, false, true, true);
+        gameOverDialog = getCustomDialog(true, true, false, false);
+        Handler handler = createGameOverHandler();
+
+        tetrisView = (TetrisView) findViewById(R.id.tetrisview);
+        tetrisView.setHandler(handler);
 
         ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         if (!isNLServiceRunning(manager)) {
@@ -134,6 +134,9 @@ public class TetrisActivity extends AppCompatActivity {
         AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
         // am.set(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), sender);
         am.setExact(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), sender);
+
+        doActionAfterRatingStressLevel(getIntent());
+
     }
 
     private void createReceivers() {
@@ -156,9 +159,9 @@ public class TetrisActivity extends AppCompatActivity {
                 gameOverDialog.setMessage("HIGHSCORE: " + highScore + "\n" + "\n" +
                         "SCORE: " + data.getInt("score"));
 
-                if(preferences != null){
+                if (preferences != null) {
                     String localUsername = preferences.getString("username", "");
-                    if(localUsername != null && !localUsername.isEmpty()){
+                    if (localUsername != null && !localUsername.isEmpty()) {
                         gameOverDialog.setMessage("USER: " + localUsername + "\n" + "\n" +
                                 "HIGHSCORE: " + highScore + "\n" + "\n" +
                                 "SCORE: " + data.getInt("score"));
@@ -270,7 +273,7 @@ public class TetrisActivity extends AppCompatActivity {
                     if (!hasFocus) {
                         client.sendScore(getApplicationContext(), highScore,
                                 getApplicationContext().getSharedPreferences("de.fachstudie" +
-                                        ".stressapp.preferences",
+                                                ".stressapp.preferences",
                                         Context.MODE_PRIVATE).getString("username", ""));
                         addHighscoreToPreferences(client, preferences);
                     }
@@ -287,19 +290,32 @@ public class TetrisActivity extends AppCompatActivity {
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
+        doActionAfterRatingStressLevel(intent);
+    }
+
+    private void doActionAfterRatingStressLevel(Intent intent) {
         Bundle bundle = intent.getExtras();
-        if (bundle != null && bundle.getString("message") != null && tetrisView != null) {
-            String message = bundle.getString("message");
-            Log.d("message", message);
-            if (message.equals("stresslevel defined")) {
+        String message = getMessage(bundle);
+        Log.d("message", message);
+        if (message.equals("stresslevel defined")) {
+            if (tetrisView != null) {
                 tetrisView.increaseGoldBlockCount(2);
-            } else if (message.equals("stresslevel defined and exit app")) {
+            }
+        } else if (message.equals("stresslevel defined and exit app")) {
+            if (tetrisView != null) {
                 tetrisView.increaseGoldBlockCount(2);
-                moveTaskToBack(true);
-            } else if (message.equals("exit app")) {
                 moveTaskToBack(true);
             }
+        } else if (message.equals("exit app")) {
+            moveTaskToBack(true);
         }
+    }
+
+    private String getMessage(Bundle bundle) {
+        if (bundle != null && bundle.getString("message") != null) {
+            return bundle.getString("message");
+        }
+        return "";
     }
 
     @Override
