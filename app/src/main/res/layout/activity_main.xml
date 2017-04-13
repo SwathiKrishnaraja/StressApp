@@ -69,7 +69,7 @@
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:id="@+id/btn_start_game"
-            android:layout_marginTop="280dp"
+            android:layout_marginTop="270dp"
             android:layout_alignParentTop="true"/>
 
         <Button
@@ -81,7 +81,7 @@
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:id="@+id/btn_view_scoreboard"
-            android:layout_marginTop="350dp"
+            android:layout_marginTop="330dp"
             android:layout_below="@+id/btn_start_game" />
 
         <Button
@@ -93,7 +93,19 @@
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:id="@+id/btn_rate_stress_level"
-            android:layout_marginTop="420dp"
+            android:layout_marginTop="390dp"
+            android:layout_below="@+id/btn_view_scoreboard"/>
+
+        <Button
+            android:text="Exit Stress Blocks"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/white"
+            android:background="@color/red"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:id="@+id/btn_exit_stress_blocks"
+            android:layout_marginTop="450dp"
             android:layout_below="@+id/btn_view_scoreboard"/>
 
         <ImageView

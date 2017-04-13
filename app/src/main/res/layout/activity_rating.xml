@@ -61,18 +61,25 @@
             android:layout_height="wrap_content"
             android:text="extremely" />
     </RadioGroup>
-
-    <Button
-        android:id="@+id/buttonSendStressLevel"
+    <LinearLayout
+        android:id="@+id/stresslevel_text_layout"
+        android:layout_width="300dp"
+        android:layout_height="40dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="240dp"
+        android:orientation="vertical"
+        android:background="@drawable/border"
+        android:visibility="gone">
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignEnd="@+id/radio_group_stress_level"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginBottom="200dp"
-        android:textColor="@android:color/white"
-        android:enabled="false"
-        android:text="@string/buttonSendStressLevel" />
+        android:text="Your stress level has been sent."
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="30dp"
+        android:textSize="16dp"
+        android:textColor="@android:color/black" />
+    </LinearLayout>
 
     <Button
         android:id="@+id/buttonPlayTetris"

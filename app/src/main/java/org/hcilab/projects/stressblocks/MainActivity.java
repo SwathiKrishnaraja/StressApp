@@ -82,6 +82,15 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        final Button btnExitApp = (Button) findViewById(R.id.btn_exit_stress_blocks);
+        btnExitApp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+
+            }
+        });
+
         this.sendNotifications();
         this.sendSurveyResults();
         this.sendStressLevels();

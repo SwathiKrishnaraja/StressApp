@@ -4,13 +4,13 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
@@ -57,43 +57,9 @@ public class RatingActivity extends AppCompatActivity {
         final RadioGroup radioGroupStressLevel = (RadioGroup) findViewById(R.id.radio_group_stress_level);
         final String rating = (isPredecessorMainActivity(this.getIntent())) ? "manual" : "time";
 
-        final Button btnSendStressLevel = (Button) findViewById(R.id.buttonSendStressLevel);
+        final LinearLayout layout = (LinearLayout) findViewById(R.id.stresslevel_text_layout);
         final Button btnBackToGame = (Button) findViewById(R.id.buttonPlayTetris);
         final Button btnExitApp = (Button) findViewById(R.id.buttonExitApp);
-
-        btnSendStressLevel.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view) {
-                RadioButton checkedRadioButton = (RadioButton) radioGroupStressLevel.
-                        findViewById(radioGroupStressLevel.getCheckedRadioButtonId());
-                final int scale = getScale(checkedRadioButton.getText().toString());
-
-                client.sendStressLevel(scale, rating, new Handler.Callback() {
-                    @Override
-                    public boolean handleMessage(Message message) {
-                        boolean sent = message.getData().getBoolean("sent");
-                        dbService.saveStressLevel(scale, sent);
-                        return false;
-                    }
-                });
-
-                preferences.edit().putString(NOTIFICATION_TIMESTAMP, timestamp).commit();
-                disableRadioButtons(radioGroupStressLevel);
-
-                btnSendStressLevel.setEnabled(false);
-                btnSendStressLevel.setBackgroundColor(Color.GRAY);
-
-                if (!btnBackToGame.isEnabled()) {
-                    btnBackToGame.setBackgroundColor(getResources().getColor(R.color.green));
-                    btnBackToGame.setEnabled(true);
-                }
-
-                if (!btnExitApp.isEnabled()) {
-                    btnExitApp.setBackgroundColor(getResources().getColor(R.color.red));
-                    btnExitApp.setEnabled(true);
-                }
-            }
-        });
 
         btnBackToGame.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -126,9 +92,31 @@ public class RatingActivity extends AppCompatActivity {
                 boolean isChecked = checkedRadioButton.isChecked();
 
                 if (isChecked) {
-                    if (!btnSendStressLevel.isEnabled()) {
-                        btnSendStressLevel.setBackgroundColor(getResources().getColor(R.color.blue));
-                        btnSendStressLevel.setEnabled(true);
+
+                    final int scale = getScale(checkedRadioButton.getText().toString());
+
+                    client.sendStressLevel(scale, rating, new Handler.Callback() {
+                        @Override
+                        public boolean handleMessage(Message message) {
+                            boolean sent = message.getData().getBoolean("sent");
+                            dbService.saveStressLevel(scale, sent);
+                            return false;
+                        }
+                    });
+
+                    preferences.edit().putString(NOTIFICATION_TIMESTAMP, timestamp).commit();
+                    disableRadioButtons(radioGroupStressLevel);
+
+                    layout.setVisibility(View.VISIBLE);
+
+                    if (!btnBackToGame.isEnabled()) {
+                        btnBackToGame.setBackgroundColor(getResources().getColor(R.color.green));
+                        btnBackToGame.setEnabled(true);
+                    }
+
+                    if (!btnExitApp.isEnabled()) {
+                        btnExitApp.setBackgroundColor(getResources().getColor(R.color.red));
+                        btnExitApp.setEnabled(true);
                     }
                 }
             }
