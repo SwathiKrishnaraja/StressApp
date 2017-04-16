@@ -2,10 +2,10 @@ package org.hcilab.projects.stressblocks.tetris;
 
 import android.graphics.Bitmap;
 
-import java.util.Random;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import org.hcilab.projects.stressblocks.tetris.constants.BlockConfigurations;
+import org.hcilab.projects.stressblocks.tetris.wrapper.RotatedBlockState;
+
+import java.util.Random;
 
 import static org.hcilab.projects.stressblocks.tetris.Block.Shape.I;
 import static org.hcilab.projects.stressblocks.tetris.Block.Shape.J;
@@ -122,17 +122,25 @@ public class Block extends Item {
             this.x -= shift[(rotationIndex - 1) % 4][1];
         }
         this.rotationIndex += direction;
-
-        if (this.x < 0) {
-            this.x = 0;
-        }
     }
 
-    public void simulateRotate(int[][] state, AtomicBoolean overlapsBoundary) {
+    public void simulateRotate(int[][] state, RotatedBlockState rotatedBlockState) {
         this.rotate(1);
-        computeOverlaps(state);
-        overlapsBoundary.set(this.overlapsBoundary(state));
+        rotatedBlockState.setPreviousX(getPreviousX());
+        this.resetX();
+        this.computeOverlaps(state);
+        rotatedBlockState.setOverlappingBoundary(this.overlapsBoundary(state));
         this.rotate(-1);
+    }
+
+    private int getPreviousX() {
+        int x = -5;
+        if (this.x < 0) x = this.x;
+        return x;
+    }
+
+    private void resetX(){
+        if(this.x < 0) this.x = 0;
     }
 
     private void computeOverlaps(int[][] state) {

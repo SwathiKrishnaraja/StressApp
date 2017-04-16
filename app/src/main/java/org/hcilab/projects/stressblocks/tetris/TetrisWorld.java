@@ -21,12 +21,12 @@ import org.hcilab.projects.stressblocks.networking.StressAppClient;
 import org.hcilab.projects.stressblocks.tetris.constants.BlockColors;
 import org.hcilab.projects.stressblocks.tetris.utils.ArrayUtils;
 import org.hcilab.projects.stressblocks.tetris.utils.ColorUtils;
+import org.hcilab.projects.stressblocks.tetris.wrapper.RotatedBlockState;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.hcilab.projects.stressblocks.tetris.Block.randomItem;
 import static org.hcilab.projects.stressblocks.tetris.constants.StringConstants.GOLD_BLOCKS;
@@ -74,7 +74,7 @@ public class TetrisWorld {
     private boolean highlighting = false;
     private boolean currentBlockGolden = false;
     private boolean nextBlockGolden = false;
-    private AtomicBoolean overlapsBoundary = new AtomicBoolean(false);
+    private RotatedBlockState rotatedBlockState = new RotatedBlockState();
 
     private List<StressNotification> notifications = new ArrayList<>();
     private StressNotification loadedNotification;
@@ -861,10 +861,12 @@ public class TetrisWorld {
     public void rotateBlock() {
         synchronized (currentBlock) {
             int[][] state = copy(occupancy);
-            this.currentBlock.simulateRotate(state, overlapsBoundary);
+            this.currentBlock.simulateRotate(state, rotatedBlockState);
 
-            if (!hasOverlap(state) && !overlapsBoundary.get()) {
+            if (!hasOverlap(state) && !rotatedBlockState.isOverlappingBoundary()) {
                 this.currentBlock.rotate();
+            }else if(rotatedBlockState.getPreviousX() < 0 && rotatedBlockState.getPreviousX() != -5){
+                this.currentBlock.setX(this.currentBlock.getX() + rotatedBlockState.getPreviousX());
             }
 
             if (this.currentBlock.getX() + this.currentBlock.getWidth() >= WIDTH) {
