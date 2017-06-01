@@ -40,6 +40,9 @@ import static org.hcilab.projects.stressblocks.tetris.constants.StringConstants.
 import static org.hcilab.projects.stressblocks.tetris.utils.NotificationUtils.isNLServiceRunning;
 import static org.hcilab.projects.stressblocks.tetris.utils.ScoreUtils.addHighscoreToPreferences;
 
+/**
+ * Starts the activation of tetris.
+ */
 public class TetrisActivity extends AppCompatActivity {
     public static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private NotificationReceiver notificationReceiver;

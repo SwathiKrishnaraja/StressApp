@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by Sanjeev on 24.11.2016.
+ * Handles extracting the emoticons of a text.
  */
 
 public class EmojiFrequency extends EmojiParser {

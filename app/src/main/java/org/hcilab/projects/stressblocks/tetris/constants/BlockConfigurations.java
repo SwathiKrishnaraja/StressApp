@@ -1,7 +1,7 @@
 package org.hcilab.projects.stressblocks.tetris.constants;
 
 /**
- * Created by Sanjeev on 16.12.2016.
+ * Represents the various configuration of the blocks regarding moving and rotating them.
  */
 
 public class BlockConfigurations {

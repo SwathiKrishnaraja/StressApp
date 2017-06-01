@@ -39,6 +39,10 @@ import static org.hcilab.projects.stressblocks.tetris.utils.ColorUtils.setColorF
 import static org.hcilab.projects.stressblocks.tetris.utils.ColorUtils.setColorForShape;
 import static org.hcilab.projects.stressblocks.tetris.utils.ColorUtils.setLightColorForShape;
 
+/**
+ * Represents the model for the tetris view and
+ * implements the logic for tetris.
+ */
 public class TetrisWorld {
 
     public static final float CLEAR_TIME = 250f;
@@ -865,7 +869,7 @@ public class TetrisWorld {
 
             if (!hasOverlap(state) && !rotatedBlockState.isOverlappingBoundary()) {
                 this.currentBlock.rotate();
-            }else if(rotatedBlockState.getPreviousX() < 0 && rotatedBlockState.getPreviousX() != -5){
+            } else if (rotatedBlockState.getPreviousX() < 0 && rotatedBlockState.getPreviousX() != -5) {
                 this.currentBlock.setX(this.currentBlock.getX() + rotatedBlockState.getPreviousX());
             }
 

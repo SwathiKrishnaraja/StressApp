@@ -23,7 +23,9 @@ import java.util.Date;
 
 import static org.hcilab.projects.stressblocks.tetris.constants.StringConstants.NOTIFICATION_TIMESTAMP;
 
-
+/**
+ * Provides the rating of the stress level.
+ */
 public class RatingActivity extends AppCompatActivity {
 
     private StressAppClient client;

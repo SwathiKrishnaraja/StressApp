@@ -3,7 +3,7 @@ package org.hcilab.projects.stressblocks.model;
 import android.provider.BaseColumns;
 
 /**
- * Created by Sanjeev on 14.01.2017.
+ * Represents the score of a user.
  */
 
 public class Score {

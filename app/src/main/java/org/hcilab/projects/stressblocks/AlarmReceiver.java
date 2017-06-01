@@ -11,6 +11,9 @@ import java.util.Random;
 
 import static org.hcilab.projects.stressblocks.tetris.utils.NotificationUtils.createNotification;
 
+/**
+ * Handles the sending of the notifications for the stress level rating.
+ */
 public class AlarmReceiver extends BroadcastReceiver {
 
     @Override
@@ -41,6 +44,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                 cal.add(Calendar.DAY_OF_YEAR, 1);
             }
 
+            // Creates the notification for the stress level rating
             createNotification(context);
 
             PendingIntent sender = PendingIntent.getBroadcast(context, 10, intent, PendingIntent

@@ -11,17 +11,15 @@ import org.hcilab.projects.stressblocks.EmojiFrequency;
 import org.hcilab.projects.stressblocks.model.Score;
 import org.hcilab.projects.stressblocks.model.StressLevel;
 import org.hcilab.projects.stressblocks.model.StressNotification;
-import org.hcilab.projects.stressblocks.model.SurveyResult;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
 /**
- * Created by Sanjeev on 03.01.2017.
+ * Provides several services for handling the 'CRUD' functions regarding the model data.
  */
 
 public class DatabaseService {
@@ -36,9 +34,6 @@ public class DatabaseService {
             StressNotification.NotificationEntry.EVENT,
             StressNotification.NotificationEntry.SENT};
 
-    private final String[] surveyResultColumns = {SurveyResult.SurveyResultEntry._ID,
-            SurveyResult.SurveyResultEntry.ANSWERS, SurveyResult.SurveyResultEntry.SENT};
-
     private final String NOTIFICATIONS_SELECT_QUERY = "SELECT * FROM " + StressNotification.NotificationEntry
             .TABLE_NAME + " WHERE " + StressNotification.NotificationEntry.APPLICATION + " != ''" +
             " AND " + StressNotification.NotificationEntry.LOADED + " = ?" +
@@ -48,9 +43,6 @@ public class DatabaseService {
     private final String NOTIFICATIONS_NOT_SENT_QUERY = "SELECT * FROM " +
             StressNotification.NotificationEntry.TABLE_NAME + " WHERE " +
             StressNotification.NotificationEntry.SENT + " = ?";
-
-    private final String ANSWERS_SELECT_QUERY = "SELECT * FROM " + SurveyResult.SurveyResultEntry
-            .TABLE_NAME + " WHERE " + SurveyResult.SurveyResultEntry.SENT + " = ?";
 
     private final String SCORE_SELECT_QUERY = "SELECT MAX(" + Score.ScoreEntry.VALUE + ") AS " +
             Score.ScoreEntry.VALUE + " FROM " + Score.ScoreEntry.TABLE_NAME;
@@ -100,25 +92,6 @@ public class DatabaseService {
         value.put(StressLevel.StressLevelEntry.VALUE, level);
         value.put(StressLevel.StressLevelEntry.SENT, "" + sent);
         db.insert(StressLevel.StressLevelEntry.TABLE_NAME, null, value);
-    }
-
-    public void saveSurveyAnswers(String answers, boolean sent) {
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(SurveyResult.SurveyResultEntry.ANSWERS, answers);
-        values.put(SurveyResult.SurveyResultEntry.SENT, sent + "");
-        db.insert(SurveyResult.SurveyResultEntry.TABLE_NAME, null, values);
-    }
-
-    public List<SurveyResult> getSurveyResults() {
-        List<SurveyResult> results = new ArrayList<>();
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
-        Cursor c = db.query(SurveyResult.SurveyResultEntry.TABLE_NAME, surveyResultColumns, null,
-                null, null, null, null);
-
-        addAnswers(results, c);
-        closeDatabaseComponents(c);
-        return results;
     }
 
     public void saveNotification(Intent intent, boolean successful) {
@@ -175,17 +148,6 @@ public class DatabaseService {
         return results;
     }
 
-    public List<SurveyResult> getNotSentSurveyResults() {
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
-
-        String[] selectionArgs = {"false"};
-        Cursor c = db.rawQuery(ANSWERS_SELECT_QUERY, selectionArgs);
-
-        List<SurveyResult> results = loadSurveyResults(c);
-        closeDatabaseComponents(c);
-        return results;
-    }
-
     public List<StressLevel> getNotSentStressLevels() {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
@@ -219,18 +181,6 @@ public class DatabaseService {
         String[] selectionArgs = {"" + id};
 
         db.update(StressNotification.NotificationEntry.TABLE_NAME, values, selection, selectionArgs);
-    }
-
-    public void updateAnswersSent(int id) {
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
-
-        ContentValues values = new ContentValues();
-        values.put(SurveyResult.SurveyResultEntry.SENT, "true");
-
-        String selection = SurveyResult.SurveyResultEntry._ID + " LIKE ?";
-        String[] selectionArgs = {"" + id};
-
-        db.update(SurveyResult.SurveyResultEntry.TABLE_NAME, values, selection, selectionArgs);
     }
 
     public void updateStressLevelIsSent(int id) {
@@ -278,29 +228,11 @@ public class DatabaseService {
         return notifications;
     }
 
-    private List<SurveyResult> loadSurveyResults(Cursor c) {
-        List<SurveyResult> results = new ArrayList<>();
-        if (c != null) {
-            while (!c.isClosed() && c.moveToNext()) {
-                int id = c.getInt(c.getColumnIndex(SurveyResult.SurveyResultEntry._ID));
-
-                String answer = c.getString(c.getColumnIndex(SurveyResult.SurveyResultEntry
-                        .ANSWERS));
-
-                SurveyResult result = new SurveyResult(id);
-                result.setEntireAnswer(answer);
-                results.add(result);
-            }
-        }
-        return results;
-    }
-
     private List<StressLevel> loadStressLevels(Cursor c) {
         List<StressLevel> results = new ArrayList<>();
         if (c != null) {
             while (!c.isClosed() && c.moveToNext()) {
                 int id = c.getInt(c.getColumnIndex(StressLevel.StressLevelEntry._ID));
-
                 int value = c.getInt(c.getColumnIndex(StressLevel.StressLevelEntry.VALUE));
 
                 StressLevel result = new StressLevel(id, value);
@@ -308,24 +240,6 @@ public class DatabaseService {
             }
         }
         return results;
-    }
-
-
-    private void addAnswers(List<SurveyResult> results, Cursor c) {
-        if (c != null) {
-            while (c.moveToNext()) {
-                int id = c.getInt(c.getColumnIndex(SurveyResult.SurveyResultEntry._ID));
-
-                String answers = c.getString(c.getColumnIndex(SurveyResult.SurveyResultEntry
-                        .ANSWERS));
-
-                List<String> items = Arrays.asList(answers.split(","));
-
-                SurveyResult result = new SurveyResult(id);
-                result.setAnswers(items);
-                results.add(result);
-            }
-        }
     }
 
     private Date getTimeStampDate(String timeStampText) {

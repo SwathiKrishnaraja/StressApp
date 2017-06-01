@@ -36,6 +36,9 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManagerFactory;
 
+/**
+ * Handles the communication between client and backend server.
+ */
 public class StressAppClient {
 
     private Context context;

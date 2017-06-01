@@ -1,9 +1,5 @@
 package org.hcilab.projects.stressblocks.tetris.constants;
 
-/**
- * Created by Sanjeev on 16.12.2016.
- */
-
 public class BlockColors {
 
     public static final String RED = "#f44336";

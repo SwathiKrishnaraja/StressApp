@@ -8,7 +8,7 @@ import java.util.Date;
 import java.util.Map;
 
 /**
- * Created by Paul Kuznecov on 13.11.2016.
+ * Represents the received notification with the relevant information.
  */
 public class StressNotification {
 

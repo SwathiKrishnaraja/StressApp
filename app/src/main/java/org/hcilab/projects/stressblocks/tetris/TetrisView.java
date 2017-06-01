@@ -12,6 +12,10 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+/**
+ * Represents the view of tetris.
+ * Handles the drawing of the blocks on the surface view.
+ */
 public class TetrisView extends SurfaceView implements SurfaceHolder.Callback {
     private static int GRAVITY_TIME = 800;
     private final TetrisWorld model;

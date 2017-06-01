@@ -15,6 +15,9 @@ import org.json.JSONObject;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+/**
+ * Handles the smartphone-screen-activity of an user.
+ */
 public class LockScreenReceiver extends BroadcastReceiver {
 
     DatabaseService dbService = null;

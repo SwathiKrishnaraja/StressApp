@@ -7,6 +7,9 @@ import android.content.IntentFilter;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 
+/**
+ * Handles the smartphone-screen-activity of an user when the app is not opened.
+ */
 public class ScreenStatusReceiverService extends Service {
     private BroadcastReceiver lockScreenReceiver;
 

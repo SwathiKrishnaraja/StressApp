@@ -2,10 +2,6 @@ package org.hcilab.projects.stressblocks.model;
 
 import android.provider.BaseColumns;
 
-/**
- * Created by Sanjeev on 05.02.2017.
- */
-
 public class StressLevel {
     private int id;
     private int value;

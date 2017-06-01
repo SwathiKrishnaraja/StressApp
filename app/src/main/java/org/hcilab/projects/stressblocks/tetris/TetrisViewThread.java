@@ -4,7 +4,7 @@ import android.graphics.Canvas;
 import android.view.SurfaceHolder;
 
 /**
- * Created by Sanjeev on 12.12.2016.
+ * Handles tetris game in an own thread.
  */
 public class TetrisViewThread extends Thread {
     private TetrisView view;

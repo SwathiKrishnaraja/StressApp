@@ -16,7 +16,7 @@ import org.hcilab.projects.stressblocks.model.Score;
 import static org.hcilab.projects.stressblocks.R.id.text_view_username;
 
 /**
- * Created by Paul Kuznecov on 24.01.2017.
+ * Provides an adapter for showing the highscore list.
  */
 
 public class ScoreAdapter extends ArrayAdapter<Score> {

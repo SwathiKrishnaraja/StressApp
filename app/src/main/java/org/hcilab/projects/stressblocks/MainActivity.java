@@ -16,7 +16,6 @@ import android.widget.TextView;
 import org.hcilab.projects.stressblocks.db.DatabaseService;
 import org.hcilab.projects.stressblocks.model.StressLevel;
 import org.hcilab.projects.stressblocks.model.StressNotification;
-import org.hcilab.projects.stressblocks.model.SurveyResult;
 import org.hcilab.projects.stressblocks.networking.StressAppClient;
 
 import java.util.List;
@@ -27,6 +26,9 @@ import static org.hcilab.projects.stressblocks.tetris.utils.NotificationUtils.is
 import static org.hcilab.projects.stressblocks.tetris.utils.NotificationUtils.loadJSONObject;
 import static org.hcilab.projects.stressblocks.tetris.utils.ScoreUtils.addHighscoreToPreferences;
 
+/**
+ * Represents the main instance of the application.
+ */
 public class MainActivity extends AppCompatActivity {
     private DatabaseService dbService;
     private StressAppClient client;
@@ -92,7 +94,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
         this.sendNotifications();
-        this.sendSurveyResults();
         this.sendStressLevels();
 
         if (isLastNotficationLongAgo(preferences)) {
@@ -142,25 +143,6 @@ public class MainActivity extends AppCompatActivity {
                             boolean sent = message.getData().getBoolean("sent");
                             if (sent)
                                 dbService.updateNotificationIsSent(result.getId());
-                            return false;
-                        }
-                    });
-                }
-            }
-        }
-    }
-
-    private void sendSurveyResults() {
-        if (dbService != null && client != null) {
-            List<SurveyResult> results = dbService.getNotSentSurveyResults();
-            if (!results.isEmpty()) {
-                for (final SurveyResult result : results) {
-                    client.sendSurveyAnswers(result.getEntireAnswer(), new Handler.Callback() {
-                        @Override
-                        public boolean handleMessage(Message message) {
-                            boolean sent = message.getData().getBoolean("sent");
-                            if (sent)
-                                dbService.updateAnswersSent(result.getId());
                             return false;
                         }
                     });
