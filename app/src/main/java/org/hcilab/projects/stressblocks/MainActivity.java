@@ -21,8 +21,6 @@ import org.hcilab.projects.stressblocks.networking.StressAppClient;
 import java.util.List;
 
 import static org.hcilab.projects.stressblocks.tetris.constants.StringConstants.HIGHSCORE;
-import static org.hcilab.projects.stressblocks.tetris.utils.NotificationUtils.createNotification;
-import static org.hcilab.projects.stressblocks.tetris.utils.NotificationUtils.isLastNotficationLongAgo;
 import static org.hcilab.projects.stressblocks.tetris.utils.NotificationUtils.loadJSONObject;
 import static org.hcilab.projects.stressblocks.tetris.utils.ScoreUtils.addHighscoreToPreferences;
 
@@ -93,12 +91,15 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // Try to resend not sent notifications and stresslevels of user to server
         this.sendNotifications();
         this.sendStressLevels();
 
-        if (isLastNotficationLongAgo(preferences)) {
+        // Backup for stress notification, if the last stress notification has been sent for a while ago
+        // Not needed anymore, because stress notification is
+        /*if (isLastNotficationLongAgo(preferences)) {
             createNotification(getApplicationContext());
-        }
+        }*/
 
     }
 

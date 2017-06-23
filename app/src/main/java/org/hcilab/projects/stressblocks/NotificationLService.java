@@ -21,7 +21,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
- * Handles the receiving of a notification.
+ * Handles the receiving of a notification from android user.
  */
 
 public class NotificationLService extends NotificationListenerService {
