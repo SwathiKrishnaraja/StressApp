@@ -1,204 +1,447 @@
 {
   "survey_properties": {
-    "intro_message": "<p>Please answer the 14 questions of the survey.</p>",
-    "end_message": "Thank you for answering our survey.",
+    "intro_message": "<p>Please rate all the items and do so honestly; do not worry about your answer because there are no right or wrong ones. Thank you very much for your collaboration. If you have never experienced the situation described, please imagine what your level of UNEASE, STRESS, or NERVOUSNESS might be if you were in that situation and rate how you imagine you would feel by placing an “X” on the corresponding number. </p>",
+    "end_message": "Thank you for your honest answers.",
     "skip_intro": false
   },
   "questions": [
     {
       "question_type": "Radioboxes",
-      "question_title": "1. In the last day, how often have you been upset because of something that happened unexpectedly?",
+      "question_title": "1. Greeting someone and being ignored",
       "description": "",
       "required": true,
       "random_choices": false,
       "choices": [
-        "Never",
-        "Almost never",
-        "Sometimes",
-        "Fairly often",
-        "Very often"
+        "Not at all or very Slight",
+        "Slight",
+        "Moderate",
+        "High",
+        "Very High or Extremely High"
       ]
     },
     {
       "question_type": "Radioboxes",
-      "question_title": "2. In the last day, how often have you felt that you were unable to control the important things in your life?",
+      "question_title": "2. Having to ask a neighbour to stop making noise",
       "description": "",
       "required": true,
       "random_choices": false,
       "choices": [
-        "Never",
-        "Almost never",
-        "Sometimes",
-        "Fairly often",
-        "Very often"
+        "Not at all or very Slight",
+        "Slight",
+        "Moderate",
+        "High",
+        "Very High or Extremely High"
       ]
     },
     {
       "question_type": "Radioboxes",
-      "question_title": "3. In the last day, how often have you felt nervous and \"stressed\"?",
+      "question_title": "3. Speaking in Public ",
       "description": "",
       "required": true,
       "random_choices": false,
       "choices": [
-        "Never",
-        "Almost never",
-        "Sometimes",
-        "Fairly often",
-        "Very often"
+        "Not at all or very Slight",
+        "Slight",
+        "Moderate",
+        "High",
+        "Very High or Extremely High"
       ]
     },
     {
       "question_type": "Radioboxes",
-      "question_title": "4. In the last day, how often have you dealt successfully with irritating life hassles?",
+      "question_title": "4. Asking someone I find attractive for a date",
       "description": "",
       "required": true,
       "random_choices": false,
       "choices": [
-        "Never",
-        "Almost never",
-        "Sometimes",
-        "Fairly often",
-        "Very often"
+      "Not at all or very Slight",
+        "Slight",
+        "Moderate",
+        "High",
+        "Very High or Extremely High"
       ]
     },
     {
       "question_type": "Radioboxes",
-      "question_title": "5. In the last day, how often have you felt that you were effectively coping with important changes were occurring in your life?",
+      "question_title": "5. Complaining to the waiter about my food ",
       "description": "",
       "required": true,
       "random_choices": false,
       "choices": [
-        "Never",
-        "Almost never",
-        "Sometimes",
-        "Fairly often",
-        "Very often"
+      "Not at all or very Slight",
+        "Slight",
+        "Moderate",
+        "High",
+        "Very High or Extremely High"
       ]
     },
     {
       "question_type": "Radioboxes",
-      "question_title": "6. In the last day, how often have you felt confident about your ability to handle your personal problems?",
+      "question_title": "6. Feeling watched by people I find attractive",
       "description": "",
       "required": true,
       "random_choices": false,
       "choices": [
-        "Never",
-        "Almost never",
-        "Sometimes",
-        "Fairly often",
-        "Very often"
+        "Not at all or very Slight",
+        "Slight",
+        "Moderate",
+        "High",
+        "Very High or Extremely High"
       ]
     },
     {
       "question_type": "Radioboxes",
-      "question_title": "7. In the last day, how often have you felt that things were going your way?",
+      "question_title": "7. Participating in a meeting with people in authority",
       "description": "",
       "required": true,
       "random_choices": false,
       "choices": [
-        "Never",
-        "Almost never",
-        "Sometimes",
-        "Fairly often",
-        "Very often"
+        "Not at all or very Slight",
+        "Slight",
+        "Moderate",
+        "High",
+        "Very High or Extremely High"
       ]
     },
     {
       "question_type": "Radioboxes",
-      "question_title": "8. In the last day, how often have you found that you could not cope with all the things that you had to do?",
+      "question_title": "8. Talking to someone who isn't paying attention to what I am saying",
       "description": "",
       "required": true,
       "random_choices": false,
       "choices": [
-        "Never",
-        "Almost never",
-        "Sometimes",
-        "Fairly often",
-        "Very often"
+        "Not at all or very Slight",
+        "Slight",
+        "Moderate",
+        "High",
+        "Very High or Extremely High"
       ]
     },
     {
       "question_type": "Radioboxes",
-      "question_title": "9. In the last day, how often have you been able to control irritations in your life?",
+      "question_title": "9. Refusing when asked to do something I don't like doing ",
       "description": "",
       "required": true,
       "random_choices": false,
       "choices": [
-        "Never",
-        "Almost never",
-        "Sometimes",
-        "Fairly often",
-        "Very often"
+        "Not at all or very Slight",
+        "Slight",
+        "Moderate",
+        "High",
+        "Very High or Extremely High"
       ]
     },
     {
       "question_type": "Radioboxes",
-      "question_title": "10. In the last day, how often have you felt that you were on top of things?",
+      "question_title": "10. Making new friends",
       "description": "",
       "required": true,
       "random_choices": false,
       "choices": [
-        "Never",
-        "Almost never",
-        "Sometimes",
-        "Fairly often",
-        "Very often"
+        "Not at all or very Slight",
+        "Slight",
+        "Moderate",
+        "High",
+        "Very High or Extremely High"
       ]
     },
     {
       "question_type": "Radioboxes",
-      "question_title": "11. In the last day, how often have you been angered because of things that happened that were outside of your control?",
+      "question_title": "11. Telling someone that they have hurt my feelings",
       "description": "",
       "required": true,
       "random_choices": false,
       "choices": [
-        "Never",
-        "Almost never",
-        "Sometimes",
-        "Fairly often",
-        "Very often"
+  "Not at all or very Slight",
+        "Slight",
+        "Moderate",
+        "High",
+        "Very High or Extremely High"
       ]
     },
     {
       "question_type": "Radioboxes",
-      "question_title": "12. In the last day, how often have you found yourself thinking about things that you have to accomplish?",
+      "question_title": "12. Having to speak in class,at work, or in a meeting",
       "description": "",
       "required": true,
       "random_choices": false,
       "choices": [
-        "Never",
-        "Almost never",
-        "Sometimes",
-        "Fairly often",
-        "Very often"
+        "Not at all or very Slight",
+        "Slight",
+        "Moderate",
+        "High",
+        "Very High or Extremely High"
+
       ]
     },
     {
       "question_type": "Radioboxes",
-      "question_title": "13. In the last day, how often have you been able to control the way you spend your time?",
+      "question_title": "13. Maintaining a conversation with someone I have just met",
       "description": "",
       "required": true,
       "random_choices": false,
       "choices": [
-        "Never",
-        "Almost never",
-        "Sometimes",
-        "Fairly often",
-        "Very often"
+        "Not at all or very Slight",
+        "Slight",
+        "Moderate",
+        "High",
+        "Very High or Extremely High"
+
       ]
     },
     {
       "question_type": "Radioboxes",
-      "question_title": "14. In the last day, how often have you felt difficulties were piling up so high that you could not overcome them?",
+      "question_title": "14. Expressing my annoyance to someone that is picking on me",
       "description": "",
       "required": true,
       "random_choices": false,
       "choices": [
-        "Never",
-        "Almost never",
-        "Sometimes",
-        "Fairly often",
-        "Very often"
+        "Not at all or very Slight",
+        "Slight",
+        "Moderate",
+        "High",
+        "Very High or Extremely High"
+
+      ]
+    },
+    
+    {
+      "question_type": "Radioboxes",
+      "question_title": "15. Greeting each person at a social meeting when I don't know most of them",
+      "description": "",
+      "required": true,
+      "random_choices": false,
+      "choices": [
+        "Not at all or very Slight",
+        "Slight",
+        "Moderate",
+        "High",
+        "Very High or Extremely High"
+
+      ]
+    },
+    {
+      "question_type": "Radioboxes",
+      "question_title": "16. Being teased in public",
+      "description": "",
+      "required": true,
+      "random_choices": false,
+      "choices": [
+        "Not at all or very Slight",
+        "Slight",
+        "Moderate",
+        "High",
+        "Very High or Extremely High"
+
+      ]
+    },
+    {
+      "question_type": "Radioboxes",
+      "question_title": "17. Talking to people I don't know at a party or meeting ",
+      "description": "",
+      "required": true,
+      "random_choices": false,
+      "choices": [
+        "Not at all or very Slight",
+        "Slight",
+        "Moderate",
+        "High",
+        "Very High or Extremely High"
+
+      ]
+    },
+    {
+      "question_type": "Radioboxes",
+      "question_title": "18. Being asked a question in class by the teacher or by a superior in a meeting",
+      "description": "",
+      "required": true,
+      "random_choices": false,
+      "choices": [
+        "Not at all or very Slight",
+        "Slight",
+        "Moderate",
+        "High",
+        "Very High or Extremely High"
+
+      ]
+    },
+    {
+      "question_type": "Radioboxes",
+      "question_title": "19. Looking into the eyes of someone I have just met while we are talking",
+      "description": "",
+      "required": true,
+      "random_choices": false,
+      "choices": [
+        "Not at all or very Slight",
+        "Slight",
+        "Moderate",
+        "High",
+        "Very High or Extremely High"
+
+      ]
+    },
+    {
+      "question_type": "Radioboxes",
+      "question_title": "20. Being asked out by a person I am attracted to",
+      "description": "",
+      "required": true,
+      "random_choices": false,
+      "choices": [
+        "Not at all or very Slight",
+        "Slight",
+        "Moderate",
+        "High",
+        "Very High or Extremely High"
+
+      ]
+    },
+    {
+      "question_type": "Radioboxes",
+      "question_title": "21.   Making a mistake in front of other people ",
+      "description": "",
+      "required": true,
+      "random_choices": false,
+      "choices": [
+        "Not at all or very Slight",
+        "Slight",
+        "Moderate",
+        "High",
+        "Very High or Extremely High"
+
+      ]
+    },
+    {
+      "question_type": "Radioboxes",
+      "question_title": "22. Attending a social event where I know only one person ",
+      "description": "",
+      "required": true,
+      "random_choices": false,
+      "choices": [
+        "Not at all or very Slight",
+        "Slight",
+        "Moderate",
+        "High",
+        "Very High or Extremely High"
+
+      ]
+    },
+    {
+      "question_type": "Radioboxes",
+      "question_title": "23. Starting a conversation with someone I find attractive ",
+      "description": "",
+      "required": true,
+      "random_choices": false,
+      "choices": [
+        "Not at all or very Slight",
+        "Slight",
+        "Moderate",
+        "High",
+        "Very High or Extremely High"
+
+      ]
+    },
+    {
+      "question_type": "Radioboxes",
+      "question_title": "24. Being reprimanded about something I have done wrong ",
+      "description": "",
+      "required": true,
+      "random_choices": false,
+      "choices": [
+        "Not at all or very Slight",
+        "Slight",
+        "Moderate",
+        "High",
+        "Very High or Extremely High"
+
+      ]
+    },
+    {
+      "question_type": "Radioboxes",
+      "question_title": "25. While having dinner with colleagues, classmates or workmates, being asked to speak on behalf of the entire group",
+      "description": "",
+      "required": true,
+      "random_choices": false,
+      "choices": [
+        "Not at all or very Slight",
+        "Slight",
+        "Moderate",
+        "High",
+        "Very High or Extremely High"
+
+      ]
+    },
+    {
+      "question_type": "Radioboxes",
+      "question_title": "26. Telling someone that their behavior bothers me and asking them to stop",
+      "description": "",
+      "required": true,
+      "random_choices": false,
+      "choices": [
+        "Not at all or very Slight",
+        "Slight",
+        "Moderate",
+        "High",
+        "Very High or Extremely High"
+
+      ]
+    },
+    {
+      "question_type": "Radioboxes",
+      "question_title": "27. Asking someone I find attractive to dance",
+      "description": "",
+      "required": true,
+      "random_choices": false,
+      "choices": [
+        "Not at all or very Slight",
+        "Slight",
+        "Moderate",
+        "High",
+        "Very High or Extremely High"
+
+      ]
+    },
+    {
+      "question_type": "Radioboxes",
+      "question_title": "28. Being criticized",
+      "description": "",
+      "required": true,
+      "random_choices": false,
+      "choices": [
+        "Not at all or very Slight",
+        "Slight",
+        "Moderate",
+        "High",
+        "Very High or Extremely High"
+
+      ]
+    },
+    {
+      "question_type": "Radioboxes",
+      "question_title": "29.   Talking to a superior or a person in authority",
+      "description": "",
+      "required": true,
+      "random_choices": false,
+      "choices": [
+        "Not at all or very Slight",
+        "Slight",
+        "Moderate",
+        "High",
+        "Very High or Extremely High"
+
+      ]
+    },{
+      "question_type": "Radioboxes",
+      "question_title": "30.   Telling someone I am attracted to that I would like to get to know them better",
+      "description": "",
+      "required": true,
+      "random_choices": false,
+      "choices": [
+        "Not at all or very Slight",
+        "Slight",
+        "Moderate",
+        "High",
+        "Very High or Extremely High"
+
       ]
     }
   ]
